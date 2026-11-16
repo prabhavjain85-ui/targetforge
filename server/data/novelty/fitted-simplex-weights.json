@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "progression-simplex-cohort2",
+  "description": "Fitted simplex weights over the eight Open Targets biology features, used by progressionScore. Contains no drug-count term.",
+  "provenance": {
+    "releasePair": "21.04 (2021-05-05) -> 26.09 (2026-09)",
+    "yearsElapsed": 5.4,
+    "cohort": "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
+    "diseases": {
+      "total": 22,
+      "training": 11,
+      "heldOut": 11
+    },
+    "heldOut": {
+      "pairs": 11711,
+      "positives": 258,
+      "baseRate": 0.022
+    },
+    "generatedAt": "2026-11-16T14:00:57.009Z",
+    "producedByCommit": "7883506c6817f0401aeb6c1a4055ee1d2521a2be",
+    "sourceFiles": [
+      "benchmark/docking/results/task3_novelty_validation.json",
+      "benchmark/docking/TASK3_NOVELTY_VALIDATION.md"
+    ],
+    "generator": "benchmark/docking/scripts/validate_novelty_retrospective.mjs"
+  },
+  "heldOutPerformance": {
+    "rocAuc": 0.7079,
+    "prAuc": 0.0516,
+    "precisionAt25": 0.12,
+    "comparators": {
+      "publicationCountAlone": 0.6672,
+      "handSetBiologySignal": 0.6371,
+      "geneticAssociationAlone": 0.4998
+    }
+  },
+  "caveat": "Literature carries 0.81 of the simplex, so this model behaves largely as a publication-count proxy; publication count alone scores 0.667 against this model's 0.708.",
+  "weights": {
+    "genetic_association": 0.0175,
+    "genetic_literature": 0.0192,
+    "somatic_mutation": 0.0336,
+    "overall": 0,
+    "literature": 0.8135,
+    "affected_pathway": 0,
+    "animal_model": 0.1053,
+    "rna_expression": 0.011
+  }
+}
