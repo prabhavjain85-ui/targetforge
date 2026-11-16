@@ -1,0 +1,1735 @@
+{
+  "generated_at": "2026-11-16T08:54:59.237Z",
+  "benchmark_id": "task2_scaffold_property_matched_benchmark",
+  "split_method": "bemis_murcko_scaffold_split",
+  "decoy_method": "dude_dekois_6prop_matched_tanimoto_ceiling_0.35",
+  "n_targets_total": 15,
+  "n_targets_passing_sanity": 14,
+  "n_targets_passing_count_check": 15,
+  "n_targets_evaluable": 15,
+  "finding": "heuristic-v2 DOES NOT beat (c) Tanimoto to the staged co-crystal ligand on ROC-AUC (0.523 vs 0.662 on the 14/15 sanity-passing targets; 0.520 vs 0.653 on the 15/15 count-passing targets; 0.520 vs 0.653 across all 15 targets) or BEDROC(alpha=20) (0.436 vs 0.617 on sanity-passing; 0.422 vs 0.619 on count-passing). Furthermore, without pre-staged co-crystal similarity annotation, heuristic-v2 (rule table only) DOES NOT beat (b) drug-likeness only (0.482 vs 0.482 on count-passing targets; 0.482 vs 0.482 on sanity-passing targets; 0.482 vs 0.482 across all 15 targets), scoring below random chance (~0.34–0.46 AUC) because hardcoded drug-name rules never fire on held-out molecules and Lipinski/Veber points favor smaller weak binders over potent actives.",
+  "heuristic_v2_beats_druglikeness_only_without_cocrystal": false,
+  "heuristic_v2_beats_tanimoto_cocrystal": false,
+  "summary_sanity_passing_targets": {
+    "random": {
+      "roc_auc": 0.5204,
+      "ci_low": 0.3609,
+      "ci_high": 0.6812,
+      "ef_1pct": 1.1429,
+      "ef_5pct": 1.381,
+      "bedroc_20": 0.3295
+    },
+    "druglikeness_only": {
+      "roc_auc": 0.4825,
+      "ci_low": 0.3248,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9505,
+      "ef_5pct": 0.9505,
+      "bedroc_20": 0.2379
+    },
+    "tanimoto_cocrystal": {
+      "roc_auc": 0.6616,
+      "ci_low": 0.5047,
+      "ci_high": 0.805,
+      "ef_1pct": 2.5714,
+      "ef_5pct": 2.7143,
+      "bedroc_20": 0.6172
+    },
+    "heuristic_v2": {
+      "roc_auc": 0.5229,
+      "ci_low": 0.356,
+      "ci_high": 0.6868,
+      "ef_1pct": 2.4145,
+      "ef_5pct": 2.129,
+      "bedroc_20": 0.4365
+    },
+    "heuristic_v2_rules_only": {
+      "roc_auc": 0.4825,
+      "ci_low": 0.3248,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9505,
+      "ef_5pct": 0.9505,
+      "bedroc_20": 0.2379
+    }
+  },
+  "summary_count_passing_targets": {
+    "random": {
+      "roc_auc": 0.5188,
+      "ci_low": 0.3579,
+      "ci_high": 0.6814,
+      "ef_1pct": 1.0667,
+      "ef_5pct": 1.3778,
+      "bedroc_20": 0.3268
+    },
+    "druglikeness_only": {
+      "roc_auc": 0.482,
+      "ci_low": 0.3233,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9538,
+      "ef_5pct": 0.9538,
+      "bedroc_20": 0.2371
+    },
+    "tanimoto_cocrystal": {
+      "roc_auc": 0.6527,
+      "ci_low": 0.4945,
+      "ci_high": 0.7985,
+      "ef_1pct": 2.6667,
+      "ef_5pct": 2.8,
+      "bedroc_20": 0.6186
+    },
+    "heuristic_v2": {
+      "roc_auc": 0.5199,
+      "ci_low": 0.3526,
+      "ci_high": 0.684,
+      "ef_1pct": 2.3202,
+      "ef_5pct": 2.0537,
+      "bedroc_20": 0.4225
+    },
+    "heuristic_v2_rules_only": {
+      "roc_auc": 0.482,
+      "ci_low": 0.3233,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9538,
+      "ef_5pct": 0.9538,
+      "bedroc_20": 0.2371
+    }
+  },
+  "summary_all_evaluable_targets": {
+    "random": {
+      "roc_auc": 0.5188,
+      "ci_low": 0.3579,
+      "ci_high": 0.6814,
+      "ef_1pct": 1.0667,
+      "ef_5pct": 1.3778,
+      "bedroc_20": 0.3268
+    },
+    "druglikeness_only": {
+      "roc_auc": 0.482,
+      "ci_low": 0.3233,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9538,
+      "ef_5pct": 0.9538,
+      "bedroc_20": 0.2371
+    },
+    "tanimoto_cocrystal": {
+      "roc_auc": 0.6527,
+      "ci_low": 0.4945,
+      "ci_high": 0.7985,
+      "ef_1pct": 2.6667,
+      "ef_5pct": 2.8,
+      "bedroc_20": 0.6186
+    },
+    "heuristic_v2": {
+      "roc_auc": 0.5199,
+      "ci_low": 0.3526,
+      "ci_high": 0.684,
+      "ef_1pct": 2.3202,
+      "ef_5pct": 2.0537,
+      "bedroc_20": 0.4225
+    },
+    "heuristic_v2_rules_only": {
+      "roc_auc": 0.482,
+      "ci_low": 0.3233,
+      "ci_high": 0.6419,
+      "ef_1pct": 0.9538,
+      "ef_5pct": 0.9538,
+      "bedroc_20": 0.2371
+    }
+  },
+  "targets": [
+    {
+      "target_id": "egfr",
+      "gene_symbol": "EGFR",
+      "chembl_target_id": "CHEMBL203",
+      "pdb_id": "1M17",
+      "ligand_resname": "AQ4",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -1,
+      "delta_clogp": 0.14,
+      "ave_bias": 0.0852,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.447520184544406,
+          "ci_low": 0.3006993006993007,
+          "ci_high": 0.6109422492401215,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.2726443329482229
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4596309111880046,
+          "ci_low": 0.29988465974625145,
+          "ci_high": 0.6099759615384616,
+          "ef_1pct": 0.7692307692307693,
+          "ef_5pct": 0.7692307692307693,
+          "bedroc_20": 0.19367959866971124
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.709919261822376,
+          "ci_low": 0.5271164021164021,
+          "ci_high": 0.8921875,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.9161202534589761
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.6234140715109573,
+          "ci_low": 0.43898809523809523,
+          "ci_high": 0.8045112781954887,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.8504548566415907
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4596309111880046,
+          "ci_low": 0.29988465974625145,
+          "ci_high": 0.6099759615384616,
+          "ef_1pct": 0.7692307692307693,
+          "ef_5pct": 0.7692307692307693,
+          "bedroc_20": 0.19367959866971124
+        }
+      }
+    },
+    {
+      "target_id": "erbb2",
+      "gene_symbol": "ERBB2",
+      "chembl_target_id": "CHEMBL1824",
+      "pdb_id": "3PP0",
+      "ligand_resname": "03Q",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 1.2,
+      "delta_clogp": 0.07,
+      "ave_bias": 0.0958,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.4895833333333333,
+          "ci_low": 0.32,
+          "ci_high": 0.6569468267581475,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.29456980904565483
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4850260416666667,
+          "ci_low": 0.3108843537414966,
+          "ci_high": 0.6542857142857142,
+          "ef_1pct": 0.8,
+          "ef_5pct": 0.7999999999999999,
+          "bedroc_20": 0.2043354627923154
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.7779947916666666,
+          "ci_low": 0.6280193236714976,
+          "ci_high": 0.9102040816326531,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.853426023717575
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.48828125,
+          "ci_low": 0.3177083333333333,
+          "ci_high": 0.654296875,
+          "ef_1pct": 0.8,
+          "ef_5pct": 0.7999999999999999,
+          "bedroc_20": 0.2043439130833216
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4850260416666667,
+          "ci_low": 0.3108843537414966,
+          "ci_high": 0.6542857142857142,
+          "ef_1pct": 0.8,
+          "ef_5pct": 0.7999999999999999,
+          "bedroc_20": 0.2043354627923154
+        }
+      }
+    },
+    {
+      "target_id": "abl1",
+      "gene_symbol": "ABL1",
+      "chembl_target_id": "CHEMBL1862",
+      "pdb_id": "1IEP",
+      "ligand_resname": "STI",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -1.2,
+      "delta_clogp": 0.2,
+      "ave_bias": 0.0269,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.5121107266435986,
+          "ci_low": 0.34975961538461536,
+          "ci_high": 0.6788888888888889,
+          "ef_1pct": 4,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.3646903548721802
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.49480968858131485,
+          "ci_low": 0.3438735177865613,
+          "ci_high": 0.6586538461538461,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.2472508988146965
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.4527104959630911,
+          "ci_low": 0.29146634615384615,
+          "ci_high": 0.6239907727797002,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.2810819211048583
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.49480968858131485,
+          "ci_low": 0.3438735177865613,
+          "ci_high": 0.6586538461538461,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.2472508988146965
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.49480968858131485,
+          "ci_low": 0.3438735177865613,
+          "ci_high": 0.6586538461538461,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.2472508988146965
+        }
+      }
+    },
+    {
+      "target_id": "braf",
+      "gene_symbol": "BRAF",
+      "chembl_target_id": "CHEMBL5145",
+      "pdb_id": "4XV2",
+      "ligand_resname": "P06",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -4.7,
+      "delta_clogp": 0.14,
+      "ave_bias": 0.0377,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.5494791666666666,
+          "ci_low": 0.3815104166666667,
+          "ci_high": 0.723404255319149,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.280511896770298
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.494140625,
+          "ci_low": 0.3391927083333333,
+          "ci_high": 0.6680805938494168,
+          "ef_1pct": 1.3333333333333333,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.31740215911464764
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.8053385416666666,
+          "ci_low": 0.6736842105263158,
+          "ci_high": 0.9149659863945578,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.8616966958796187
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.494140625,
+          "ci_low": 0.3391927083333333,
+          "ci_high": 0.6680805938494168,
+          "ef_1pct": 1.3333333333333333,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.31740215911464764
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.494140625,
+          "ci_low": 0.3391927083333333,
+          "ci_high": 0.6680805938494168,
+          "ef_1pct": 1.3333333333333333,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.31740215911464764
+        }
+      }
+    },
+    {
+      "target_id": "jak2",
+      "gene_symbol": "JAK2",
+      "chembl_target_id": "CHEMBL2971",
+      "pdb_id": "4JI9",
+      "ligand_resname": "1M3",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -8.8,
+      "delta_clogp": 0.08,
+      "ave_bias": -0.0036,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.66796875,
+          "ci_low": 0.5,
+          "ci_high": 0.8216123499142367,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.7188073598396253
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4401041666666667,
+          "ci_low": 0.2863945578231292,
+          "ci_high": 0.5755102040816327,
+          "ef_1pct": 0.7142857142857142,
+          "ef_5pct": 0.7142857142857143,
+          "bedroc_20": 0.17981275572329355
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.5078125,
+          "ci_low": 0.32571428571428573,
+          "ci_high": 0.6612244897959184,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.2184556992348226
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.4401041666666667,
+          "ci_low": 0.2863945578231292,
+          "ci_high": 0.5755102040816327,
+          "ef_1pct": 0.7142857142857142,
+          "ef_5pct": 0.7142857142857143,
+          "bedroc_20": 0.17981275572329355
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4401041666666667,
+          "ci_low": 0.2863945578231292,
+          "ci_high": 0.5755102040816327,
+          "ef_1pct": 0.7142857142857142,
+          "ef_5pct": 0.7142857142857143,
+          "bedroc_20": 0.17981275572329355
+        }
+      }
+    },
+    {
+      "target_id": "adrb2",
+      "gene_symbol": "ADRB2",
+      "chembl_target_id": "CHEMBL210",
+      "pdb_id": "3SN6",
+      "ligand_resname": "P0G",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 5.5,
+      "delta_clogp": 0.11,
+      "ave_bias": 0.2375,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.4140715109573241,
+          "ci_low": 0.2722029988465975,
+          "ci_high": 0.5745192307692307,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.2203830212914954
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.47693194925028837,
+          "ci_low": 0.31415343915343913,
+          "ci_high": 0.6384615384615384,
+          "ef_1pct": 0.8888888888888888,
+          "ef_5pct": 0.8888888888888888,
+          "bedroc_20": 0.22707552567662878
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.6055363321799307,
+          "ci_low": 0.41932367149758454,
+          "ci_high": 0.779245283018868,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.38644023033649194
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.47116493656286046,
+          "ci_low": 0.31189903846153844,
+          "ci_high": 0.629757785467128,
+          "ef_1pct": 0,
+          "ef_5pct": 0.2962962962962963,
+          "bedroc_20": 0.13078904381045917
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.47693194925028837,
+          "ci_low": 0.31415343915343913,
+          "ci_high": 0.6384615384615384,
+          "ef_1pct": 0.8888888888888888,
+          "ef_5pct": 0.8888888888888888,
+          "bedroc_20": 0.22707552567662878
+        }
+      }
+    },
+    {
+      "target_id": "ptgs2",
+      "gene_symbol": "PTGS2",
+      "chembl_target_id": "CHEMBL230",
+      "pdb_id": "1CX2",
+      "ligand_resname": "S58",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -4.3,
+      "delta_clogp": -0.02,
+      "ave_bias": 0.0914,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.6432291666666666,
+          "ci_low": 0.4857142857142857,
+          "ci_high": 0.8,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.24097968692323996
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.490234375,
+          "ci_low": 0.34285714285714286,
+          "ci_high": 0.6370772946859904,
+          "ef_1pct": 0.975609756097561,
+          "ef_5pct": 0.975609756097561,
+          "bedroc_20": 0.2455568639996448
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.740234375,
+          "ci_low": 0.5731523378582202,
+          "ci_high": 0.8914285714285715,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.8738279219473981
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.55078125,
+          "ci_low": 0.37318840579710144,
+          "ci_high": 0.7140350877192982,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.6851489211942422
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.490234375,
+          "ci_low": 0.34285714285714286,
+          "ci_high": 0.6370772946859904,
+          "ef_1pct": 0.975609756097561,
+          "ef_5pct": 0.975609756097561,
+          "bedroc_20": 0.2455568639996448
+        }
+      }
+    },
+    {
+      "target_id": "hmgcr",
+      "gene_symbol": "HMGCR",
+      "chembl_target_id": "CHEMBL402",
+      "pdb_id": "1HWK",
+      "ligand_resname": "117",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 8.9,
+      "delta_clogp": -0.47,
+      "ave_bias": 0.0582,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.5078125,
+          "ci_low": 0.3229166666666667,
+          "ci_high": 0.6794871794871795,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.20429528833718674
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4928385416666667,
+          "ci_low": 0.3407142857142857,
+          "ci_high": 0.6472222222222223,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.2494826488859613
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.677734375,
+          "ci_low": 0.48299319727891155,
+          "ci_high": 0.8429951690821256,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.873543282001739
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.5436197916666666,
+          "ci_low": 0.3697916666666667,
+          "ci_high": 0.7175438596491228,
+          "ef_1pct": 4,
+          "ef_5pct": 3,
+          "bedroc_20": 0.5995404801710732
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4928385416666667,
+          "ci_low": 0.3407142857142857,
+          "ci_high": 0.6472222222222223,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.2494826488859613
+        }
+      }
+    },
+    {
+      "target_id": "dpp4",
+      "gene_symbol": "DPP4",
+      "chembl_target_id": "CHEMBL284",
+      "pdb_id": "4A5S",
+      "ligand_resname": "N7F",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 22.6,
+      "delta_clogp": -0.28,
+      "ave_bias": 0.1436,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.3828125,
+          "ci_low": 0.23142857142857143,
+          "ci_high": 0.5414285714285715,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.21220342400235306
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4895833333333333,
+          "ci_low": 0.33071428571428574,
+          "ci_high": 0.6614285714285715,
+          "ef_1pct": 1.0666666666666667,
+          "ef_5pct": 1.0666666666666667,
+          "bedroc_20": 0.26735669431850856
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.72265625,
+          "ci_low": 0.5904761904761905,
+          "ci_high": 0.8423028785982478,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.21137182735035207
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.4895833333333333,
+          "ci_low": 0.33071428571428574,
+          "ci_high": 0.6614285714285715,
+          "ef_1pct": 1.0666666666666667,
+          "ef_5pct": 1.0666666666666667,
+          "bedroc_20": 0.26735669431850856
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4895833333333333,
+          "ci_low": 0.33071428571428574,
+          "ci_high": 0.6614285714285715,
+          "ef_1pct": 1.0666666666666667,
+          "ef_5pct": 1.0666666666666667,
+          "bedroc_20": 0.26735669431850856
+        }
+      }
+    },
+    {
+      "target_id": "hivpr",
+      "gene_symbol": "HIV1PR",
+      "chembl_target_id": "CHEMBL243",
+      "pdb_id": "1HVR",
+      "ligand_resname": "XK2",
+      "passes_count_check": true,
+      "passes_sanity": false,
+      "sanity_failure_reason": "ave_bias_exceeded (|AVE|=0.311 > 0.25)",
+      "delta_mw_da": 12,
+      "delta_clogp": -0.17,
+      "ave_bias": 0.3107,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.49609375,
+          "ci_low": 0.3157142857142857,
+          "ci_high": 0.6848484848484848,
+          "ef_1pct": 0,
+          "ef_5pct": 1.3333333333333333,
+          "bedroc_20": 0.28923099347997033
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.474609375,
+          "ci_low": 0.302734375,
+          "ci_high": 0.6424242424242425,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.22644809664990473
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.52734375,
+          "ci_low": 0.3510204081632653,
+          "ci_high": 0.7071339173967459,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.6381523091046051
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.4778645833333333,
+          "ci_low": 0.30580357142857145,
+          "ci_high": 0.6447507953340403,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.22645395746454053
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.474609375,
+          "ci_low": 0.302734375,
+          "ci_high": 0.6424242424242425,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.22644809664990473
+        }
+      }
+    },
+    {
+      "target_id": "sars_mpro",
+      "gene_symbol": "MPRO",
+      "chembl_target_id": "CHEMBL4523582",
+      "pdb_id": "7BQY",
+      "ligand_resname": "N3",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -9.5,
+      "delta_clogp": -0.02,
+      "ave_bias": 0.0188,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.5755208333333334,
+          "ci_low": 0.40700483091787437,
+          "ci_high": 0.7586726998491704,
+          "ef_1pct": 4,
+          "ef_5pct": 2.6666666666666665,
+          "bedroc_20": 0.5681501932665592
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.4524739583333333,
+          "ci_low": 0.2857142857142857,
+          "ci_high": 0.6166380789022299,
+          "ef_1pct": 0.8888888888888888,
+          "ef_5pct": 0.8888888888888888,
+          "bedroc_20": 0.22371345602105697
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.23177083333333334,
+          "ci_low": 0.09136420525657071,
+          "ci_high": 0.3942857142857143,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.012415990549285274
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.4524739583333333,
+          "ci_low": 0.2857142857142857,
+          "ci_high": 0.6166380789022299,
+          "ef_1pct": 0.8888888888888888,
+          "ef_5pct": 0.8888888888888888,
+          "bedroc_20": 0.22371345602105697
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.4524739583333333,
+          "ci_low": 0.2857142857142857,
+          "ci_high": 0.6166380789022299,
+          "ef_1pct": 0.8888888888888888,
+          "ef_5pct": 0.8888888888888888,
+          "bedroc_20": 0.22371345602105697
+        }
+      }
+    },
+    {
+      "target_id": "pde5a",
+      "gene_symbol": "PDE5A",
+      "chembl_target_id": "CHEMBL1827",
+      "pdb_id": "1UDT",
+      "ligand_resname": "VIA",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 4,
+      "delta_clogp": -0.12,
+      "ave_bias": 0.1364,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.46943483275663206,
+          "ci_low": 0.3232704402515723,
+          "ci_high": 0.6137931034482759,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.11370704044309536
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.5040369088811996,
+          "ci_low": 0.3546099290780142,
+          "ci_high": 0.665,
+          "ef_1pct": 0.9230769230769231,
+          "ef_5pct": 0.923076923076923,
+          "bedroc_20": 0.23277180366181607
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.4953863898500577,
+          "ci_low": 0.31069182389937106,
+          "ci_high": 0.6792452830188679,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.672716756834188
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.5726643598615917,
+          "ci_low": 0.40476190476190477,
+          "ci_high": 0.7255555555555555,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.6306610904561398
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.5040369088811996,
+          "ci_low": 0.3546099290780142,
+          "ci_high": 0.665,
+          "ef_1pct": 0.9230769230769231,
+          "ef_5pct": 0.923076923076923,
+          "bedroc_20": 0.23277180366181607
+        }
+      }
+    },
+    {
+      "target_id": "hdac1",
+      "gene_symbol": "HDAC1",
+      "chembl_target_id": "CHEMBL325",
+      "pdb_id": "4LXZ",
+      "ligand_resname": "SHH",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -5.9,
+      "delta_clogp": 0.04,
+      "ave_bias": 0.1293,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.4232987312572088,
+          "ci_low": 0.2605820105820106,
+          "ci_high": 0.5810955961331902,
+          "ef_1pct": 0,
+          "ef_5pct": 0,
+          "bedroc_20": 0.23396368070196363
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.5017301038062284,
+          "ci_low": 0.34615384615384615,
+          "ci_high": 0.6620530565167243,
+          "ef_1pct": 1.076923076923077,
+          "ef_5pct": 1.0769230769230769,
+          "bedroc_20": 0.27100329219317587
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.8858131487889274,
+          "ci_low": 0.7513227513227513,
+          "ci_high": 0.9846153846153847,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.9675329163771719
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.6372549019607843,
+          "ci_low": 0.4639423076923077,
+          "ci_high": 0.8082706766917294,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.7708192879488415
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.5017301038062284,
+          "ci_low": 0.34615384615384615,
+          "ci_high": 0.6620530565167243,
+          "ef_1pct": 1.076923076923077,
+          "ef_5pct": 1.0769230769230769,
+          "bedroc_20": 0.27100329219317587
+        }
+      }
+    },
+    {
+      "target_id": "esr1",
+      "gene_symbol": "ESR1",
+      "chembl_target_id": "CHEMBL206",
+      "pdb_id": "3ERT",
+      "ligand_resname": "OHT",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": -7.4,
+      "delta_clogp": 0.25,
+      "ave_bias": 0.068,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.6482122260668973,
+          "ci_low": 0.4909090909090909,
+          "ci_high": 0.7884615384615384,
+          "ef_1pct": 4,
+          "ef_5pct": 2.6666666666666665,
+          "bedroc_20": 0.5476923388100905
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.47231833910034604,
+          "ci_low": 0.3177083333333333,
+          "ci_high": 0.6328125,
+          "ef_1pct": 0.8695652173913043,
+          "ef_5pct": 0.8695652173913043,
+          "bedroc_20": 0.21888704652359114
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.8915801614763552,
+          "ci_low": 0.7816425120772947,
+          "ci_high": 0.9705528846153846,
+          "ef_1pct": 4,
+          "ef_5pct": 4,
+          "bedroc_20": 0.9138061909917531
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.5426758938869666,
+          "ci_low": 0.3690888119953864,
+          "ci_high": 0.7086956521739131,
+          "ef_1pct": 4,
+          "ef_5pct": 2.956521739130435,
+          "bedroc_20": 0.5692469335869713
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.47231833910034604,
+          "ci_low": 0.3177083333333333,
+          "ci_high": 0.6328125,
+          "ef_1pct": 0.8695652173913043,
+          "ef_5pct": 0.8695652173913043,
+          "bedroc_20": 0.21888704652359114
+        }
+      }
+    },
+    {
+      "target_id": "thrombin",
+      "gene_symbol": "F2",
+      "chembl_target_id": "CHEMBL204",
+      "pdb_id": "1PPB",
+      "ligand_resname": "0G6",
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "delta_mw_da": 3.6,
+      "delta_clogp": -0.29,
+      "ave_bias": 0.0461,
+      "n_test_actives": 18,
+      "n_test_decoys": 54,
+      "decoy_per_active_ratio": 3,
+      "rankers": {
+        "random": {
+          "roc_auc": 0.5545267489711934,
+          "ci_low": 0.40673076923076923,
+          "ci_high": 0.706951871657754,
+          "ef_1pct": 0,
+          "ef_5pct": 2,
+          "bedroc_20": 0.34041164725990963
+        },
+        "druglikeness_only": {
+          "roc_auc": 0.5015432098765432,
+          "ci_low": 0.33370535714285715,
+          "ci_high": 0.6589506172839507,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.25162716453286743
+        },
+        "tanimoto_cocrystal": {
+          "roc_auc": 0.7582304526748971,
+          "ci_low": 0.619140625,
+          "ci_high": 0.8824561403508772,
+          "ef_1pct": 4,
+          "ef_5pct": 2,
+          "bedroc_20": 0.5990285097383246
+        },
+        "heuristic_v2": {
+          "roc_auc": 0.5200617283950617,
+          "ci_low": 0.3485221674876847,
+          "ci_high": 0.6717980295566502,
+          "ef_1pct": 4,
+          "ef_5pct": 1.75,
+          "bedroc_20": 0.4345731480699486
+        },
+        "heuristic_v2_rules_only": {
+          "roc_auc": 0.5015432098765432,
+          "ci_low": 0.33370535714285715,
+          "ci_high": 0.6589506172839507,
+          "ef_1pct": 1,
+          "ef_5pct": 1,
+          "bedroc_20": 0.25162716453286743
+        }
+      }
+    }
+  ],
+  "all_targets_audit": [
+    {
+      "target_id": "egfr",
+      "gene_symbol": "EGFR",
+      "chembl_target_id": "CHEMBL203",
+      "pdb_id": "1M17",
+      "ligand_resname": "AQ4",
+      "n_train_actives": 18,
+      "n_train_decoys": 54,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -1,
+      "delta_clogp": 0.14,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0852
+    },
+    {
+      "target_id": "erbb2",
+      "gene_symbol": "ERBB2",
+      "chembl_target_id": "CHEMBL1824",
+      "pdb_id": "3PP0",
+      "ligand_resname": "03Q",
+      "n_train_actives": 14,
+      "n_train_decoys": 42,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 1.2,
+      "delta_clogp": 0.07,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0958
+    },
+    {
+      "target_id": "abl1",
+      "gene_symbol": "ABL1",
+      "chembl_target_id": "CHEMBL1862",
+      "pdb_id": "1IEP",
+      "ligand_resname": "STI",
+      "n_train_actives": 18,
+      "n_train_decoys": 54,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -1.2,
+      "delta_clogp": 0.2,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0269
+    },
+    {
+      "target_id": "braf",
+      "gene_symbol": "BRAF",
+      "chembl_target_id": "CHEMBL5145",
+      "pdb_id": "4XV2",
+      "ligand_resname": "P06",
+      "n_train_actives": 20,
+      "n_train_decoys": 60,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -4.7,
+      "delta_clogp": 0.14,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0377
+    },
+    {
+      "target_id": "jak2",
+      "gene_symbol": "JAK2",
+      "chembl_target_id": "CHEMBL2971",
+      "pdb_id": "4JI9",
+      "ligand_resname": "1M3",
+      "n_train_actives": 15,
+      "n_train_decoys": 45,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -8.8,
+      "delta_clogp": 0.08,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": -0.0036
+    },
+    {
+      "target_id": "adrb2",
+      "gene_symbol": "ADRB2",
+      "chembl_target_id": "CHEMBL210",
+      "pdb_id": "3SN6",
+      "ligand_resname": "P0G",
+      "n_train_actives": 19,
+      "n_train_decoys": 57,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 5.5,
+      "delta_clogp": 0.11,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.2375
+    },
+    {
+      "target_id": "ptgs2",
+      "gene_symbol": "PTGS2",
+      "chembl_target_id": "CHEMBL230",
+      "pdb_id": "1CX2",
+      "ligand_resname": "S58",
+      "n_train_actives": 15,
+      "n_train_decoys": 45,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -4.3,
+      "delta_clogp": -0.02,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0914
+    },
+    {
+      "target_id": "hmgcr",
+      "gene_symbol": "HMGCR",
+      "chembl_target_id": "CHEMBL402",
+      "pdb_id": "1HWK",
+      "ligand_resname": "117",
+      "n_train_actives": 15,
+      "n_train_decoys": 45,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 8.9,
+      "delta_clogp": -0.47,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0582
+    },
+    {
+      "target_id": "dpp4",
+      "gene_symbol": "DPP4",
+      "chembl_target_id": "CHEMBL284",
+      "pdb_id": "4A5S",
+      "ligand_resname": "N7F",
+      "n_train_actives": 13,
+      "n_train_decoys": 39,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 22.6,
+      "delta_clogp": -0.28,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.1436
+    },
+    {
+      "target_id": "hivpr",
+      "gene_symbol": "HIV1PR",
+      "chembl_target_id": "CHEMBL243",
+      "pdb_id": "1HVR",
+      "ligand_resname": "XK2",
+      "n_train_actives": 19,
+      "n_train_decoys": 57,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 12,
+      "delta_clogp": -0.17,
+      "passes_count_check": true,
+      "passes_sanity": false,
+      "sanity_failure_reason": "ave_bias_exceeded (|AVE|=0.311 > 0.25)",
+      "ave_bias": 0.3107
+    },
+    {
+      "target_id": "sars_mpro",
+      "gene_symbol": "MPRO",
+      "chembl_target_id": "CHEMBL4523582",
+      "pdb_id": "7BQY",
+      "ligand_resname": "N3",
+      "n_train_actives": 18,
+      "n_train_decoys": 54,
+      "n_test_actives": 16,
+      "n_test_decoys": 48,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -9.5,
+      "delta_clogp": -0.02,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0188
+    },
+    {
+      "target_id": "pde5a",
+      "gene_symbol": "PDE5A",
+      "chembl_target_id": "CHEMBL1827",
+      "pdb_id": "1UDT",
+      "ligand_resname": "VIA",
+      "n_train_actives": 15,
+      "n_train_decoys": 45,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 4,
+      "delta_clogp": -0.12,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.1364
+    },
+    {
+      "target_id": "hdac1",
+      "gene_symbol": "HDAC1",
+      "chembl_target_id": "CHEMBL325",
+      "pdb_id": "4LXZ",
+      "ligand_resname": "SHH",
+      "n_train_actives": 18,
+      "n_train_decoys": 54,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -5.9,
+      "delta_clogp": 0.04,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.1293
+    },
+    {
+      "target_id": "esr1",
+      "gene_symbol": "ESR1",
+      "chembl_target_id": "CHEMBL206",
+      "pdb_id": "3ERT",
+      "ligand_resname": "OHT",
+      "n_train_actives": 12,
+      "n_train_decoys": 36,
+      "n_test_actives": 17,
+      "n_test_decoys": 51,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": -7.4,
+      "delta_clogp": 0.25,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.068
+    },
+    {
+      "target_id": "thrombin",
+      "gene_symbol": "F2",
+      "chembl_target_id": "CHEMBL204",
+      "pdb_id": "1PPB",
+      "ligand_resname": "0G6",
+      "n_train_actives": 15,
+      "n_train_decoys": 45,
+      "n_test_actives": 18,
+      "n_test_decoys": 54,
+      "decoy_per_active_ratio": 3,
+      "delta_mw_da": 3.6,
+      "delta_clogp": -0.29,
+      "passes_count_check": true,
+      "passes_sanity": true,
+      "sanity_failure_reason": null,
+      "ave_bias": 0.0461
+    }
+  ],
+  "ave_before_after": [
+    {
+      "target_id": "egfr",
+      "gene_symbol": "EGFR",
+      "before": {
+        "ave_bias": 0.6505,
+        "active_bias_aa_minus_ai": 0.3515,
+        "inactive_bias_ii_minus_ia": 0.299,
+        "mean_nn_aa": 0.703,
+        "mean_nn_ai": 0.3515,
+        "mean_nn_ii": 0.5432,
+        "mean_nn_ia": 0.2442,
+        "shared_scaffolds_train_test": 16,
+        "max_test_decoy_to_active_tanimoto": 0.6429
+      },
+      "after": {
+        "ave_bias": 0.0852,
+        "active_bias_aa_minus_ai": 0.0279,
+        "inactive_bias_ii_minus_ia": 0.0572,
+        "mean_nn_aa": 0.2465,
+        "mean_nn_ai": 0.2186,
+        "mean_nn_ii": 0.2101,
+        "mean_nn_ia": 0.1529,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3293
+      },
+      "delta_mw_da": -1,
+      "delta_clogp": 0.14,
+      "before_sanity": true,
+      "after_sanity": true
+    },
+    {
+      "target_id": "erbb2",
+      "gene_symbol": "ERBB2",
+      "before": {
+        "ave_bias": 0.6002,
+        "active_bias_aa_minus_ai": 0.2256,
+        "inactive_bias_ii_minus_ia": 0.3746,
+        "mean_nn_aa": 0.7408,
+        "mean_nn_ai": 0.5152,
+        "mean_nn_ii": 0.6159,
+        "mean_nn_ia": 0.2413,
+        "shared_scaffolds_train_test": 16,
+        "max_test_decoy_to_active_tanimoto": 0.6984
+      },
+      "after": {
+        "ave_bias": 0.0958,
+        "active_bias_aa_minus_ai": 0.0606,
+        "inactive_bias_ii_minus_ia": 0.0352,
+        "mean_nn_aa": 0.296,
+        "mean_nn_ai": 0.2354,
+        "mean_nn_ii": 0.2011,
+        "mean_nn_ia": 0.1659,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2877
+      },
+      "delta_mw_da": 1.2,
+      "delta_clogp": 0.07,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "abl1",
+      "gene_symbol": "ABL1",
+      "before": {
+        "ave_bias": 0.467,
+        "active_bias_aa_minus_ai": 0.1014,
+        "inactive_bias_ii_minus_ia": 0.3657,
+        "mean_nn_aa": 0.62,
+        "mean_nn_ai": 0.5186,
+        "mean_nn_ii": 0.584,
+        "mean_nn_ia": 0.2183,
+        "shared_scaffolds_train_test": 15,
+        "max_test_decoy_to_active_tanimoto": 0.6383
+      },
+      "after": {
+        "ave_bias": 0.0269,
+        "active_bias_aa_minus_ai": -0.0119,
+        "inactive_bias_ii_minus_ia": 0.0389,
+        "mean_nn_aa": 0.1797,
+        "mean_nn_ai": 0.1916,
+        "mean_nn_ii": 0.2102,
+        "mean_nn_ia": 0.1713,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3023
+      },
+      "delta_mw_da": -1.2,
+      "delta_clogp": 0.2,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "braf",
+      "gene_symbol": "BRAF",
+      "before": {
+        "ave_bias": 0.7352,
+        "active_bias_aa_minus_ai": 0.2467,
+        "inactive_bias_ii_minus_ia": 0.4886,
+        "mean_nn_aa": 0.6103,
+        "mean_nn_ai": 0.3636,
+        "mean_nn_ii": 0.7026,
+        "mean_nn_ia": 0.214,
+        "shared_scaffolds_train_test": 15,
+        "max_test_decoy_to_active_tanimoto": 0.7872
+      },
+      "after": {
+        "ave_bias": 0.0377,
+        "active_bias_aa_minus_ai": -0.0013,
+        "inactive_bias_ii_minus_ia": 0.039,
+        "mean_nn_aa": 0.2203,
+        "mean_nn_ai": 0.2216,
+        "mean_nn_ii": 0.21,
+        "mean_nn_ia": 0.171,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3229
+      },
+      "delta_mw_da": -4.7,
+      "delta_clogp": 0.14,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "jak2",
+      "gene_symbol": "JAK2",
+      "before": {
+        "ave_bias": 0.6282,
+        "active_bias_aa_minus_ai": 0.3949,
+        "inactive_bias_ii_minus_ia": 0.2333,
+        "mean_nn_aa": 0.6188,
+        "mean_nn_ai": 0.2239,
+        "mean_nn_ii": 0.4075,
+        "mean_nn_ia": 0.1742,
+        "shared_scaffolds_train_test": 10,
+        "max_test_decoy_to_active_tanimoto": 0.4054
+      },
+      "after": {
+        "ave_bias": -0.0036,
+        "active_bias_aa_minus_ai": -0.0305,
+        "inactive_bias_ii_minus_ia": 0.0269,
+        "mean_nn_aa": 0.1707,
+        "mean_nn_ai": 0.2012,
+        "mean_nn_ii": 0.2002,
+        "mean_nn_ia": 0.1733,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3469
+      },
+      "delta_mw_da": -8.8,
+      "delta_clogp": 0.08,
+      "before_sanity": true,
+      "after_sanity": true
+    },
+    {
+      "target_id": "adrb2",
+      "gene_symbol": "ADRB2",
+      "before": {
+        "ave_bias": 0.5654,
+        "active_bias_aa_minus_ai": 0.2299,
+        "inactive_bias_ii_minus_ia": 0.3354,
+        "mean_nn_aa": 0.7562,
+        "mean_nn_ai": 0.5263,
+        "mean_nn_ii": 0.6556,
+        "mean_nn_ia": 0.3202,
+        "shared_scaffolds_train_test": 10,
+        "max_test_decoy_to_active_tanimoto": 0.84
+      },
+      "after": {
+        "ave_bias": 0.2375,
+        "active_bias_aa_minus_ai": 0.1793,
+        "inactive_bias_ii_minus_ia": 0.0582,
+        "mean_nn_aa": 0.392,
+        "mean_nn_ai": 0.2128,
+        "mean_nn_ii": 0.2155,
+        "mean_nn_ia": 0.1572,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2881
+      },
+      "delta_mw_da": 5.5,
+      "delta_clogp": 0.11,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "ptgs2",
+      "gene_symbol": "PTGS2",
+      "before": {
+        "ave_bias": 0.2987,
+        "active_bias_aa_minus_ai": 0.0519,
+        "inactive_bias_ii_minus_ia": 0.2468,
+        "mean_nn_aa": 0.5674,
+        "mean_nn_ai": 0.5155,
+        "mean_nn_ii": 0.555,
+        "mean_nn_ia": 0.3082,
+        "shared_scaffolds_train_test": 14,
+        "max_test_decoy_to_active_tanimoto": 1
+      },
+      "after": {
+        "ave_bias": 0.0914,
+        "active_bias_aa_minus_ai": 0.0319,
+        "inactive_bias_ii_minus_ia": 0.0595,
+        "mean_nn_aa": 0.2509,
+        "mean_nn_ai": 0.219,
+        "mean_nn_ii": 0.2042,
+        "mean_nn_ia": 0.1446,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2593
+      },
+      "delta_mw_da": -4.3,
+      "delta_clogp": -0.02,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "hmgcr",
+      "gene_symbol": "HMGCR",
+      "before": {
+        "ave_bias": 0.7428,
+        "active_bias_aa_minus_ai": 0.3426,
+        "inactive_bias_ii_minus_ia": 0.4002,
+        "mean_nn_aa": 0.6782,
+        "mean_nn_ai": 0.3356,
+        "mean_nn_ii": 0.6671,
+        "mean_nn_ia": 0.2669,
+        "shared_scaffolds_train_test": 11,
+        "max_test_decoy_to_active_tanimoto": 0.5352
+      },
+      "after": {
+        "ave_bias": 0.0582,
+        "active_bias_aa_minus_ai": 0.0264,
+        "inactive_bias_ii_minus_ia": 0.0319,
+        "mean_nn_aa": 0.2013,
+        "mean_nn_ai": 0.175,
+        "mean_nn_ii": 0.1788,
+        "mean_nn_ia": 0.1469,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.35
+      },
+      "delta_mw_da": 8.9,
+      "delta_clogp": -0.47,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "dpp4",
+      "gene_symbol": "DPP4",
+      "before": {
+        "ave_bias": 0.3106,
+        "active_bias_aa_minus_ai": 0.0117,
+        "inactive_bias_ii_minus_ia": 0.2989,
+        "mean_nn_aa": 0.6894,
+        "mean_nn_ai": 0.6776,
+        "mean_nn_ii": 0.6069,
+        "mean_nn_ia": 0.3079,
+        "shared_scaffolds_train_test": 18,
+        "max_test_decoy_to_active_tanimoto": 0.9259
+      },
+      "after": {
+        "ave_bias": 0.1436,
+        "active_bias_aa_minus_ai": 0.1049,
+        "inactive_bias_ii_minus_ia": 0.0387,
+        "mean_nn_aa": 0.2846,
+        "mean_nn_ai": 0.1797,
+        "mean_nn_ii": 0.183,
+        "mean_nn_ia": 0.1443,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2717
+      },
+      "delta_mw_da": 22.6,
+      "delta_clogp": -0.28,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "hivpr",
+      "gene_symbol": "HIV1PR",
+      "before": {
+        "ave_bias": 0.6083,
+        "active_bias_aa_minus_ai": 0.2656,
+        "inactive_bias_ii_minus_ia": 0.3428,
+        "mean_nn_aa": 0.6996,
+        "mean_nn_ai": 0.434,
+        "mean_nn_ii": 0.5991,
+        "mean_nn_ia": 0.2563,
+        "shared_scaffolds_train_test": 15,
+        "max_test_decoy_to_active_tanimoto": 1
+      },
+      "after": {
+        "ave_bias": 0.3107,
+        "active_bias_aa_minus_ai": 0.2511,
+        "inactive_bias_ii_minus_ia": 0.0596,
+        "mean_nn_aa": 0.4523,
+        "mean_nn_ai": 0.2012,
+        "mean_nn_ii": 0.2199,
+        "mean_nn_ia": 0.1603,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2568
+      },
+      "delta_mw_da": 12,
+      "delta_clogp": -0.17,
+      "before_sanity": false,
+      "after_sanity": false
+    },
+    {
+      "target_id": "sars_mpro",
+      "gene_symbol": "MPRO",
+      "before": {
+        "ave_bias": 0.4006,
+        "active_bias_aa_minus_ai": 0.0137,
+        "inactive_bias_ii_minus_ia": 0.3869,
+        "mean_nn_aa": 0.1802,
+        "mean_nn_ai": 0.1665,
+        "mean_nn_ii": 0.5724,
+        "mean_nn_ia": 0.1855,
+        "shared_scaffolds_train_test": 10,
+        "max_test_decoy_to_active_tanimoto": 0.4054
+      },
+      "after": {
+        "ave_bias": 0.0188,
+        "active_bias_aa_minus_ai": -0.0207,
+        "inactive_bias_ii_minus_ia": 0.0395,
+        "mean_nn_aa": 0.1235,
+        "mean_nn_ai": 0.1442,
+        "mean_nn_ii": 0.1927,
+        "mean_nn_ia": 0.1533,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2245
+      },
+      "delta_mw_da": -9.5,
+      "delta_clogp": -0.02,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "pde5a",
+      "gene_symbol": "PDE5A",
+      "before": {
+        "ave_bias": 0.7744,
+        "active_bias_aa_minus_ai": 0.4285,
+        "inactive_bias_ii_minus_ia": 0.3459,
+        "mean_nn_aa": 0.7915,
+        "mean_nn_ai": 0.363,
+        "mean_nn_ii": 0.6265,
+        "mean_nn_ia": 0.2806,
+        "shared_scaffolds_train_test": 15,
+        "max_test_decoy_to_active_tanimoto": 0.75
+      },
+      "after": {
+        "ave_bias": 0.1364,
+        "active_bias_aa_minus_ai": 0.0899,
+        "inactive_bias_ii_minus_ia": 0.0465,
+        "mean_nn_aa": 0.2952,
+        "mean_nn_ai": 0.2053,
+        "mean_nn_ii": 0.2069,
+        "mean_nn_ia": 0.1604,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2347
+      },
+      "delta_mw_da": 4,
+      "delta_clogp": -0.12,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "hdac1",
+      "gene_symbol": "HDAC1",
+      "before": {
+        "ave_bias": 0.5858,
+        "active_bias_aa_minus_ai": 0.2618,
+        "inactive_bias_ii_minus_ia": 0.324,
+        "mean_nn_aa": 0.6856,
+        "mean_nn_ai": 0.4238,
+        "mean_nn_ii": 0.6126,
+        "mean_nn_ia": 0.2887,
+        "shared_scaffolds_train_test": 13,
+        "max_test_decoy_to_active_tanimoto": 0.7381
+      },
+      "after": {
+        "ave_bias": 0.1293,
+        "active_bias_aa_minus_ai": 0.0865,
+        "inactive_bias_ii_minus_ia": 0.0428,
+        "mean_nn_aa": 0.2868,
+        "mean_nn_ai": 0.2003,
+        "mean_nn_ii": 0.212,
+        "mean_nn_ia": 0.1692,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3226
+      },
+      "delta_mw_da": -5.9,
+      "delta_clogp": 0.04,
+      "before_sanity": true,
+      "after_sanity": true
+    },
+    {
+      "target_id": "esr1",
+      "gene_symbol": "ESR1",
+      "before": {
+        "ave_bias": 0.723,
+        "active_bias_aa_minus_ai": 0.4768,
+        "inactive_bias_ii_minus_ia": 0.2462,
+        "mean_nn_aa": 0.7357,
+        "mean_nn_ai": 0.2588,
+        "mean_nn_ii": 0.4177,
+        "mean_nn_ia": 0.1715,
+        "shared_scaffolds_train_test": 11,
+        "max_test_decoy_to_active_tanimoto": 0.2885
+      },
+      "after": {
+        "ave_bias": 0.068,
+        "active_bias_aa_minus_ai": 0.0187,
+        "inactive_bias_ii_minus_ia": 0.0494,
+        "mean_nn_aa": 0.214,
+        "mean_nn_ai": 0.1953,
+        "mean_nn_ii": 0.2048,
+        "mean_nn_ia": 0.1554,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.3061
+      },
+      "delta_mw_da": -7.4,
+      "delta_clogp": 0.25,
+      "before_sanity": false,
+      "after_sanity": true
+    },
+    {
+      "target_id": "thrombin",
+      "gene_symbol": "F2",
+      "before": {
+        "ave_bias": 0.6567,
+        "active_bias_aa_minus_ai": 0.3107,
+        "inactive_bias_ii_minus_ia": 0.3461,
+        "mean_nn_aa": 0.8094,
+        "mean_nn_ai": 0.4988,
+        "mean_nn_ii": 0.6524,
+        "mean_nn_ia": 0.3064,
+        "shared_scaffolds_train_test": 14,
+        "max_test_decoy_to_active_tanimoto": 0.8148
+      },
+      "after": {
+        "ave_bias": 0.0461,
+        "active_bias_aa_minus_ai": 0.006,
+        "inactive_bias_ii_minus_ia": 0.0401,
+        "mean_nn_aa": 0.2022,
+        "mean_nn_ai": 0.1962,
+        "mean_nn_ii": 0.2076,
+        "mean_nn_ia": 0.1676,
+        "shared_scaffolds_train_test": 0,
+        "max_test_decoy_to_active_tanimoto": 0.2603
+      },
+      "delta_mw_da": 3.6,
+      "delta_clogp": -0.29,
+      "before_sanity": false,
+      "after_sanity": true
+    }
+  ]
+}

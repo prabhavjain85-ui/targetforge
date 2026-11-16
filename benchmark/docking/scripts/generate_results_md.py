@@ -175,6 +175,75 @@ def main() -> None:
         lines.append("")
         lines.append("_Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BASELINES.md` and `benchmark/docking/results/task1_four_rankers.json`._")
 
+    task2_path = ROOT / "results" / "task2_four_rankers.json"
+    if task2_path.exists():
+        t2 = json.loads(task2_path.read_text())
+        s2_sane = t2.get("summary_sanity_passing_targets") or {}
+        s2_all = t2.get("summary_all_evaluable_targets") or {}
+        ave_rows = t2.get("ave_before_after") or []
+        ranker_rows = [
+            ("random", "(a) Random (seeded uniform)"),
+            ("druglikeness_only", "(b) Drug-likeness only (no target term)"),
+            ("tanimoto_cocrystal", "(c) Tanimoto to staged co-crystal (`structuralSimilarity.js`)"),
+            ("heuristic_v2", "(d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal)"),
+            ("heuristic_v2_rules_only", "(d-0) `heuristic-v2` (rule table only, no co-crystal sim)"),
+        ]
+        lines.extend(
+            [
+                "",
+                "## Task 2 — Property-Matched Decoys & Bemis–Murcko Scaffold Split (Before vs After)",
+                "",
+                f"- **Rebuilt benchmark:** `{t2.get('benchmark_id')}` (`{t2.get('split_method')}`, `{t2.get('decoy_method')}`)",
+                f"- **Decoy sanity pass rate:** **{t2.get('n_targets_passing_sanity')}/{t2.get('n_targets_total')}** "
+                f"(up from **{t1.get('n_targets_passing_sanity')}/{t1.get('n_targets_total')}** in Task 1)",
+                f"- **Finding:** {t2.get('finding')}",
+                "",
+                "### Four-Ranker Comparison on Rebuilt Benchmark",
+                "",
+                "| Panel Subset | Ranker | Mean ROC-AUC (95% CI) | Mean EF@1% | Mean EF@5% | Mean BEDROC(α=20) | Beats (b)? | Beats (c)? |",
+                "| --- | --- | ---: | ---: | ---: | ---: | :---: | :---: |",
+            ]
+        )
+        for subset_label, summary_obj in [
+            (f"Sanity-passing ({t2.get('n_targets_passing_sanity')}/{t2.get('n_targets_total')})", s2_sane),
+            (f"All targets ({t2.get('n_targets_evaluable')}/{t2.get('n_targets_total')})", s2_all),
+        ]:
+            dl_auc = (summary_obj.get("druglikeness_only") or {}).get("roc_auc")
+            tan_auc = (summary_obj.get("tanimoto_cocrystal") or {}).get("roc_auc")
+            for rk, rlabel in ranker_rows:
+                m = summary_obj.get(rk) or {}
+                auc = m.get("roc_auc")
+                if auc is None:
+                    continue
+                beats_b = "Yes" if (dl_auc is not None and auc > dl_auc + 1e-6) else "No"
+                beats_c = "Yes" if (tan_auc is not None and auc > tan_auc + 1e-6) else "No"
+                lines.append(
+                    f"| {subset_label} | {rlabel} | {auc:.3f} ({m.get('ci_low', 0):.3f}–{m.get('ci_high', 0):.3f}) | "
+                    f"{m.get('ef_1pct', 0):.2f} | {m.get('ef_5pct', 0):.2f} | {m.get('bedroc_20', 0):.3f} | {beats_b} | {beats_c} |"
+                )
+
+        if ave_rows:
+            lines.extend(
+                [
+                    "",
+                    "### Per-Target AVE Bias & Scaffold Leakage (Before vs After)",
+                    "",
+                    "| Target | Before Leaked Scaffolds | After Leaked Scaffolds | Before AVE | After AVE | Max Decoy–Active Tanimoto | Before Sanity | After Sanity |",
+                    "| --- | ---: | ---: | ---: | ---: | ---: | :---: | :---: |",
+                ]
+            )
+            for r in ave_rows:
+                b = r.get("before") or {}
+                a = r.get("after") or {}
+                lines.append(
+                    f"| {r['target_id']} ({r['gene_symbol']}) | {b.get('shared_scaffolds_train_test', 0)} | "
+                    f"{a.get('shared_scaffolds_train_test', 0)} | {b.get('ave_bias', 0):.3f} | {a.get('ave_bias', 0):.3f} | "
+                    f"{a.get('max_test_decoy_to_active_tanimoto', 0):.3f} | "
+                    f"{'PASS' if r.get('before_sanity') else 'FAIL'} | {'PASS' if r.get('after_sanity') else 'FAIL'} |"
+                )
+        lines.append("")
+        lines.append("_Full before/after tables and per-target AVE decomposition in `benchmark/docking/TASK2_DECOY_BENCHMARK.md` and `benchmark/docking/results/task2_four_rankers.json`._")
+
     lines.extend(["", "## Failures and limitations", ""])
     for r in redock["rows"]:
         if not r.get("pass_rmsd_2A"):
@@ -188,7 +257,7 @@ def main() -> None:
         [
             "- Panel and per-drug metrics use the same Vina prep; failures are not tuned away by swapping PDB entries.",
             "- Vina scores are not calibrated affinities; Spearman uses sparse ChEMBL pairings across heterogeneous targets.",
-            "- Enrichment decoys are ChEMBL weak binders (train/test split by molecule ID); not DUD-E matched decoys.",
+            "- Legacy Vina 3-target enrichment decoys (`enrichment.json`) used ChEMBL weak binders split by molecule ID; Task 2 (`task2_four_rankers.json`) replaces this with 6-property-matched decoys (Tanimoto ≤ 0.35 ceiling) and Bemis–Murcko scaffold splitting.",
         ]
     )
 

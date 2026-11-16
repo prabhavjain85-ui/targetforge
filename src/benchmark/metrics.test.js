@@ -108,4 +108,28 @@ describe("benchmark metrics", () => {
       expect(typeof m.bedroc_20).toBe("number");
     }
   });
+
+  it("validates committed Task 2 scaffold-split & property-matched decoy benchmark (>=10/15 passing sanity + AVE bias)", () => {
+    const jsonPath = path.resolve(
+      __dirname,
+      "../../benchmark/docking/results/task2_four_rankers.json"
+    );
+    expect(fs.existsSync(jsonPath)).toBe(true);
+    const report = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+    expect(report.n_targets_total).toBe(15);
+    expect(report.n_targets_passing_sanity).toBeGreaterThanOrEqual(10);
+    expect(report.split_method).toBe("bemis_murcko_scaffold_split");
+    expect(report.heuristic_v2_beats_tanimoto_cocrystal).toBe(false);
+    expect(Array.isArray(report.ave_before_after)).toBe(true);
+    expect(report.ave_before_after.length).toBe(15);
+
+    for (const row of report.ave_before_after) {
+      expect(typeof row.before.ave_bias).toBe("number");
+      expect(typeof row.after.ave_bias).toBe("number");
+      // Zero shared Bemis-Murcko scaffolds across train and test after scaffold splitting
+      expect(row.after.shared_scaffolds_train_test).toBe(0);
+      // Strict Tanimoto ceiling <= 0.35 between all test decoys and target actives
+      expect(row.after.max_test_decoy_to_active_tanimoto).toBeLessThanOrEqual(0.35);
+    }
+  });
 });

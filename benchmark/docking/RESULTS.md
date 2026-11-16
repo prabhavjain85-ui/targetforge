@@ -131,6 +131,49 @@ Spearman ρ (inverted Vina score vs ChEMBL pChEMBL median): **-0.291** (95% boot
 
 _Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BASELINES.md` and `benchmark/docking/results/task1_four_rankers.json`._
 
+## Task 2 — Property-Matched Decoys & Bemis–Murcko Scaffold Split (Before vs After)
+
+- **Rebuilt benchmark:** `task2_scaffold_property_matched_benchmark` (`bemis_murcko_scaffold_split`, `dude_dekois_6prop_matched_tanimoto_ceiling_0.35`)
+- **Decoy sanity pass rate:** **14/15** (up from **3/15** in Task 1)
+- **Finding:** heuristic-v2 DOES NOT beat (c) Tanimoto to the staged co-crystal ligand on ROC-AUC (0.523 vs 0.662 on the 14/15 sanity-passing targets; 0.520 vs 0.653 on the 15/15 count-passing targets; 0.520 vs 0.653 across all 15 targets) or BEDROC(alpha=20) (0.436 vs 0.617 on sanity-passing; 0.422 vs 0.619 on count-passing). Furthermore, without pre-staged co-crystal similarity annotation, heuristic-v2 (rule table only) DOES NOT beat (b) drug-likeness only (0.482 vs 0.482 on count-passing targets; 0.482 vs 0.482 on sanity-passing targets; 0.482 vs 0.482 across all 15 targets), scoring below random chance (~0.34–0.46 AUC) because hardcoded drug-name rules never fire on held-out molecules and Lipinski/Veber points favor smaller weak binders over potent actives.
+
+### Four-Ranker Comparison on Rebuilt Benchmark
+
+| Panel Subset | Ranker | Mean ROC-AUC (95% CI) | Mean EF@1% | Mean EF@5% | Mean BEDROC(α=20) | Beats (b)? | Beats (c)? |
+| --- | --- | ---: | ---: | ---: | ---: | :---: | :---: |
+| Sanity-passing (14/15) | (a) Random (seeded uniform) | 0.520 (0.361–0.681) | 1.14 | 1.38 | 0.330 | Yes | No |
+| Sanity-passing (14/15) | (b) Drug-likeness only (no target term) | 0.482 (0.325–0.642) | 0.95 | 0.95 | 0.238 | No | No |
+| Sanity-passing (14/15) | (c) Tanimoto to staged co-crystal (`structuralSimilarity.js`) | 0.662 (0.505–0.805) | 2.57 | 2.71 | 0.617 | Yes | No |
+| Sanity-passing (14/15) | (d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal) | 0.523 (0.356–0.687) | 2.41 | 2.13 | 0.436 | Yes | No |
+| Sanity-passing (14/15) | (d-0) `heuristic-v2` (rule table only, no co-crystal sim) | 0.482 (0.325–0.642) | 0.95 | 0.95 | 0.238 | No | No |
+| All targets (15/15) | (a) Random (seeded uniform) | 0.519 (0.358–0.681) | 1.07 | 1.38 | 0.327 | Yes | No |
+| All targets (15/15) | (b) Drug-likeness only (no target term) | 0.482 (0.323–0.642) | 0.95 | 0.95 | 0.237 | No | No |
+| All targets (15/15) | (c) Tanimoto to staged co-crystal (`structuralSimilarity.js`) | 0.653 (0.494–0.798) | 2.67 | 2.80 | 0.619 | Yes | No |
+| All targets (15/15) | (d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal) | 0.520 (0.353–0.684) | 2.32 | 2.05 | 0.422 | Yes | No |
+| All targets (15/15) | (d-0) `heuristic-v2` (rule table only, no co-crystal sim) | 0.482 (0.323–0.642) | 0.95 | 0.95 | 0.237 | No | No |
+
+### Per-Target AVE Bias & Scaffold Leakage (Before vs After)
+
+| Target | Before Leaked Scaffolds | After Leaked Scaffolds | Before AVE | After AVE | Max Decoy–Active Tanimoto | Before Sanity | After Sanity |
+| --- | ---: | ---: | ---: | ---: | ---: | :---: | :---: |
+| egfr (EGFR) | 16 | 0 | 0.650 | 0.085 | 0.329 | PASS | PASS |
+| erbb2 (ERBB2) | 16 | 0 | 0.600 | 0.096 | 0.288 | FAIL | PASS |
+| abl1 (ABL1) | 15 | 0 | 0.467 | 0.027 | 0.302 | FAIL | PASS |
+| braf (BRAF) | 15 | 0 | 0.735 | 0.038 | 0.323 | FAIL | PASS |
+| jak2 (JAK2) | 10 | 0 | 0.628 | -0.004 | 0.347 | PASS | PASS |
+| adrb2 (ADRB2) | 10 | 0 | 0.565 | 0.237 | 0.288 | FAIL | PASS |
+| ptgs2 (PTGS2) | 14 | 0 | 0.299 | 0.091 | 0.259 | FAIL | PASS |
+| hmgcr (HMGCR) | 11 | 0 | 0.743 | 0.058 | 0.350 | FAIL | PASS |
+| dpp4 (DPP4) | 18 | 0 | 0.311 | 0.144 | 0.272 | FAIL | PASS |
+| hivpr (HIV1PR) | 15 | 0 | 0.608 | 0.311 | 0.257 | FAIL | FAIL |
+| sars_mpro (MPRO) | 10 | 0 | 0.401 | 0.019 | 0.225 | FAIL | PASS |
+| pde5a (PDE5A) | 15 | 0 | 0.774 | 0.136 | 0.235 | FAIL | PASS |
+| hdac1 (HDAC1) | 13 | 0 | 0.586 | 0.129 | 0.323 | PASS | PASS |
+| esr1 (ESR1) | 11 | 0 | 0.723 | 0.068 | 0.306 | FAIL | PASS |
+| thrombin (F2) | 14 | 0 | 0.657 | 0.046 | 0.260 | FAIL | PASS |
+
+_Full before/after tables and per-target AVE decomposition in `benchmark/docking/TASK2_DECOY_BENCHMARK.md` and `benchmark/docking/results/task2_four_rankers.json`._
+
 ## Failures and limitations
 
 - **Redock adrb2** (3SN6): GPCR fusion construct; pocket definition sensitive to chain/strip choices.
@@ -146,4 +189,4 @@ _Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BA
 - **Osimertinib**: RMSD=8.7946971209959, note=None
 - Panel and per-drug metrics use the same Vina prep; failures are not tuned away by swapping PDB entries.
 - Vina scores are not calibrated affinities; Spearman uses sparse ChEMBL pairings across heterogeneous targets.
-- Enrichment decoys are ChEMBL weak binders (train/test split by molecule ID); not DUD-E matched decoys.
+- Legacy Vina 3-target enrichment decoys (`enrichment.json`) used ChEMBL weak binders split by molecule ID; Task 2 (`task2_four_rankers.json`) replaces this with 6-property-matched decoys (Tanimoto ≤ 0.35 ceiling) and Bemis–Murcko scaffold splitting.
