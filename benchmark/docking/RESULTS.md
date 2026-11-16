@@ -103,6 +103,34 @@ Spearman ρ (inverted Vina score vs ChEMBL pChEMBL median): **-0.291** (95% boot
 | jak2 | 16 | 40 | 0.744 (0.589–0.870) | 3.50 |
 | pde5a | 18 | 38 | 0.800 (0.668–0.911) | 0.00 |
 
+## Task 1 — Four-Ranker Triage Baseline (Held-Out Test Split)
+
+- **Benchmark:** `task1_chembl_weak_binder_benchmark` (`molecule_chembl_id_md5`, `chembl_weak_binders_pchembl_lt_5`)
+- **Decoy sanity pass rate:** **3/15** (sample-count check only: 11/15)
+- **Finding:** heuristic-v2 DOES NOT beat (c) Tanimoto to the staged co-crystal ligand on ROC-AUC (0.583 vs 0.777 on the 3/15 sanity-passing targets; 0.457 vs 0.673 on the 11/15 count-passing targets; 0.513 vs 0.684 across all 15 targets) or BEDROC(alpha=20) (0.631 vs 0.854 on sanity-passing; 0.345 vs 0.545 on count-passing). Furthermore, without pre-staged co-crystal similarity annotation, heuristic-v2 (rule table only) DOES NOT beat (b) drug-likeness only (0.344 vs 0.344 on count-passing targets; 0.464 vs 0.464 on sanity-passing targets; 0.407 vs 0.407 across all 15 targets), scoring below random chance (~0.34–0.46 AUC) because hardcoded drug-name rules never fire on held-out molecules and Lipinski/Veber points favor smaller weak binders over potent actives.
+
+### Mean Metrics Across Sanity-Passing Targets (3/15) vs Count-Passing Targets (11/15) vs All Targets (15/15)
+
+| Panel Subset | Ranker | Mean ROC-AUC (95% CI) | Mean EF@1% | Mean EF@5% | Mean BEDROC(α=20) | Beats (b)? | Beats (c)? |
+| --- | --- | ---: | ---: | ---: | ---: | :---: | :---: |
+| Sanity-passing (3/15) | (a) Random (seeded uniform) | 0.439 (0.284–0.603) | 2.56 | 1.59 | 0.348 | No | No |
+| Sanity-passing (3/15) | (b) Drug-likeness only (no target term) | 0.464 (0.314–0.625) | 0.85 | 0.85 | 0.233 | No | No |
+| Sanity-passing (3/15) | (c) Tanimoto to staged co-crystal (`structuralSimilarity.js`) | 0.777 (0.611–0.913) | 3.78 | 3.78 | 0.854 | Yes | No |
+| Sanity-passing (3/15) | (d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal) | 0.583 (0.430–0.740) | 2.82 | 2.82 | 0.631 | Yes | No |
+| Sanity-passing (3/15) | (d-0) `heuristic-v2` (rule table only, no co-crystal sim) | 0.464 (0.314–0.625) | 0.85 | 0.85 | 0.233 | No | No |
+| Count-passing (11/15) | (a) Random (seeded uniform) | 0.486 (0.329–0.649) | 1.68 | 1.49 | 0.331 | Yes | No |
+| Count-passing (11/15) | (b) Drug-likeness only (no target term) | 0.344 (0.213–0.486) | 0.60 | 0.60 | 0.167 | No | No |
+| Count-passing (11/15) | (c) Tanimoto to staged co-crystal (`structuralSimilarity.js`) | 0.673 (0.549–0.793) | 1.96 | 1.97 | 0.545 | Yes | No |
+| Count-passing (11/15) | (d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal) | 0.457 (0.322–0.593) | 1.20 | 1.31 | 0.345 | Yes | No |
+| Count-passing (11/15) | (d-0) `heuristic-v2` (rule table only, no co-crystal sim) | 0.344 (0.213–0.486) | 0.60 | 0.60 | 0.167 | No | No |
+| All targets (15/15) | (a) Random (seeded uniform) | 0.502 (0.336–0.670) | 1.37 | 1.42 | 0.341 | Yes | No |
+| All targets (15/15) | (b) Drug-likeness only (no target term) | 0.407 (0.275–0.544) | 0.74 | 0.72 | 0.221 | No | No |
+| All targets (15/15) | (c) Tanimoto to staged co-crystal (`structuralSimilarity.js`) | 0.684 (0.542–0.817) | 2.37 | 2.18 | 0.613 | Yes | No |
+| All targets (15/15) | (d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal) | 0.513 (0.374–0.649) | 1.58 | 1.66 | 0.437 | Yes | No |
+| All targets (15/15) | (d-0) `heuristic-v2` (rule table only, no co-crystal sim) | 0.407 (0.275–0.544) | 0.74 | 0.72 | 0.221 | No | No |
+
+_Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BASELINES.md` and `benchmark/docking/results/task1_four_rankers.json`._
+
 ## Failures and limitations
 
 - **Redock adrb2** (3SN6): GPCR fusion construct; pocket definition sensitive to chain/strip choices.

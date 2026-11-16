@@ -125,6 +125,56 @@ def main() -> None:
                 f"{t['roc_auc']:.3f} ({ci[0]:.3f}–{ci[1]:.3f}) | {t['ef1pct']:.2f} |"
             )
 
+    task1_path = ROOT / "results" / "task1_four_rankers.json"
+    if task1_path.exists():
+        t1 = json.loads(task1_path.read_text())
+        s_sane = t1.get("summary_sanity_passing_targets") or {}
+        s_count = t1.get("summary_count_passing_targets") or {}
+        s_all = t1.get("summary_all_evaluable_targets") or {}
+        ranker_rows = [
+            ("random", "(a) Random (seeded uniform)"),
+            ("druglikeness_only", "(b) Drug-likeness only (no target term)"),
+            ("tanimoto_cocrystal", "(c) Tanimoto to staged co-crystal (`structuralSimilarity.js`)"),
+            ("heuristic_v2", "(d) `heuristic-v2` (`scoreCandidates.js` + staged co-crystal)"),
+            ("heuristic_v2_rules_only", "(d-0) `heuristic-v2` (rule table only, no co-crystal sim)"),
+        ]
+        lines.extend(
+            [
+                "",
+                "## Task 1 — Four-Ranker Triage Baseline (Held-Out Test Split)",
+                "",
+                f"- **Benchmark:** `{t1.get('benchmark_id')}` (`{t1.get('split_method')}`, `{t1.get('decoy_method')}`)",
+                f"- **Decoy sanity pass rate:** **{t1.get('n_targets_passing_sanity')}/{t1.get('n_targets_total')}** "
+                f"(sample-count check only: {t1.get('n_targets_passing_count_check')}/{t1.get('n_targets_total')})",
+                f"- **Finding:** {t1.get('finding')}",
+                "",
+                "### Mean Metrics Across Sanity-Passing Targets (3/15) vs Count-Passing Targets (11/15) vs All Targets (15/15)",
+                "",
+                "| Panel Subset | Ranker | Mean ROC-AUC (95% CI) | Mean EF@1% | Mean EF@5% | Mean BEDROC(α=20) | Beats (b)? | Beats (c)? |",
+                "| --- | --- | ---: | ---: | ---: | ---: | :---: | :---: |",
+            ]
+        )
+        for subset_label, summary_obj in [
+            (f"Sanity-passing ({t1.get('n_targets_passing_sanity')}/{t1.get('n_targets_total')})", s_sane),
+            (f"Count-passing ({t1.get('n_targets_passing_count_check')}/{t1.get('n_targets_total')})", s_count),
+            (f"All targets ({t1.get('n_targets_evaluable')}/{t1.get('n_targets_total')})", s_all),
+        ]:
+            dl_auc = (summary_obj.get("druglikeness_only") or {}).get("roc_auc")
+            tan_auc = (summary_obj.get("tanimoto_cocrystal") or {}).get("roc_auc")
+            for rk, rlabel in ranker_rows:
+                m = summary_obj.get(rk) or {}
+                auc = m.get("roc_auc")
+                if auc is None:
+                    continue
+                beats_b = "Yes" if (dl_auc is not None and auc > dl_auc + 1e-6) else "No"
+                beats_c = "Yes" if (tan_auc is not None and auc > tan_auc + 1e-6) else "No"
+                lines.append(
+                    f"| {subset_label} | {rlabel} | {auc:.3f} ({m.get('ci_low', 0):.3f}–{m.get('ci_high', 0):.3f}) | "
+                    f"{m.get('ef_1pct', 0):.2f} | {m.get('ef_5pct', 0):.2f} | {m.get('bedroc_20', 0):.3f} | {beats_b} | {beats_c} |"
+                )
+        lines.append("")
+        lines.append("_Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BASELINES.md` and `benchmark/docking/results/task1_four_rankers.json`._")
+
     lines.extend(["", "## Failures and limitations", ""])
     for r in redock["rows"]:
         if not r.get("pass_rmsd_2A"):
