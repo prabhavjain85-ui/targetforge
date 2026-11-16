@@ -53,6 +53,7 @@ query DiseaseAssociatedTargets($efoId: String!, $size: Int!) {
             targetPercentageIdentity
           }
           drugAndClinicalCandidates { count }
+          literatureOcurrences { count }
           tractability {
             label
             modality

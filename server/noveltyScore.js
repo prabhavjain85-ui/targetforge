@@ -27,6 +27,8 @@
  * accumulation over time — that is NOT this score, and we do not use it.
  */
 
+import { nodeRequire } from "./nodeRequire.js";
+
 export const MIN_OVERALL_SCORE = 0.2;
 
 export const DATATYPE_LABELS = {
@@ -861,6 +863,69 @@ export function noveltyScoreValue(biology, exploration = {}) {
   return Math.round(Math.min(100, raw) * 10) / 10;
 }
 
+/**
+ * Fitted simplex weights over the eight biology features, from the
+ * retrospective validation (Open Targets 21.04 -> 26.09, cohort 2).
+ * Committed so the shipped model is traceable to the run that fitted it.
+ */
+const FITTED = nodeRequire()("./data/novelty/fitted-simplex-weights.json");
+
+export const PROGRESSION_WEIGHTS = FITTED.weights;
+export const PROGRESSION_PROVENANCE = FITTED.provenance;
+export const PROGRESSION_PERFORMANCE = FITTED.heldOutPerformance;
+
+/**
+ * How little is known about a target: the hand-set weighted biology signal.
+ *
+ * This is what the previously shipped novelty score actually measured. The
+ * drug-count divisor it carried is gone: on cohort 2 that divisor is inert
+ * (every target has drugCount 0, and biology_signal_handset scored 0.6371
+ * against novelty_v2's 0.6366), while on cohort 1 the same divisor drove the
+ * score to 0.361, below chance. It measures understudy, not progression.
+ */
+export function understudyScore(biology) {
+  const raw = 100 * Math.max(0, Number(biology) || 0);
+  return Math.round(Math.min(100, raw) * 10) / 10;
+}
+
+/**
+ * Fitted score for a globally undrugged target acquiring a first clinical
+ * programme. No drug-count term by construction.
+ *
+ * Scope: fitted and tested only on targets with drugCount_2021 == 0, so it
+ * returns null for anything with an approved or clinical-stage drug rather
+ * than extrapolating outside the validated cohort.
+ */
+export function progressionScore(datatypeScores = {}, overallScore = 0, drugCount = 0) {
+  if ((Number(drugCount) || 0) > 0) return null;
+  const dt = datatypeScores || {};
+  const w = PROGRESSION_WEIGHTS;
+  const raw =
+    w.genetic_association * (dt.genetic_association || 0) +
+    w.genetic_literature * (dt.genetic_literature || 0) +
+    w.somatic_mutation * (dt.somatic_mutation || 0) +
+    w.overall * (Number(overallScore) || 0) +
+    w.literature * (dt.literature || 0) +
+    w.affected_pathway * (dt.affected_pathway || 0) +
+    w.animal_model * (dt.animal_model || 0) +
+    w.rna_expression * (dt.rna_expression || 0);
+  return Math.round(Math.min(100, Math.max(0, raw * 100)) * 10) / 10;
+}
+
+let deprecationLogged = false;
+
+/**
+ * @deprecated Use understudyScore. Kept for one release and returns the same
+ * value, so nothing silently changes meaning.
+ */
+export function noveltyScoreValueDeprecated(biology) {
+  if (!deprecationLogged) {
+    deprecationLogged = true;
+    console.warn("[noveltyScore] noveltyScore is deprecated; use understudyScore. It measures how understudied a target is, not how likely it is to progress.");
+  }
+  return understudyScore(biology);
+}
+
 export function geneticStrength(geneticScore) {
   const g = Number(geneticScore) || 0;
   if (g >= 0.7) return { label: "Strong", level: "strong" };
@@ -986,6 +1051,11 @@ export function scoreAssociatedRows(rows, options = {}) {
     const paralogs = extractHumanParalogs(target);
     const repurposingScore = repurposingSignal(datatypeScores, overallScore, tractability, drugCount);
     const defaultNoveltyScore = noveltyScoreValue(biology, { clinicalScore, drugCount });
+    // Two separately-named scores: understudy (what the old score measured)
+    // and progression (fitted, scoped to the validated undrugged cohort).
+    const understudy = understudyScore(biology);
+    const progression = progressionScore(datatypeScores, overallScore, drugCount);
+    const publicationCount = Number(target.literatureOcurrences?.count) || 0;
     const customScore = normalizedCustom
       ? customWeightedSignal(datatypeScores, datasourceScores, overallScore, normalizedCustom, drugCount)
       : null;
@@ -1014,6 +1084,11 @@ export function scoreAssociatedRows(rows, options = {}) {
       clinicalScore,
       drugCount,
       biologySignal: biology,
+      understudyScore: understudy,
+      progressionScore: progression,
+      progressionInScope: progression !== null,
+      publicationCount,
+      // Deprecated alias, same meaning as understudyScore for one release.
       noveltyScore: penalizedNoveltyScore,
       discoveryNoveltyScore: defaultNoveltyScore,
       repurposingScore,
