@@ -244,6 +244,69 @@ def main() -> None:
         lines.append("")
         lines.append("_Full before/after tables and per-target AVE decomposition in `benchmark/docking/TASK2_DECOY_BENCHMARK.md` and `benchmark/docking/results/task2_four_rankers.json`._")
 
+    task3_path = ROOT / "results" / "task3_novelty_validation.json"
+    if task3_path.exists():
+        t3 = json.loads(task3_path.read_text())
+        c1_test = ((t3.get("cohort1_disease_undrugged") or {}).get("held_out_test") or {})
+        c2_test = ((t3.get("cohort2_globally_undrugged_first_in_class") or {}).get("held_out_test") or {})
+        m1_test = c1_test.get("predictors") or {}
+        m2_test = c2_test.get("predictors") or {}
+        method_order = [
+            ("novelty_v1_hyperbolic", "Novelty Score v1 (`biologySignal / (1 + drugCount)`)"),
+            ("novelty_v2_current", "Novelty Score v2 (`noveltyScore.js`: `biologySignal * broadDrugDiscount`)"),
+            ("biology_signal_handset", "Hand-set `biologySignal` only (`0.50 genetic + 0.12 genlit + ...`)"),
+            ("baseline_genetic_only", "Baseline: `genetic_association` alone"),
+            ("baseline_drug_count", "Baseline: `drugCount` alone"),
+            ("baseline_inv_drug_count", "Baseline: `1 / (1 + drugCount)` alone"),
+            ("baseline_publication_count", "Baseline: `publication_count` alone"),
+            ("fitted_biology_simplex", "Fitted Simplex Biology Weights (trained on 11 training diseases)"),
+            ("fitted_logistic_full", "Fitted Full Logistic Model (trained on 11 training diseases)"),
+        ]
+        lines.extend(
+            [
+                "",
+                "## Task 3 — Retrospective Novelty Score Validation (Open Targets 21.04 → 26.09)",
+                "",
+                f"- **Historical snapshot:** Open Targets `{t3.get('historical_release')}` vs current `{t3.get('current_release')}` ({t3.get('years_elapsed')} years elapsed)",
+                f"- **Split:** {t3.get('n_train_diseases')} training diseases / {t3.get('n_test_diseases')} held-out test diseases",
+                f"- **Finding:** {t3.get('finding')}",
+                "",
+                f"### Held-Out Test Split — Cohort 1: Disease-Specific Clinical Acquisition (n={c1_test.get('n_total')}, positives={c1_test.get('n_positives')})",
+                "",
+                "| Predictor / Baseline | Test ROC-AUC (95% CI) | Test PR-AUC (95% CI) | Precision@25 | Recall@25 |",
+                "| --- | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for mk, mlabel in method_order:
+            m = m1_test.get(mk)
+            if not m:
+                continue
+            lines.append(
+                f"| {mlabel} | {m.get('roc_auc', 0):.3f} ({m.get('roc_ci_low', 0):.3f}–{m.get('roc_ci_high', 0):.3f}) | "
+                f"{m.get('pr_auc', 0):.3f} ({m.get('pr_ci_low', 0):.3f}–{m.get('pr_ci_high', 0):.3f}) | "
+                f"{m.get('precision_at_25', 0):.3f} | {m.get('recall_at_25', 0):.3f} |"
+            )
+        lines.extend(
+            [
+                "",
+                f"### Held-Out Test Split — Cohort 2: Strictly Undrugged Targets (`drugCount_2021 == 0`, n={c2_test.get('n_total')}, positives={c2_test.get('n_positives')})",
+                "",
+                "| Predictor / Baseline | Test ROC-AUC (95% CI) | Test PR-AUC (95% CI) | Precision@25 | Recall@25 |",
+                "| --- | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for mk, mlabel in method_order:
+            m = m2_test.get(mk)
+            if not m:
+                continue
+            lines.append(
+                f"| {mlabel} | {m.get('roc_auc', 0):.3f} ({m.get('roc_ci_low', 0):.3f}–{m.get('roc_ci_high', 0):.3f}) | "
+                f"{m.get('pr_auc', 0):.3f} ({m.get('pr_ci_low', 0):.3f}–{m.get('pr_ci_high', 0):.3f}) | "
+                f"{m.get('precision_at_25', 0):.3f} | {m.get('recall_at_25', 0):.3f} |"
+            )
+        lines.append("")
+        lines.append("_Full retrospective cohort analysis, fitted vs hand-set weight comparison, and per-disease metrics in `benchmark/docking/TASK3_NOVELTY_VALIDATION.md` and `benchmark/docking/results/task3_novelty_validation.json`._")
+
     lines.extend(["", "## Failures and limitations", ""])
     for r in redock["rows"]:
         if not r.get("pass_rmsd_2A"):

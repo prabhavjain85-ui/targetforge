@@ -7,6 +7,8 @@ import path from "path";
 import {
   rocAuc,
   bootstrapAucCi,
+  prAuc,
+  bootstrapPrAucCi,
   enrichmentFactor,
   bedroc,
   evaluateRankerMetrics,
@@ -22,8 +24,25 @@ describe("benchmark metrics", () => {
     expect(rocAuc([1, 1, 0, 0], [5, 5, 5, 5])).toBe(0.5);
   });
 
+  it("computes tie-aware PR-AUC and bootstrap PR-AUC CI", () => {
+    expect(prAuc([1, 1, 0, 0], [4, 3, 2, 1])).toBeCloseTo(1.0, 8);
+    const prevalence = 2 / 10;
+    const labels = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+    const tiedScores = Array(10).fill(5);
+    expect(prAuc(labels, tiedScores)).toBeCloseTo(prevalence, 8);
+
+    const ci = bootstrapPrAucCi(labels, [10, 8, 9, 7, 6, 5, 4, 3, 2, 1], {
+      nBoot: 100,
+      seed: 42,
+    });
+    expect(ci.prAuc).toBeGreaterThan(prevalence);
+    expect(ci.ciLow).toBeLessThanOrEqual(ci.prAuc);
+    expect(ci.ciHigh).toBeGreaterThanOrEqual(ci.prAuc);
+  });
+
   it("returns null when only one class is present", () => {
     expect(rocAuc([1, 1], [1, 2])).toBeNull();
+    expect(prAuc([1, 1], [1, 2])).toBeNull();
     expect(enrichmentFactor([1, 1], [1, 2], 0.01)).toBeNull();
     expect(bedroc([1, 1], [1, 2], 20)).toBeNull();
   });
@@ -130,6 +149,42 @@ describe("benchmark metrics", () => {
       expect(row.after.shared_scaffolds_train_test).toBe(0);
       // Strict Tanimoto ceiling <= 0.35 between all test decoys and target actives
       expect(row.after.max_test_decoy_to_active_tanimoto).toBeLessThanOrEqual(0.35);
+    }
+  });
+
+  it("validates committed Task 3 retrospective Novelty Score validation (Open Targets 21.04 -> 26.09)", () => {
+    const jsonPath = path.resolve(
+      __dirname,
+      "../../benchmark/docking/results/task3_novelty_validation.json"
+    );
+    expect(fs.existsSync(jsonPath)).toBe(true);
+    const report = JSON.parse(fs.readFileSync(jsonPath, "utf8"));
+    expect(report.historical_release).toContain("21.04");
+    expect(report.current_release).toContain("26.09");
+    expect(report.n_train_diseases).toBe(11);
+    expect(report.n_test_diseases).toBe(11);
+    expect(report.handset_beats_drug_count_cohort1).toBe(false);
+    expect(report.handset_beats_pub_count_cohort1).toBe(false);
+    expect(report.handset_beats_fitted_weights_cohort1).toBe(false);
+    expect(report.handset_beats_fitted_weights_cohort2).toBe(false);
+
+    const requiredMethods = [
+      "novelty_v1_hyperbolic",
+      "novelty_v2_current",
+      "biology_signal_handset",
+      "baseline_genetic_only",
+      "baseline_drug_count",
+      "baseline_publication_count",
+      "fitted_biology_simplex",
+      "fitted_logistic_full",
+    ];
+    const c1Test = report.cohort1_disease_undrugged.held_out_test.predictors;
+    const c2Test = report.cohort2_globally_undrugged_first_in_class.held_out_test.predictors;
+    for (const mk of requiredMethods) {
+      expect(typeof c1Test[mk].roc_auc).toBe("number");
+      expect(typeof c1Test[mk].pr_auc).toBe("number");
+      expect(typeof c2Test[mk].roc_auc).toBe("number");
+      expect(typeof c2Test[mk].pr_auc).toBe("number");
     }
   });
 });

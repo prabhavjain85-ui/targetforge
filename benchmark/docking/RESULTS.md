@@ -174,6 +174,42 @@ _Full per-target breakdown and decoy sanity audit in `benchmark/docking/TASK1_BA
 
 _Full before/after tables and per-target AVE decomposition in `benchmark/docking/TASK2_DECOY_BENCHMARK.md` and `benchmark/docking/results/task2_four_rankers.json`._
 
+## Task 3 — Retrospective Novelty Score Validation (Open Targets 21.04 → 26.09)
+
+- **Historical snapshot:** Open Targets `21.04 (2021-05-05)` vs current `26.09 (2026-09)` (5.4 years elapsed)
+- **Split:** 11 training diseases / 11 held-out test diseases
+- **Finding:** On held-out diseases (Open Targets 21.04 -> 26.09, 5.4-year prospective window), the hand-set Novelty Score fails to beat simple baselines: for predicting which disease-undrugged targets in 2021 acquire a clinical/approved drug for that disease by 2026 (Cohort 1, n=13601 held-out pairs, 300 positives), the original 1/(1+drugCount) formula (novelty_v1) scores BELOW random chance (ROC-AUC 0.361, PR-AUC 0.018) and current novelty_v2 scores ROC-AUC 0.510 (PR-AUC 0.025), because dividing by drugCount penalizes existing clinical tractability — whereas drugCount_2021 alone achieves ROC-AUC 0.872 (PR-AUC 0.177), publication_count alone achieves ROC-AUC 0.707, and a logistic model fit on training diseases achieves held-out ROC-AUC 0.887 (PR-AUC 0.169). Even when restricted strictly to globally undrugged targets in 2021 (drugCount_2021 == 0, Cohort 2: first-in-class progression, n=11711 held-out pairs, 258 positives), the hand-set biology weights (0.50 genetic + 0.12 genlit + ...) achieve held-out ROC-AUC 0.637 (PR-AUC 0.038), failing to beat publication_count alone (ROC-AUC 0.667, PR-AUC 0.057) or fitted simplex weights (held-out ROC-AUC 0.708, PR-AUC 0.052; genetic_association alone = 0.497 on Cohort 1 / 0.500 on Cohort 2).
+
+### Held-Out Test Split — Cohort 1: Disease-Specific Clinical Acquisition (n=13601, positives=300)
+
+| Predictor / Baseline | Test ROC-AUC (95% CI) | Test PR-AUC (95% CI) | Precision@25 | Recall@25 |
+| --- | ---: | ---: | ---: | ---: |
+| Novelty Score v1 (`biologySignal / (1 + drugCount)`) | 0.361 (0.326–0.397) | 0.018 (0.015–0.024) | 0.040 | 0.003 |
+| Novelty Score v2 (`noveltyScore.js`: `biologySignal * broadDrugDiscount`) | 0.510 (0.478–0.546) | 0.025 (0.020–0.036) | 0.080 | 0.007 |
+| Hand-set `biologySignal` only (`0.50 genetic + 0.12 genlit + ...`) | 0.555 (0.524–0.588) | 0.030 (0.024–0.044) | 0.160 | 0.013 |
+| Baseline: `genetic_association` alone | 0.497 (0.489–0.506) | 0.023 (0.020–0.030) | 0.120 | 0.010 |
+| Baseline: `drugCount` alone | 0.872 (0.848–0.894) | 0.177 (0.149–0.216) | 0.240 | 0.020 |
+| Baseline: `1 / (1 + drugCount)` alone | 0.129 (0.106–0.152) | 0.012 (0.011–0.013) | 0.040 | 0.003 |
+| Baseline: `publication_count` alone | 0.707 (0.673–0.738) | 0.070 (0.055–0.090) | 0.160 | 0.013 |
+| Fitted Simplex Biology Weights (trained on 11 training diseases) | 0.577 (0.548–0.606) | 0.031 (0.023–0.044) | 0.120 | 0.010 |
+| Fitted Full Logistic Model (trained on 11 training diseases) | 0.887 (0.869–0.907) | 0.169 (0.144–0.204) | 0.160 | 0.013 |
+
+### Held-Out Test Split — Cohort 2: Strictly Undrugged Targets (`drugCount_2021 == 0`, n=11711, positives=258)
+
+| Predictor / Baseline | Test ROC-AUC (95% CI) | Test PR-AUC (95% CI) | Precision@25 | Recall@25 |
+| --- | ---: | ---: | ---: | ---: |
+| Novelty Score v1 (`biologySignal / (1 + drugCount)`) | 0.637 (0.605–0.674) | 0.038 (0.031–0.049) | 0.040 | 0.004 |
+| Novelty Score v2 (`noveltyScore.js`: `biologySignal * broadDrugDiscount`) | 0.637 (0.604–0.674) | 0.038 (0.030–0.048) | 0.040 | 0.004 |
+| Hand-set `biologySignal` only (`0.50 genetic + 0.12 genlit + ...`) | 0.637 (0.604–0.674) | 0.038 (0.031–0.049) | 0.040 | 0.004 |
+| Baseline: `genetic_association` alone | 0.500 (0.490–0.511) | 0.022 (0.019–0.027) | 0.040 | 0.004 |
+| Baseline: `drugCount` alone | 0.500 (0.500–0.500) | 0.022 (0.020–0.025) | 0.040 | 0.004 |
+| Baseline: `1 / (1 + drugCount)` alone | 0.500 (0.500–0.500) | 0.022 (0.020–0.025) | 0.040 | 0.004 |
+| Baseline: `publication_count` alone | 0.667 (0.629–0.706) | 0.057 (0.045–0.074) | 0.040 | 0.004 |
+| Fitted Simplex Biology Weights (trained on 11 training diseases) | 0.708 (0.678–0.739) | 0.052 (0.042–0.064) | 0.120 | 0.012 |
+| Fitted Full Logistic Model (trained on 11 training diseases) | 0.721 (0.689–0.756) | 0.069 (0.053–0.092) | 0.240 | 0.023 |
+
+_Full retrospective cohort analysis, fitted vs hand-set weight comparison, and per-disease metrics in `benchmark/docking/TASK3_NOVELTY_VALIDATION.md` and `benchmark/docking/results/task3_novelty_validation.json`._
+
 ## Failures and limitations
 
 - **Redock adrb2** (3SN6): GPCR fusion construct; pocket definition sensitive to chain/strip choices.

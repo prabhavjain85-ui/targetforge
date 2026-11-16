@@ -212,10 +212,81 @@ export function bedroc(labels, scores, alpha = 20.0) {
 }
 
 /**
- * Compute the complete Task 1 metric bundle for a single (labels, scores) vector.
+ * Tie-aware Precision-Recall AUC (Average Precision) invariant to input ordering of tied scores.
+ * Returns null if all labels belong to a single class or input is empty.
+ */
+export function prAuc(labels, scores) {
+  if (!Array.isArray(labels) || !Array.isArray(scores) || labels.length === 0) {
+    return null;
+  }
+  const { groups, n } = buildTieGroups(labels, scores);
+  let nPos = 0;
+  for (const g of groups) nPos += g.actives;
+  const nNeg = n - nPos;
+  if (nPos === 0 || nNeg === 0) return null;
+
+  let tp = 0;
+  let seen = 0;
+  let ap = 0;
+
+  for (const g of groups) {
+    if (g.actives > 0) {
+      const rate = g.actives / g.count;
+      let groupPrecSum = 0;
+      for (let j = 1; j <= g.count; j++) {
+        groupPrecSum += (tp + j * rate) / (seen + j);
+      }
+      ap += (g.actives / nPos) * (groupPrecSum / g.count);
+    }
+    tp += g.actives;
+    seen += g.count;
+  }
+
+  return Math.max(0, Math.min(1, ap));
+}
+
+/**
+ * Bootstrap 95% confidence interval for PR-AUC (Average Precision).
+ */
+export function bootstrapPrAucCi(labels, scores, { nBoot = 1000, seed = 42 } = {}) {
+  const base = prAuc(labels, scores);
+  if (base === null) {
+    return { prAuc: null, ciLow: null, ciHigh: null };
+  }
+  const n = Math.min(labels.length, scores.length);
+  const rng = mulberry32(seed);
+  const samples = [];
+  const bootLabels = new Array(n);
+  const bootScores = new Array(n);
+
+  for (let b = 0; b < nBoot; b++) {
+    for (let i = 0; i < n; i++) {
+      const idx = Math.floor(rng() * n);
+      bootLabels[i] = labels[idx];
+      bootScores[i] = scores[idx];
+    }
+    const a = prAuc(bootLabels, bootScores);
+    if (a !== null) samples.push(a);
+  }
+  if (samples.length === 0) {
+    return { prAuc: base, ciLow: base, ciHigh: base };
+  }
+  samples.sort((a, b) => a - b);
+  const loIdx = Math.min(samples.length - 1, Math.max(0, Math.floor(0.025 * samples.length)));
+  const hiIdx = Math.min(samples.length - 1, Math.max(0, Math.floor(0.975 * samples.length)));
+  return {
+    prAuc: base,
+    ciLow: samples[loIdx],
+    ciHigh: samples[hiIdx],
+  };
+}
+
+/**
+ * Compute the complete Task 1/2/3 metric bundle for a single (labels, scores) vector.
  */
 export function evaluateRankerMetrics(labels, scores, { nBoot = 1000, seed = 42, alpha = 20.0 } = {}) {
   const { auc, ciLow, ciHigh } = bootstrapAucCi(labels, scores, { nBoot, seed });
+  const pr = prAuc(labels, scores);
   const ef1 = enrichmentFactor(labels, scores, 0.01);
   const ef5 = enrichmentFactor(labels, scores, 0.05);
   const bedroc20 = bedroc(labels, scores, alpha);
@@ -223,6 +294,7 @@ export function evaluateRankerMetrics(labels, scores, { nBoot = 1000, seed = 42,
     roc_auc: auc,
     ci_low: ciLow,
     ci_high: ciHigh,
+    pr_auc: pr,
     ef_1pct: ef1,
     ef_5pct: ef5,
     bedroc_20: bedroc20,
