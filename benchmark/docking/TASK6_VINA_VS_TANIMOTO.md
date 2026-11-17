@@ -46,6 +46,20 @@ comparison stays paired on an identical compound set.
 Expect hours of compute at exhaustiveness 16. `--target <id>` runs one target
 at a time and `--check` reports prerequisites without docking.
 
+## Ranking is not affinity prediction
+
+Whatever the run eventually shows, it will be a statement about **ranking actives
+above decoys**, not about predicting binding affinity. On the earlier 25-drug
+run, Vina's correlation with measured potency was Spearman **−0.291** (95% CI
+**−0.681 to 0.478**) — an interval spanning zero and most of both directions,
+i.e. no measurable relationship.
+
+A ranking win in Task 6 would therefore not license any claim that the scores
+estimate affinity, and the two results must not be used to support each other.
+Separating actives from property-matched decoys and ordering actives by potency
+are different tasks; this benchmark measures only the first. The harness repeats
+this note in its own output so the caveat travels with the numbers.
+
 ## Promotion rule, and what holds until the run happens
 
 Vina becomes the default ranker only if it beats Tanimoto with a paired CI

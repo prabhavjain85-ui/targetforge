@@ -1,0 +1,168 @@
+{
+  "schemaVersion": 1,
+  "description": "Cancer / non-cancer labelling of the 22-disease retrospective panel, committed separately from the analysis script so the stratification is auditable and can be disputed without reading code.",
+  "labelled_by": "EFO term semantics: a disease is 'cancer' if its EFO label denotes a malignant neoplasm or a haematological malignancy.",
+  "cutoff_note": "The labelling uses only the disease name, which is fixed in the 21.04 snapshot. It introduces no post-2021 information.",
+  "counts": {
+    "cancer": 15,
+    "non_cancer": 7,
+    "total": 22
+  },
+  "known_limitation": "The held-out non-cancer stratum is 2 diseases, and one of them (chronic obstructive pulmonary disease) contributes zero cohort-2 target-disease pairs, leaving amyotrophic lateral sclerosis as the only held-out non-cancer disease with data. A disease-level bootstrap over one cluster carries no information. See TASK7_CANCER_STRATIFICATION.md.",
+  "diseases": [
+    {
+      "disease_id_2021": "EFO_0000199",
+      "disease_name": "oral cavity squamous cell carcinoma",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "squamous cell carcinoma — malignant epithelial neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000222",
+      "disease_name": "acute myeloid leukemia",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "haematological malignancy"
+    },
+    {
+      "disease_id_2021": "EFO_0000231",
+      "disease_name": "adenoid cystic carcinoma",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "carcinoma — malignant epithelial neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000253",
+      "disease_name": "amyotrophic lateral sclerosis",
+      "split": "test",
+      "stratum": "non_cancer",
+      "rationale": "neurodegenerative motor neuron disease"
+    },
+    {
+      "disease_id_2021": "EFO_0000272",
+      "disease_name": "astrocytoma (excluding glioblastoma)",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "astrocytoma — primary CNS neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000294",
+      "disease_name": "urinary bladder neoplasm",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "neoplasm of the bladder; the EFO term covers malignant bladder tumours. Labelled cancer, and flagged as the least clear-cut call in this file because 'neoplasm' does not by itself assert malignancy."
+    },
+    {
+      "disease_id_2021": "EFO_0000304",
+      "disease_name": "breast adenocarcinoma",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "adenocarcinoma — malignant glandular neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000308",
+      "disease_name": "bronchioloalveolar carcinoma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "carcinoma — lung adenocarcinoma subtype"
+    },
+    {
+      "disease_id_2021": "EFO_0000309",
+      "disease_name": "Burkitt lymphoma",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "B-cell non-Hodgkin lymphoma — haematological malignancy"
+    },
+    {
+      "disease_id_2021": "EFO_0000313",
+      "disease_name": "carcinoma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "generic malignant epithelial neoplasm term"
+    },
+    {
+      "disease_id_2021": "EFO_0000318",
+      "disease_name": "cardiomyopathy",
+      "split": "train",
+      "stratum": "non_cancer",
+      "rationale": "structural myocardial disease"
+    },
+    {
+      "disease_id_2021": "EFO_0000341",
+      "disease_name": "chronic obstructive pulmonary disease",
+      "split": "test",
+      "stratum": "non_cancer",
+      "rationale": "chronic inflammatory airway disease. Contributes zero cohort-2 pairs, so it adds no data to the held-out non-cancer stratum."
+    },
+    {
+      "disease_id_2021": "EFO_0000373",
+      "disease_name": "congestive heart failure",
+      "split": "train",
+      "stratum": "non_cancer",
+      "rationale": "cardiovascular syndrome"
+    },
+    {
+      "disease_id_2021": "EFO_0000389",
+      "disease_name": "cutaneous melanoma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "melanoma — malignant melanocytic neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000401",
+      "disease_name": "diabetic kidney disease",
+      "split": "train",
+      "stratum": "non_cancer",
+      "rationale": "microvascular complication of diabetes"
+    },
+    {
+      "disease_id_2021": "EFO_0000519",
+      "disease_name": "glioblastoma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "grade IV astrocytoma — malignant CNS neoplasm"
+    },
+    {
+      "disease_id_2021": "EFO_0000545",
+      "disease_name": "Infertility",
+      "split": "train",
+      "stratum": "non_cancer",
+      "rationale": "reproductive disorder"
+    },
+    {
+      "disease_id_2021": "EFO_0000588",
+      "disease_name": "mesothelioma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "malignant neoplasm of the mesothelium"
+    },
+    {
+      "disease_id_2021": "EFO_0000640",
+      "disease_name": "papillary renal cell carcinoma",
+      "split": "train",
+      "stratum": "cancer",
+      "rationale": "renal cell carcinoma subtype"
+    },
+    {
+      "disease_id_2021": "EFO_0000702",
+      "disease_name": "small cell lung carcinoma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "carcinoma — neuroendocrine lung malignancy"
+    },
+    {
+      "disease_id_2021": "EFO_0000764",
+      "disease_name": "HIV infectious disease",
+      "split": "train",
+      "stratum": "non_cancer",
+      "rationale": "chronic viral infection"
+    },
+    {
+      "disease_id_2021": "EFO_0001378",
+      "disease_name": "plasma cell myeloma",
+      "split": "test",
+      "stratum": "cancer",
+      "rationale": "multiple myeloma — haematological malignancy"
+    }
+  ]
+}

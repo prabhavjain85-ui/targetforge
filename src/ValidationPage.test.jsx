@@ -85,15 +85,17 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    // One per section: target scores, attention control, compound triage, docking.
-    expect(container.querySelectorAll(".validation-source").length).toBe(4);
+    // target scores, attention control, cancer stratification, tractability, triage, docking.
+    expect(container.querySelectorAll(".validation-source").length).toBe(6);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
+    expect(text).toContain("benchmark/docking/results/task8_tractability.json");
+    expect(text).not.toMatch(/Source:s*undefined/);
   });
 
   test("reports the attention control, including the part that fails", () => {
     const text = render();
-    expect(text).toMatch(/beat counting papers/i);
+    expect(text).toMatch(/Do the biology scores beat counting papers/i);
     // The nested models and the paired delta.
     for (const n of ["0.721", "0.683", "+0.054", "+0.021", "+0.089", "+0.012"]) {
       expect(text).toContain(n);
@@ -110,5 +112,30 @@ describe("ValidationPage", () => {
     for (const word of ["powerful", "cutting-edge", "state-of-the-art", "revolutionary", "best-in-class"]) {
       expect(text).not.toContain(word);
     }
+  });
+
+  test("reports Task 8 as a negative result, not as a win", () => {
+    const text = render();
+    expect(text).toMatch(/Does anything else beat counting papers/i);
+    for (const n of ["0.807", "0.719", "0.772", "0.621", "+0.140"]) {
+      expect(text).toContain(n);
+    }
+    // The headline must be that gene properties add nothing.
+    expect(text).toMatch(/add nothing/i);
+    expect(text).toContain("−0.002");
+    expect(text).toMatch(/no score was promoted/i);
+  });
+
+  test("reports the oncology scope limit as underpowered, not as generalisation", () => {
+    const text = render();
+    expect(text).toMatch(/Is that an oncology result/i);
+    expect(text).toMatch(/underpowered to tell/i);
+    // The cancer stratum reproducing the pooled result is the established part.
+    expect(text).toContain("+0.057");
+    expect(text).toContain("10,308");
+    // The single non-cancer disease, reported as a count and not a comparison.
+    expect(text).toContain("1,403");
+    expect(text).toContain("−0.008");
+    expect(text).toMatch(/cannot establish/i);
   });
 });

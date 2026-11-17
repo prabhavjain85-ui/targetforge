@@ -481,6 +481,19 @@ def render_markdown(r: dict) -> str:
         "pooled interval does not account for."
     )
     L.append("")
+    L.append("## Ranking is not affinity prediction")
+    L.append("")
+    L.append(
+        "Whatever this table shows, it is a statement about **ranking actives above decoys**, "
+        "not about predicting binding affinity. On the earlier 25-drug run, Vina's correlation "
+        "with measured potency was Spearman **-0.291** (95% CI **-0.681 to 0.478**) — an interval "
+        "spanning zero and most of both directions, i.e. no measurable relationship. A ranking "
+        "win here would not license any claim that the scores estimate affinity, and the two "
+        "results must not be used to support each other. Separating actives from "
+        "property-matched decoys and ordering actives by potency are different tasks, and this "
+        "benchmark only measures the first."
+    )
+    L.append("")
     L.append("## Promotion decision")
     L.append("")
     L.append(f"- Criterion: {r['promotion']['criterion']}")

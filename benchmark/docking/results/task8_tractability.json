@@ -1,0 +1,1001 @@
+{
+  "generated_at": "2026-11-17T17:04:32.612Z",
+  "task": "Task 8 — pre-2021 tractability features vs attention",
+  "historical_release": "21.04 (2021-05-05)",
+  "current_release": "26.09 (2026-09)",
+  "cohort": "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
+  "label_key": "acquired_global_from_zero",
+  "n_train_diseases": 11,
+  "n_test_diseases": 11,
+  "min_join_rate": 0.7,
+  "feature_source_vintage": {
+    "ot_21_04": {
+      "source": "Open Targets Platform 21.04 target ETL",
+      "release": "21.04",
+      "release_date": "2021-05-05",
+      "url": "https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/21.04/output/etl/json/targets/",
+      "predates_cutoff": true,
+      "evidence": "The 21.04 release is the historical snapshot this retrospective is built on; its date is the release date itself."
+    },
+    "gnomad_v2_1_1": {
+      "source": "gnomAD v2.1.1 loss-of-function constraint metrics by gene",
+      "release": "v2.1.1",
+      "release_date": "2019-03-01",
+      "url": "https://storage.googleapis.com/gcp-public-data--gnomad/release/2.1.1/constraint/gnomad.v2.1.1.lof_metrics.by_gene.txt.bgz",
+      "predates_cutoff": true,
+      "evidence": "gnomAD 2.1.1 was released in March 2019, two years before the cutoff."
+    },
+    "depmap_21q2": {
+      "source": "DepMap Public 21Q2 CRISPR gene effect (Chronos-corrected CERES)",
+      "release": "21Q2",
+      "release_date": "2021-05-05",
+      "url": "https://ndownloader.figshare.com/files/27902226",
+      "predates_cutoff": true,
+      "evidence": "figshare article 14541774 'DepMap 21Q2 Public' carries published_date 2021-05-05T20:26:49Z, which is within May 2021 and is the latest release the brief permits."
+    },
+    "gtex_v8": {
+      "source": "GTEx v8 median gene TPM by tissue",
+      "release": "v8",
+      "release_date": "2017-06-05",
+      "url": "https://storage.googleapis.com/adult-gtex/bulk-gex/v8/rna-seq/GTEx_Analysis_2017-06-05_v8_RNASeQCv1.1.9_gene_median_tpm.gct.gz",
+      "predates_cutoff": true,
+      "evidence": "The GTEx v8 analysis freeze date 2017-06-05 is carried in the filename."
+    }
+  },
+  "features_skipped_at_build": [],
+  "depmap_matrix": {
+    "n_cell_lines": 990,
+    "n_genes": 17645
+  },
+  "cohort_coverage": {
+    "n_cohort_rows": 24580,
+    "n_present_in_21_04_target_etl": 24580,
+    "present_rate": 1
+  },
+  "join_rates": [
+    {
+      "feature": "tract_sm_min_bucket",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.6775,
+      "vintage": "ot_21_04",
+      "n_joined": 9972,
+      "join_rate": 0.4057,
+      "passes_join_gate": false,
+      "constant_on_cohort": false,
+      "n_distinct_values": 8,
+      "included_in_model": false,
+      "excluded_reason": "join rate 40.6% is below the 70% gate"
+    },
+    {
+      "feature": "tract_ab_min_bucket",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.5207,
+      "vintage": "ot_21_04",
+      "n_joined": 13415,
+      "join_rate": 0.5458,
+      "passes_join_gate": false,
+      "constant_on_cohort": false,
+      "n_distinct_values": 8,
+      "included_in_model": false,
+      "excluded_reason": "join rate 54.6% is below the 70% gate"
+    },
+    {
+      "feature": "tract_sm_clinical_precedence",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.5108,
+      "vintage": "ot_21_04",
+      "n_joined": 17882,
+      "join_rate": 0.7275,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 2,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "tract_ab_clinical_precedence",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.5325,
+      "vintage": "ot_21_04",
+      "n_joined": 17882,
+      "join_rate": 0.7275,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 2,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "tract_sm_predicted_tractable",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.6706,
+      "vintage": "ot_21_04",
+      "n_joined": 17882,
+      "join_rate": 0.7275,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 2,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "tract_sm_high_quality_compounds",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.772,
+      "vintage": "ot_21_04",
+      "n_joined": 17882,
+      "join_rate": 0.7275,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 212,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "tract_sm_genome_member",
+      "kind": "effort",
+      "solo_held_out_roc_auc": 0.676,
+      "vintage": "ot_21_04",
+      "n_joined": 17882,
+      "join_rate": 0.7275,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 2,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "pli",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.6207,
+      "vintage": "gnomad_v2_1_1",
+      "n_joined": 24321,
+      "join_rate": 0.9895,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 6626,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "loeuf",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.4087,
+      "vintage": "gnomad_v2_1_1",
+      "n_joined": 24321,
+      "join_rate": 0.9895,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 1802,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "depmap_mean_gene_effect",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.4974,
+      "vintage": "depmap_21q2",
+      "n_joined": 23913,
+      "join_rate": 0.9729,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 4470,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "depmap_frac_dependent_lines",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.5395,
+      "vintage": "depmap_21q2",
+      "n_joined": 23913,
+      "join_rate": 0.9729,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 615,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "depmap_common_essential",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.4796,
+      "vintage": "depmap_21q2",
+      "n_joined": 23913,
+      "join_rate": 0.9729,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 2,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "gtex_tau",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.5131,
+      "vintage": "gtex_v8",
+      "n_joined": 24517,
+      "join_rate": 0.9974,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 4857,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "gtex_n_tissues_above_1tpm",
+      "kind": "biology",
+      "solo_held_out_roc_auc": 0.5191,
+      "vintage": "gtex_v8",
+      "n_joined": 24563,
+      "join_rate": 0.9993,
+      "passes_join_gate": true,
+      "constant_on_cohort": false,
+      "n_distinct_values": 55,
+      "included_in_model": true,
+      "excluded_reason": null
+    },
+    {
+      "feature": "protein_class_l1 (8 indicators)",
+      "vintage": "ot_21_04",
+      "n_joined": 7967,
+      "join_rate": 0.3241,
+      "passes_join_gate": false,
+      "constant_on_cohort": false,
+      "n_distinct_values": 15,
+      "included_in_model": false,
+      "excluded_reason": "join rate 32.4% is below the 70% gate"
+    }
+  ],
+  "solo_held_out_roc_auc": {
+    "tract_sm_min_bucket": 0.6775,
+    "tract_ab_min_bucket": 0.5207,
+    "tract_sm_clinical_precedence": 0.5108,
+    "tract_ab_clinical_precedence": 0.5325,
+    "tract_sm_predicted_tractable": 0.6706,
+    "tract_sm_high_quality_compounds": 0.772,
+    "tract_sm_genome_member": 0.676,
+    "pli": 0.6207,
+    "loeuf": 0.4087,
+    "depmap_mean_gene_effect": 0.4974,
+    "depmap_frac_dependent_lines": 0.5395,
+    "depmap_common_essential": 0.4796,
+    "gtex_tau": 0.5131,
+    "gtex_n_tissues_above_1tpm": 0.5191
+  },
+  "residualised": [
+    {
+      "feature": "tract_sm_clinical_precedence",
+      "kind": "effort",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0005,
+        "intercept": 0.0021,
+        "r2": 0.0001
+      },
+      "held_out_roc_auc_raw": 0.5108,
+      "held_out_roc_auc_residual": 0.6779,
+      "held_out_pr_auc_residual": 0.0702
+    },
+    {
+      "feature": "tract_ab_clinical_precedence",
+      "kind": "effort",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0007,
+        "intercept": 0.0051,
+        "r2": 0.0001
+      },
+      "held_out_roc_auc_raw": 0.5325,
+      "held_out_roc_auc_residual": 0.3801,
+      "held_out_pr_auc_residual": 0.0325
+    },
+    {
+      "feature": "tract_sm_predicted_tractable",
+      "kind": "effort",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0603,
+        "intercept": 0.2039,
+        "r2": 0.012
+      },
+      "held_out_roc_auc_raw": 0.6706,
+      "held_out_roc_auc_residual": 0.6014,
+      "held_out_pr_auc_residual": 0.0334
+    },
+    {
+      "feature": "tract_sm_high_quality_compounds",
+      "kind": "effort",
+      "regression_on_log1p_pub_count": {
+        "slope": 4.5472,
+        "intercept": 10.023,
+        "r2": 0.0016
+      },
+      "held_out_roc_auc_raw": 0.772,
+      "held_out_roc_auc_residual": 0.699,
+      "held_out_pr_auc_residual": 0.1234
+    },
+    {
+      "feature": "tract_sm_genome_member",
+      "kind": "effort",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0455,
+        "intercept": 0.1129,
+        "r2": 0.0101
+      },
+      "held_out_roc_auc_raw": 0.676,
+      "held_out_roc_auc_residual": 0.5949,
+      "held_out_pr_auc_residual": 0.0418
+    },
+    {
+      "feature": "pli",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0219,
+        "intercept": 0.3536,
+        "r2": 0.0016
+      },
+      "held_out_roc_auc_raw": 0.6229,
+      "held_out_roc_auc_residual": 0.6487,
+      "held_out_pr_auc_residual": 0.0458
+    },
+    {
+      "feature": "loeuf",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0518,
+        "intercept": 0.7249,
+        "r2": 0.0072
+      },
+      "held_out_roc_auc_raw": 0.4067,
+      "held_out_roc_auc_residual": 0.3849,
+      "held_out_pr_auc_residual": 0.017
+    },
+    {
+      "feature": "depmap_mean_gene_effect",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0101,
+        "intercept": -0.1555,
+        "r2": 0.0006
+      },
+      "held_out_roc_auc_raw": 0.4996,
+      "held_out_roc_auc_residual": 0.489,
+      "held_out_pr_auc_residual": 0.0216
+    },
+    {
+      "feature": "depmap_frac_dependent_lines",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0074,
+        "intercept": 0.1187,
+        "r2": 0.0004
+      },
+      "held_out_roc_auc_raw": 0.5351,
+      "held_out_roc_auc_residual": 0.5994,
+      "held_out_pr_auc_residual": 0.0381
+    },
+    {
+      "feature": "depmap_common_essential",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0064,
+        "intercept": 0.121,
+        "r2": 0.0003
+      },
+      "held_out_roc_auc_raw": 0.4796,
+      "held_out_roc_auc_residual": 0.6138,
+      "held_out_pr_auc_residual": 0.0323
+    },
+    {
+      "feature": "gtex_tau",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.0199,
+        "intercept": 0.4781,
+        "r2": 0.004
+      },
+      "held_out_roc_auc_raw": 0.5114,
+      "held_out_roc_auc_residual": 0.488,
+      "held_out_pr_auc_residual": 0.02
+    },
+    {
+      "feature": "gtex_n_tissues_above_1tpm",
+      "kind": "biology",
+      "regression_on_log1p_pub_count": {
+        "slope": -1.7502,
+        "intercept": 43.9905,
+        "r2": 0.0062
+      },
+      "held_out_roc_auc_raw": 0.5187,
+      "held_out_roc_auc_residual": 0.5968,
+      "held_out_pr_auc_residual": 0.053
+    }
+  ],
+  "per_stratum": {
+    "cancer": {
+      "n_diseases": 9,
+      "n_total": 10308,
+      "n_positives": 236,
+      "models": {
+        "M0": {
+          "roc_auc": 0.6655,
+          "pr_auc": 0.06,
+          "precision_at_25": 0.08,
+          "recall_at_25": 0.0085
+        },
+        "M1": {
+          "roc_auc": 0.722,
+          "pr_auc": 0.0733,
+          "precision_at_25": 0.24,
+          "recall_at_25": 0.0254
+        },
+        "M3": {
+          "roc_auc": 0.8052,
+          "pr_auc": 0.1473,
+          "precision_at_25": 0.44,
+          "recall_at_25": 0.0466
+        },
+        "M4": {
+          "roc_auc": 0.7139,
+          "pr_auc": 0.0772,
+          "precision_at_25": 0.2,
+          "recall_at_25": 0.0212
+        }
+      },
+      "paired_deltas": {
+        "M3_vs_M1": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0832,
+            "ci_low": 0.0475,
+            "ci_high": 0.1168,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.074,
+            "ci_low": 0.0385,
+            "ci_high": 0.1137,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          }
+        },
+        "M3_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.1397,
+            "ci_low": 0.0939,
+            "ci_high": 0.1845,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.0872,
+            "ci_low": 0.051,
+            "ci_high": 0.1281,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "solo_held_out_roc_auc": {
+        "tract_sm_clinical_precedence": 0.5119,
+        "tract_ab_clinical_precedence": 0.5316,
+        "tract_sm_predicted_tractable": 0.6658,
+        "tract_sm_high_quality_compounds": 0.7734,
+        "tract_sm_genome_member": 0.6734,
+        "pli": 0.6276,
+        "loeuf": 0.401,
+        "depmap_mean_gene_effect": 0.4939,
+        "depmap_frac_dependent_lines": 0.5443,
+        "depmap_common_essential": 0.4849,
+        "gtex_tau": 0.5073,
+        "gtex_n_tissues_above_1tpm": 0.5192
+      },
+      "clustered_withheld": null
+    },
+    "non_cancer": {
+      "n_diseases": 1,
+      "n_total": 1403,
+      "n_positives": 22,
+      "models": {
+        "M0": {
+          "roc_auc": 0.7295,
+          "pr_auc": 0.0549,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        },
+        "M1": {
+          "roc_auc": 0.722,
+          "pr_auc": 0.0521,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        },
+        "M3": {
+          "roc_auc": 0.8259,
+          "pr_auc": 0.1643,
+          "precision_at_25": 0.24,
+          "recall_at_25": 0.2727
+        },
+        "M4": {
+          "roc_auc": 0.7849,
+          "pr_auc": 0.0548,
+          "precision_at_25": 0.04,
+          "recall_at_25": 0.0455
+        }
+      },
+      "paired_deltas": {
+        "M3_vs_M1": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.104,
+            "ci_low": -0.0177,
+            "ci_high": 0.24,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.0485,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.1122,
+            "ci_low": 0.0267,
+            "ci_high": 0.2778,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.0005,
+            "n_resamples_used": 2000
+          }
+        },
+        "M3_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0964,
+            "ci_low": -0.0064,
+            "ci_high": 0.2137,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.0395,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.1094,
+            "ci_low": 0.0251,
+            "ci_high": 0.2724,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.0005,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "solo_held_out_roc_auc": {
+        "tract_sm_clinical_precedence": 0.4993,
+        "tract_ab_clinical_precedence": 0.5429,
+        "tract_sm_predicted_tractable": 0.7218,
+        "tract_sm_high_quality_compounds": 0.7565,
+        "tract_sm_genome_member": 0.7032,
+        "pli": 0.5677,
+        "loeuf": 0.4727,
+        "depmap_mean_gene_effect": 0.557,
+        "depmap_frac_dependent_lines": 0.4379,
+        "depmap_common_essential": 0.4254,
+        "gtex_tau": 0.5481,
+        "gtex_n_tissues_above_1tpm": 0.5198
+      },
+      "clustered_withheld": "only 2 held-out disease(s) in this stratum"
+    }
+  },
+  "cancer_labels_source": "benchmark/docking/data/disease_cancer_labels.json",
+  "feature_kinds": {
+    "effort": [
+      "tract_sm_clinical_precedence",
+      "tract_ab_clinical_precedence",
+      "tract_sm_predicted_tractable",
+      "tract_sm_high_quality_compounds",
+      "tract_sm_genome_member"
+    ],
+    "biology": [
+      "pli",
+      "loeuf",
+      "depmap_mean_gene_effect",
+      "depmap_frac_dependent_lines",
+      "depmap_common_essential",
+      "gtex_tau",
+      "gtex_n_tissues_above_1tpm"
+    ]
+  },
+  "protein_classes_used": [],
+  "models": {
+    "M0": {
+      "label": "publication_count alone",
+      "features": [
+        "log1p_pub_count"
+      ]
+    },
+    "M1": {
+      "label": "publication_count + 8 biology features",
+      "features": [
+        "log1p_pub_count",
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression"
+      ]
+    },
+    "M4": {
+      "label": "publication_count + 8 biology features + gene-property features only (no effort proxies)",
+      "features": [
+        "log1p_pub_count",
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression",
+        "pli",
+        "loeuf",
+        "depmap_mean_gene_effect",
+        "depmap_frac_dependent_lines",
+        "depmap_common_essential",
+        "gtex_tau",
+        "gtex_n_tissues_above_1tpm"
+      ]
+    },
+    "M3": {
+      "label": "publication_count + 8 biology features + tractability features",
+      "features": [
+        "log1p_pub_count",
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression",
+        "tract_sm_clinical_precedence",
+        "tract_ab_clinical_precedence",
+        "tract_sm_predicted_tractable",
+        "tract_sm_high_quality_compounds",
+        "tract_sm_genome_member",
+        "pli",
+        "loeuf",
+        "depmap_mean_gene_effect",
+        "depmap_frac_dependent_lines",
+        "depmap_common_essential",
+        "gtex_tau",
+        "gtex_n_tissues_above_1tpm"
+      ]
+    }
+  },
+  "train": {
+    "n_total": 12869,
+    "n_positives": 399,
+    "models": {
+      "M0": {
+        "label": "publication_count alone",
+        "roc_auc": 0.6837,
+        "pr_auc": 0.0742,
+        "precision_at_25": 0.04,
+        "recall_at_25": 0.0025
+      },
+      "M1": {
+        "label": "publication_count + 8 biology features",
+        "roc_auc": 0.7223,
+        "pr_auc": 0.0744,
+        "precision_at_25": 0.08,
+        "recall_at_25": 0.005
+      },
+      "M3": {
+        "label": "publication_count + 8 biology features + tractability features",
+        "roc_auc": 0.8299,
+        "pr_auc": 0.214,
+        "precision_at_25": 0.52,
+        "recall_at_25": 0.0326
+      },
+      "M4": {
+        "label": "publication_count + 8 biology features + gene-property features only (no effort proxies)",
+        "roc_auc": 0.6918,
+        "pr_auc": 0.072,
+        "precision_at_25": 0.08,
+        "recall_at_25": 0.005
+      }
+    }
+  },
+  "held_out": {
+    "n_total": 11711,
+    "n_positives": 258,
+    "prevalence": 0.022,
+    "models": {
+      "M0": {
+        "label": "publication_count alone",
+        "n_features": 1,
+        "roc_auc": 0.6672,
+        "pr_auc": 0.0572,
+        "precision_at_25": 0.04,
+        "recall_at_25": 0.0039
+      },
+      "M1": {
+        "label": "publication_count + 8 biology features",
+        "n_features": 9,
+        "roc_auc": 0.7214,
+        "pr_auc": 0.069,
+        "precision_at_25": 0.24,
+        "recall_at_25": 0.0233
+      },
+      "M3": {
+        "label": "publication_count + 8 biology features + tractability features",
+        "n_features": 21,
+        "roc_auc": 0.807,
+        "pr_auc": 0.146,
+        "precision_at_25": 0.44,
+        "recall_at_25": 0.0426
+      },
+      "M4": {
+        "label": "publication_count + 8 biology features + gene-property features only (no effort proxies)",
+        "n_features": 16,
+        "roc_auc": 0.7194,
+        "pr_auc": 0.0731,
+        "precision_at_25": 0.2,
+        "recall_at_25": 0.0194
+      }
+    }
+  },
+  "paired_deltas": {
+    "M3_vs_M0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.1399,
+        "ci_low": 0.0995,
+        "ci_high": 0.1812,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0888,
+        "ci_low": 0.0571,
+        "ci_high": 0.1264,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "M3_vs_M1": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0857,
+        "ci_low": 0.0525,
+        "ci_high": 0.1187,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.077,
+        "ci_low": 0.0444,
+        "ci_high": 0.1151,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "M1_vs_M0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0542,
+        "ci_low": 0.0214,
+        "ci_high": 0.0887,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0005,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0118,
+        "ci_low": 0.0012,
+        "ci_high": 0.0249,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0125,
+        "n_resamples_used": 2000
+      }
+    },
+    "M4_vs_M0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0523,
+        "ci_low": 0.0135,
+        "ci_high": 0.0915,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0025,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0159,
+        "ci_low": 0.0032,
+        "ci_high": 0.0314,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0085,
+        "n_resamples_used": 2000
+      }
+    },
+    "M4_vs_M1": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": -0.0019,
+        "ci_low": -0.0263,
+        "ci_high": 0.0218,
+        "includes_zero": true,
+        "frac_resamples_delta_le_zero": 0.5555,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0041,
+        "ci_low": -0.0038,
+        "ci_high": 0.012,
+        "includes_zero": true,
+        "frac_resamples_delta_le_zero": 0.134,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "clustered_deltas": {
+    "M3_vs_M0": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.1384,
+        "ci_low": 0.0895,
+        "ci_high": 0.1872,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0876,
+        "ci_low": 0.0658,
+        "ci_high": 0.1153,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "M3_vs_M1": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0841,
+        "ci_low": 0.0435,
+        "ci_high": 0.1271,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0753,
+        "ci_low": 0.0554,
+        "ci_high": 0.1053,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "M4_vs_M0": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0517,
+        "ci_low": 0.0059,
+        "ci_high": 0.1063,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0158,
+        "ci_low": -0.0023,
+        "ci_high": 0.0335,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "promotion": {
+    "criterion": "M3 must beat M0 with a paired CI excluding zero",
+    "beats_m0_pair_level": true,
+    "beats_m0_disease_clustered": true,
+    "criterion_met": true,
+    "promoted_to_production": false,
+    "gene_property_features_add_nothing": true,
+    "gain_is_from_effort_features": true,
+    "note": "No production score was changed by this run. The criterion (M3 beats M0 with a CI excluding zero) is met, but it is met by features recording prior medicinal chemistry effort, not by gene properties: M4, which keeps only the gene properties, does not improve on M1 (CI includes zero). Promoting a score dominated by existing compound count would rank highest the targets the field has already chosen, which is the Goodhart failure this benchmark exists to catch."
+  },
+  "finding": "**No gene-property feature tested here predicts clinical progression beyond attention. What does predict it is prior effort — and the strongest signal is the number of compounds that already exist for the target.**\n\nM3, which adds all the pre-2021 tractability features, does beat publication count: held-out ROC-AUC 0.807 against 0.667, a paired delta of +0.140 (95% CI +0.100 to +0.181 resampling pairs; +0.089 to +0.187 resampling diseases). Both intervals exclude zero, so the brief's promotion criterion is formally met.\n\nIt is met by the wrong features. Splitting the tractability set in two — features that record medicinal chemistry or clinical work already done on a target (\"effort\"), and properties of the gene that hold whether or not anyone has studied it (\"biology\") — M4 keeps only the gene properties: pLI, LOEUF, three DepMap essentiality measures and two GTEx selectivity measures. M4 scores 0.719, against M1's 0.721. The paired delta is −0.002 (95% CI −0.026 to +0.022), which includes zero: the five gene-property groups together add nothing over publication count and the eight Open Targets evidence scores. All of M3's advantage comes from the effort features (M3 vs M1 +0.086, 95% CI +0.052 to +0.119), and the single strongest predictor in the whole study is `tract_sm_high_quality_compounds` at solo held-out ROC-AUC 0.772 — higher than any model in Task 3 or Task 4. The best gene property is `pli` at 0.621.\n\nOne correction to the obvious reading, from Table 7. Compound count is NOT a restatement of publication count: regressed against `log1p(publication_count)` it has an R² of 0.002, and residualised against attention it still scores 0.699. So it is a genuinely independent predictor, not attention measured a second way. What it is not is biology: it is a record of medicinal chemistry already done. The answer to \"does biology predict progression beyond attention\" is still no; what beats attention is a different measure of prior human effort.\n\nA target with a hundred high-quality compounds and no drug is one the field has already chosen. Predicting that it enters the clinic is not target discovery.\n\n**No production score is promoted.** A score dominated by existing compound count would rank highest precisely the targets a user could have found without it, and would rank an under-studied target last by construction. That is the Goodhart failure this benchmark exists to catch, and it is why the criterion being met is not sufficient.",
+  "coefficients": {
+    "M0": {
+      "intercept": -0.2098,
+      "coefficients": {
+        "log1p_pub_count": 1.5751
+      }
+    },
+    "M1": {
+      "intercept": -0.2711,
+      "coefficients": {
+        "log1p_pub_count": 1.601,
+        "genetic_association": 0.0059,
+        "genetic_literature": -0.0099,
+        "somatic_mutation": 0.5358,
+        "overall": 0.3612,
+        "literature": 0.255,
+        "affected_pathway": -0.2925,
+        "animal_model": 0,
+        "rna_expression": -0.0324
+      }
+    },
+    "M3": {
+      "intercept": -0.5897,
+      "coefficients": {
+        "log1p_pub_count": 1.1106,
+        "genetic_association": 0.0295,
+        "genetic_literature": -0.0069,
+        "somatic_mutation": 0.3284,
+        "overall": 0.2902,
+        "literature": 0.2062,
+        "affected_pathway": -0.1981,
+        "animal_model": 0,
+        "rna_expression": -0.027,
+        "tract_sm_clinical_precedence": 0.324,
+        "tract_ab_clinical_precedence": 1.2603,
+        "tract_sm_predicted_tractable": 0.9174,
+        "tract_sm_high_quality_compounds": 0.0686,
+        "tract_sm_genome_member": 0.5304,
+        "pli": -0.056,
+        "loeuf": -0.0751,
+        "depmap_mean_gene_effect": 0.052,
+        "depmap_frac_dependent_lines": -0.0915,
+        "depmap_common_essential": -0.3378,
+        "gtex_tau": -0.2976,
+        "gtex_n_tissues_above_1tpm": -0.2162
+      }
+    },
+    "M4": {
+      "intercept": -0.1162,
+      "coefficients": {
+        "log1p_pub_count": 1.6459,
+        "genetic_association": 0.0043,
+        "genetic_literature": -0.0094,
+        "somatic_mutation": 0.4537,
+        "overall": 0.3182,
+        "literature": 0.2611,
+        "affected_pathway": -0.2677,
+        "animal_model": 0,
+        "rna_expression": -0.0332,
+        "pli": 0.1067,
+        "loeuf": -0.2427,
+        "depmap_mean_gene_effect": -0.0853,
+        "depmap_frac_dependent_lines": -0.121,
+        "depmap_common_essential": -0.4447,
+        "gtex_tau": -0.0637,
+        "gtex_n_tissues_above_1tpm": 0.0706
+      }
+    }
+  },
+  "leakage_controls": [
+    "Every feature comes from a source dated before the May 2021 cutoff; each source's release date and the evidence for it are in `feature_source_vintage`.",
+    "Features whose vintage could not be established were not built; see `features_skipped_at_build`.",
+    "Outcomes come only from 26.09.",
+    "All three models are fitted on the 11 training diseases; the 11 held-out diseases are used once, for evaluation.",
+    "Fill values for failed joins are training-set medians, so no held-out value informs any fill.",
+    "Features that are constant on the cohort are excluded and reported, so a model's feature count is not inflated by features that cannot contribute."
+  ]
+}

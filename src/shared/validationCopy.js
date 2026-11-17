@@ -27,6 +27,9 @@ export const VALIDATION_SOURCES = {
   task2Md: "benchmark/docking/TASK2_DECOY_BENCHMARK.md",
   task4Json: "benchmark/docking/results/task4_attention_control.json",
   task4Md: "benchmark/docking/TASK4_ATTENTION_CONTROL.md",
+  task8Json: "benchmark/docking/results/task8_tractability.json",
+  task7Json: "benchmark/docking/results/task7_cancer_stratification.json",
+  cancerLabels: "benchmark/docking/data/disease_cancer_labels.json",
   redock: "benchmark/docking/results/redock_multiseed.json",
   pairs: "benchmark/docking/results/pair_sanity_checks.json",
   enrichment: "benchmark/docking/results/enrichment.json",
@@ -122,7 +125,72 @@ export const VALIDATION_SECTIONS = [
       "Only the literature feature is substantially explained by publication count " +
       "(R² 0.340). The next largest is RNA expression at 0.070 and the rest are " +
       "lower, so residualising each feature against attention changes little: " +
-      "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).",
+      "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).\n" +
+      "Scope limit, measured rather than assumed: the panel is 15 cancers and 7 " +
+      "non-cancers, and 9 of the 11 held-out diseases are cancers. Read every figure " +
+      "in this section as an oncology result — see the next section for why.",
+  },
+  {
+    id: "cancer-stratification",
+    title: "Is that an oncology result?",
+    source: VALIDATION_SOURCES.task7Json,
+    body:
+      "The signal above is carried by somatic mutation evidence, which in Open " +
+      "Targets comes largely from cancer genomics. So the same comparison was run " +
+      "separately on the cancer and non-cancer held-out diseases, with the " +
+      "cancer/non-cancer labelling committed as its own file so it can be disputed.\n" +
+      "On the 9 held-out cancers (10,308 pairs, 236 positives) the biology features " +
+      "add +0.057 over publication count (95% CI +0.019 to +0.096 resampling pairs, " +
+      "+0.002 to +0.122 resampling diseases) — almost exactly the +0.054 measured " +
+      "across everything. Since 10,308 of the 11,711 held-out pairs are cancer, the " +
+      "pooled figure essentially is the cancer figure.\n" +
+      "Whether it holds outside cancer is underpowered to tell, and that is the " +
+      "honest answer rather than a hedge. Only 2 held-out diseases are non-cancer and " +
+      "one of them contributes no rows at all, leaving a single disease: 1,403 pairs " +
+      "with 22 positives. No disease-level interval is reported for it, because " +
+      "resampling one disease would produce something that looks like a measurement " +
+      "and is not one.\n" +
+      "On that one disease the biology features do not help: −0.008 (95% CI −0.047 to " +
+      "+0.033, including zero), and publication count alone scores higher there, " +
+      "0.730 against 0.722. Residualised somatic mutation reads 0.708 on the cancers " +
+      "and 0.730 on the single non-cancer disease, which points towards the signal " +
+      "generalising — but one disease and 22 positives cannot establish that in either " +
+      "direction, so it is quoted here as a count, not as a comparison.\n" +
+      "Settling this needs more non-cancer diseases in the panel, not more analysis of " +
+      "these 22 positives.",
+  },
+  {
+    id: "tractability-features",
+    title: "Does anything else beat counting papers?",
+    source: VALIDATION_SOURCES.task8Json,
+    body:
+      "The same cohort and split, with five more pre-2021 feature groups added: " +
+      "Open Targets 21.04 tractability, ChEMBL protein class, gnomAD v2.1.1 pLI " +
+      "and LOEUF, DepMap 21Q2 CRISPR essentiality, and GTEx v8 expression " +
+      "selectivity. Every source is dated before May 2021; two features were " +
+      "dropped for joining under 70% of targets.\n" +
+      "Publication count alone: ROC-AUC 0.667. Plus the 8 biology features: 0.721. " +
+      "Plus everything: 0.807 (PR-AUC 0.146, precision@25 0.440), a paired gain of " +
+      "+0.140 over publication count (95% CI +0.100 to +0.181).\n" +
+      "That gain is not biology. Separating features that record work already done " +
+      "on a target from properties of the gene itself, and keeping only the latter — " +
+      "pLI, LOEUF, three DepMap measures, two GTEx measures — gives ROC-AUC 0.719 " +
+      "against 0.721 without them: a paired difference of −0.002 (95% CI −0.026 to " +
+      "+0.022), which includes zero. The five gene-property groups add nothing.\n" +
+      "The whole gain comes from one feature: the number of high-quality compounds " +
+      "that already existed for the target in 2021, which alone scores 0.772 — " +
+      "better than any model in this report. The best gene property is pLI at 0.621; " +
+      "DepMap essentiality and GTEx selectivity sit at chance.\n" +
+      "Compound count is not simply publication count again: regressed against " +
+      "attention its R² is 0.002, and residualised against attention it still " +
+      "scores 0.699. It is an independent predictor. What it is not is biology — it " +
+      "records medicinal chemistry already done. A target with a hundred compounds " +
+      "and no drug is one the field has already picked, so no score was promoted on " +
+      "this result: it would rank highest the targets you could have found without " +
+      "it, and rank an under-studied target last by construction.\n" +
+      "On the 9 held-out cancers the tractability features do add over the biology " +
+      "model (+0.083, 95% CI +0.048 to +0.117). On the single held-out non-cancer " +
+      "disease no interval is reported, for the reason given in the previous section.",
   },
   {
     id: "compound-triage",
