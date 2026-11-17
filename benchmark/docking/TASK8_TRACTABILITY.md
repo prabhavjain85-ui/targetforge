@@ -1,6 +1,6 @@
-# Task 5 — Do Pre-2021 Tractability Features Beat Attention?
+# Task 8 — Do Pre-2021 Tractability Features Beat Attention?
 
-Generated: 2026-11-17T05:36:07.625Z
+Generated: 2026-11-17T17:04:32.612Z
 
 Cohort 2 (`drugCount_2021 == 0`), Open Targets 21.04 (2021-05-05) → 26.09 (2026-09). Fitted on 11 training diseases (12869 pairs, 399 positives); evaluated on 11 held-out diseases (11711 pairs, 258 positives, base rate 0.022).
 
@@ -12,7 +12,9 @@ M3, which adds all the pre-2021 tractability features, does beat publication cou
 
 It is met by the wrong features. Splitting the tractability set in two — features that record medicinal chemistry or clinical work already done on a target ("effort"), and properties of the gene that hold whether or not anyone has studied it ("biology") — M4 keeps only the gene properties: pLI, LOEUF, three DepMap essentiality measures and two GTEx selectivity measures. M4 scores 0.719, against M1's 0.721. The paired delta is −0.002 (95% CI −0.026 to +0.022), which includes zero: the five gene-property groups together add nothing over publication count and the eight Open Targets evidence scores. All of M3's advantage comes from the effort features (M3 vs M1 +0.086, 95% CI +0.052 to +0.119), and the single strongest predictor in the whole study is `tract_sm_high_quality_compounds` at solo held-out ROC-AUC 0.772 — higher than any model in Task 3 or Task 4. The best gene property is `pli` at 0.621.
 
-So the answer to "does biology predict progression beyond attention" is still no. Attention simply turns out to be better measured in compounds than in papers. A target with a hundred high-quality compounds and no drug is one the field has already chosen; predicting that it enters the clinic is not target discovery.
+One correction to the obvious reading, from Table 7. Compound count is NOT a restatement of publication count: regressed against `log1p(publication_count)` it has an R² of 0.002, and residualised against attention it still scores 0.699. So it is a genuinely independent predictor, not attention measured a second way. What it is not is biology: it is a record of medicinal chemistry already done. The answer to "does biology predict progression beyond attention" is still no; what beats attention is a different measure of prior human effort.
+
+A target with a hundred high-quality compounds and no drug is one the field has already chosen. Predicting that it enters the clinic is not target discovery.
 
 **No production score is promoted.** A score dominated by existing compound count would rank highest precisely the targets a user could have found without it, and would rank an under-studied target last by construction. That is the Goodhart failure this benchmark exists to catch, and it is why the criterion being met is not sufficient.
 
@@ -117,6 +119,55 @@ The held-out rows cluster into 10 diseases and are not independent. This is the 
 | `depmap_common_essential` | biology | 0.480 | yes |
 | `gtex_tau` | biology | 0.513 | yes |
 | `gtex_n_tissues_above_1tpm` | biology | 0.519 | yes |
+
+## Table 7 — Residualised tractability features
+
+Each feature regressed on `log1p(publication_count)` across the training diseases, with the held-out AUC of the residual reported. This matters most for the `effort` features, since those are themselves a measure of attention: if a feature's AUC survives residualisation it carries something publication count does not.
+
+| Feature | Kind | R² vs attention | Raw AUC | Residualised AUC |
+|---|---|---:|---:|---:|
+| `tract_sm_clinical_precedence` | effort | 0.000 | 0.511 | **0.678** |
+| `tract_ab_clinical_precedence` | effort | 0.000 | 0.532 | **0.380** |
+| `tract_sm_predicted_tractable` | effort | 0.012 | 0.671 | **0.601** |
+| `tract_sm_high_quality_compounds` | effort | 0.002 | 0.772 | **0.699** |
+| `tract_sm_genome_member` | effort | 0.010 | 0.676 | **0.595** |
+| `pli` | biology | 0.002 | 0.623 | **0.649** |
+| `loeuf` | biology | 0.007 | 0.407 | **0.385** |
+| `depmap_mean_gene_effect` | biology | 0.001 | 0.500 | **0.489** |
+| `depmap_frac_dependent_lines` | biology | 0.000 | 0.535 | **0.599** |
+| `depmap_common_essential` | biology | 0.000 | 0.480 | **0.614** |
+| `gtex_tau` | biology | 0.004 | 0.511 | **0.488** |
+| `gtex_n_tissues_above_1tpm` | biology | 0.006 | 0.519 | **0.597** |
+
+## Table 8 — Contribution per cancer / non-cancer stratum
+
+Task 7 established that the held-out set is 9 cancers and effectively 1 non-cancer disease, and that every pooled figure is therefore an oncology result. DepMap CRISPR data in particular is cancer cell-line data, so its contribution is reported per stratum rather than pooled. Labelling: `benchmark/docking/data/disease_cancer_labels.json`. Models stay fitted on the full training set; only which held-out rows are scored changes.
+
+| Stratum | Diseases | Pairs | Positives | M0 | M1 | M3 | M4 | M3 vs M1 (pairs) |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| cancer | 9 | 10308 | 236 | 0.665 | 0.722 | 0.805 | 0.714 | +0.083 (+0.048 to +0.117) |
+| non_cancer | 1 | 1403 | 22 | 0.730 | 0.722 | 0.826 | 0.785 | +0.104 (−0.018 to +0.240) incl. 0 |
+
+No disease-level interval for `non_cancer`: only 2 held-out disease(s) in this stratum, the same rule Task 7 applies.
+
+### The DepMap and tractability features, solo, per stratum
+
+| Feature | Kind | Solo AUC (cancer) | Solo AUC (non-cancer) |
+|---|---|---:|---:|
+| `tract_sm_clinical_precedence` | effort | 0.512 | 0.499 |
+| `tract_ab_clinical_precedence` | effort | 0.532 | 0.543 |
+| `tract_sm_predicted_tractable` | effort | 0.666 | 0.722 |
+| `tract_sm_high_quality_compounds` | effort | 0.773 | 0.756 |
+| `tract_sm_genome_member` | effort | 0.673 | 0.703 |
+| `pli` | biology | 0.628 | 0.568 |
+| `loeuf` | biology | 0.401 | 0.473 |
+| `depmap_mean_gene_effect` | biology | 0.494 | 0.557 |
+| `depmap_frac_dependent_lines` | biology | 0.544 | 0.438 |
+| `depmap_common_essential` | biology | 0.485 | 0.425 |
+| `gtex_tau` | biology | 0.507 | 0.548 |
+| `gtex_n_tissues_above_1tpm` | biology | 0.519 | 0.520 |
+
+The non-cancer column is one disease. It is a count, not a comparison, and nothing should be concluded from the direction it points.
 
 ## Promotion decision
 

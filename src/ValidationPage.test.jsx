@@ -89,7 +89,7 @@ describe("ValidationPage", () => {
     expect(container.querySelectorAll(".validation-source").length).toBe(6);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
-    expect(text).toContain("benchmark/docking/results/task5_tractability.json");
+    expect(text).toContain("benchmark/docking/results/task8_tractability.json");
     expect(text).not.toMatch(/Source:s*undefined/);
   });
 
@@ -114,7 +114,7 @@ describe("ValidationPage", () => {
     }
   });
 
-  test("reports Task 5 as a negative result, not as a win", () => {
+  test("reports Task 8 as a negative result, not as a win", () => {
     const text = render();
     expect(text).toMatch(/Does anything else beat counting papers/i);
     for (const n of ["0.807", "0.719", "0.772", "0.621", "+0.140"]) {

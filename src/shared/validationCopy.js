@@ -27,7 +27,7 @@ export const VALIDATION_SOURCES = {
   task2Md: "benchmark/docking/TASK2_DECOY_BENCHMARK.md",
   task4Json: "benchmark/docking/results/task4_attention_control.json",
   task4Md: "benchmark/docking/TASK4_ATTENTION_CONTROL.md",
-  task5Json: "benchmark/docking/results/task5_tractability.json",
+  task8Json: "benchmark/docking/results/task8_tractability.json",
   task7Json: "benchmark/docking/results/task7_cancer_stratification.json",
   cancerLabels: "benchmark/docking/data/disease_cancer_labels.json",
   redock: "benchmark/docking/results/redock_multiseed.json",
@@ -162,7 +162,7 @@ export const VALIDATION_SECTIONS = [
   {
     id: "tractability-features",
     title: "Does anything else beat counting papers?",
-    source: VALIDATION_SOURCES.task5Json,
+    source: VALIDATION_SOURCES.task8Json,
     body:
       "The same cohort and split, with five more pre-2021 feature groups added: " +
       "Open Targets 21.04 tractability, ChEMBL protein class, gnomAD v2.1.1 pLI " +
@@ -181,11 +181,16 @@ export const VALIDATION_SECTIONS = [
       "that already existed for the target in 2021, which alone scores 0.772 — " +
       "better than any model in this report. The best gene property is pLI at 0.621; " +
       "DepMap essentiality and GTEx selectivity sit at chance.\n" +
-      "So nothing here predicts progression beyond attention; attention is just " +
-      "measured better in compounds than in papers. A target with a hundred " +
-      "compounds and no drug is one the field has already picked, so no score was " +
-      "promoted on this result: it would rank highest the targets you could have " +
-      "found without it, and rank an under-studied target last by construction.",
+      "Compound count is not simply publication count again: regressed against " +
+      "attention its R² is 0.002, and residualised against attention it still " +
+      "scores 0.699. It is an independent predictor. What it is not is biology — it " +
+      "records medicinal chemistry already done. A target with a hundred compounds " +
+      "and no drug is one the field has already picked, so no score was promoted on " +
+      "this result: it would rank highest the targets you could have found without " +
+      "it, and rank an under-studied target last by construction.\n" +
+      "On the 9 held-out cancers the tractability features do add over the biology " +
+      "model (+0.083, 95% CI +0.048 to +0.117). On the single held-out non-cancer " +
+      "disease no interval is reported, for the reason given in the previous section.",
   },
   {
     id: "compound-triage",

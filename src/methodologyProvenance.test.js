@@ -29,9 +29,19 @@ const validationPage = read("src/ValidationPage.jsx");
 const discoveryPage = read("src/TargetDiscoveryPage.jsx");
 const task3 = JSON.parse(read("benchmark/docking/results/task3_novelty_validation.json"));
 const task4 = JSON.parse(read("benchmark/docking/results/task4_attention_control.json"));
-const task5 = JSON.parse(read("benchmark/docking/results/task5_tractability.json"));
+const task8 = JSON.parse(read("benchmark/docking/results/task8_tractability.json"));
 const task7 = JSON.parse(read("benchmark/docking/results/task7_cancer_stratification.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
+
+/** Every committed benchmark artifact, concatenated, for traceability checks. */
+const ARTIFACT_TEXT =
+  results +
+  task1 +
+  task2 +
+  JSON.stringify(task3) +
+  JSON.stringify(task4) +
+  JSON.stringify(task7) +
+  JSON.stringify(task8);
 
 /** Every metric-looking number a user can read, across the validation copy. */
 const COPY_NUMBERS = (validationCopy.match(/\b0\.\d{3}\b/g) || []).map(Number);
@@ -174,14 +184,14 @@ describe("/validation page figures trace to committed artifacts", () => {
   });
 
   test("every three-decimal figure in the copy appears in a benchmark file", () => {
-    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4) + JSON.stringify(task5) + JSON.stringify(task7);
+    const artifacts = ARTIFACT_TEXT;
     const unmatched = [];
     for (const n of new Set(COPY_NUMBERS)) {
       const asText = n.toFixed(3);
       // A figure counts as traced if it appears verbatim, or if any artifact
       // value rounds to it at three decimals.
       if (artifacts.includes(asText)) continue;
-      const rounds = (artifacts.match(/\d+\.\d{3,}/g) || []).some(
+      const rounds = (ARTIFACT_TEXT.match(/\d+\.\d{3,}/g) || []).some(
         (v) => Number(Number(v).toFixed(3)) === n
       );
       if (!rounds) unmatched.push(asText);
@@ -352,13 +362,20 @@ describe("Task 6 (Vina vs Tanimoto) is reported as unrun, not as a result", () =
     expect(md).toMatch(/contains no measurements/i);
   });
 
-  test("it quotes no ROC-AUC of its own", () => {
-    // The only figures allowed here are the Task 2 ones it cites for context.
-    const figures = new Set(md.match(/\b0\.\d{3}\b/g) || []);
-    const task2Figures = new Set(["0.662", "0.523", "0.520", "0.636", "0.744", "0.800"]);
-    for (const f of figures) {
-      expect(task2Figures.has(f)).toBe(true);
+  test("it invents no figure of its own", () => {
+    // It has produced no measurements, so every number in it must be one it
+    // cites from an existing committed artifact. Checked by traceability rather
+    // than an allowlist, so adding a cited figure cannot silently become
+    // adding a fabricated one.
+    const unmatched = [];
+    for (const n of new Set(md.match(/\b0\.\d{3}\b/g) || [])) {
+      if (ARTIFACT_TEXT.includes(n)) continue;
+      const rounds = (ARTIFACT_TEXT.match(/\d+\.\d{3,}/g) || []).some(
+        (v) => Number(Number(v).toFixed(3)) === Number(n)
+      );
+      if (!rounds) unmatched.push(n);
     }
+    expect(unmatched).toEqual([]);
   });
 
   test("if a result file ever appears, the status document must stop saying NOT RUN", () => {
@@ -377,6 +394,27 @@ describe("Task 6 (Vina vs Tanimoto) is reported as unrun, not as a result", () =
     expect(scorer).toMatch(/haveSimilarity/);
   });
 
+  test("it separates ranking from affinity prediction, in both doc and harness", () => {
+    // A ranking win must not become evidence for affinity prediction: Vina
+    // correlated with measured potency at Spearman -0.291 (CI -0.681 to 0.478).
+    expect(md).toMatch(/Ranking is not affinity prediction/i);
+    expect(md).toContain("−0.291");
+    expect(md).toContain("−0.681 to 0.478");
+    expect(md).toMatch(/must not be used to support each other/i);
+    const py = read("benchmark/docking/scripts/run_vina_vs_tanimoto.py");
+    expect(py).toMatch(/Ranking is not affinity prediction/i);
+    expect(py).toMatch(/-0.291/);
+  });
+
+  test("promotion is gated on the target-level interval, not the pooled one", () => {
+    const py = read("benchmark/docking/scripts/run_vina_vs_tanimoto.py");
+    expect(py).toMatch(/per_target_mean_delta_roc_auc/);
+    expect(py).toMatch(/resampling_unit": "target"|"resampling_unit": "target"/);
+    // The gate reads the per-target interval.
+    const gate = py.slice(py.indexOf("promote = ("), py.indexOf("if promote:"));
+    expect(gate).toMatch(/per_target_mean_delta_roc_auc/);
+    expect(gate).not.toMatch(/pooled_paired_delta/);
+  });
   test("the harness refuses to write a result without its prerequisites", () => {
     const py = read("benchmark/docking/scripts/run_vina_vs_tanimoto.py");
     expect(py).toMatch(/def check_prerequisites/);
@@ -385,8 +423,8 @@ describe("Task 6 (Vina vs Tanimoto) is reported as unrun, not as a result", () =
   });
 });
 
-describe("Task 5 tractability figures trace to the committed run", () => {
-  const h = task5.held_out;
+describe("Task 8 tractability figures trace to the committed run", () => {
+  const h = task8.held_out;
   const section = VALIDATION_SECTIONS.find((s) => s.id === "tractability-features");
   const round = (x, d = 3) => Number(Number(x).toFixed(d));
 
@@ -403,7 +441,7 @@ describe("Task 5 tractability figures trace to the committed run", () => {
   });
 
   test("M3 beats M0 and the page says so", () => {
-    const d = task5.paired_deltas.M3_vs_M0.roc_auc;
+    const d = task8.paired_deltas.M3_vs_M0.roc_auc;
     expect(round(d.delta)).toBe(0.14);
     expect(d.includes_zero).toBe(false);
     expect(section.body).toContain("+0.140");
@@ -414,35 +452,35 @@ describe("Task 5 tractability figures trace to the committed run", () => {
   test("the gene-property features add nothing, and that is the headline", () => {
     // The result that governs how this run should be read: M4 keeps only gene
     // properties and does not improve on M1.
-    const d = task5.paired_deltas.M4_vs_M1.roc_auc;
+    const d = task8.paired_deltas.M4_vs_M1.roc_auc;
     expect(d.includes_zero).toBe(true);
     expect(round(d.delta)).toBe(-0.002);
-    expect(task5.promotion.gene_property_features_add_nothing).toBe(true);
-    expect(task5.finding).toMatch(/No gene-property feature tested here predicts/i);
+    expect(task8.promotion.gene_property_features_add_nothing).toBe(true);
+    expect(task8.finding).toMatch(/No gene-property feature tested here predicts/i);
     expect(section.body).toContain("−0.002");
     expect(section.body).toMatch(/includes zero/i);
     expect(section.body).toMatch(/add nothing/i);
   });
 
   test("the gain is attributed to the compound-count feature", () => {
-    expect(round(task5.solo_held_out_roc_auc.tract_sm_high_quality_compounds)).toBe(0.772);
-    expect(round(task5.solo_held_out_roc_auc.pli)).toBe(0.621);
-    expect(task5.feature_kinds.effort).toContain("tract_sm_high_quality_compounds");
-    expect(task5.feature_kinds.biology).toContain("pli");
-    expect(task5.feature_kinds.biology).not.toContain("tract_sm_high_quality_compounds");
+    expect(round(task8.solo_held_out_roc_auc.tract_sm_high_quality_compounds)).toBe(0.772);
+    expect(round(task8.solo_held_out_roc_auc.pli)).toBe(0.621);
+    expect(task8.feature_kinds.effort).toContain("tract_sm_high_quality_compounds");
+    expect(task8.feature_kinds.biology).toContain("pli");
+    expect(task8.feature_kinds.biology).not.toContain("tract_sm_high_quality_compounds");
     expect(section.body).toContain("0.772");
     expect(section.body).toContain("0.621");
   });
 
   test("the criterion is met yet nothing was promoted, with the reason recorded", () => {
-    expect(task5.promotion.criterion_met).toBe(true);
-    expect(task5.promotion.promoted_to_production).toBe(false);
-    expect(task5.promotion.note).toMatch(/Goodhart/i);
+    expect(task8.promotion.criterion_met).toBe(true);
+    expect(task8.promotion.promoted_to_production).toBe(false);
+    expect(task8.promotion.note).toMatch(/Goodhart/i);
     expect(section.body).toMatch(/no score was\s+promoted/i);
   });
 
   test("every feature carries a vintage predating the cutoff", () => {
-    const vintages = Object.values(task5.feature_source_vintage);
+    const vintages = Object.values(task8.feature_source_vintage);
     expect(vintages.length).toBeGreaterThanOrEqual(4);
     for (const v of vintages) {
       expect(v.predates_cutoff).toBe(true);
@@ -454,38 +492,38 @@ describe("Task 5 tractability figures trace to the committed run", () => {
   });
 
   test("features under the 70% join gate are excluded and named", () => {
-    const excluded = task5.join_rates.filter((j) => !j.included_in_model);
+    const excluded = task8.join_rates.filter((j) => !j.included_in_model);
     expect(excluded.length).toBeGreaterThan(0);
     for (const j of excluded) {
       expect(j.excluded_reason).toBeTruthy();
-      expect(j.join_rate < task5.min_join_rate || j.constant_on_cohort).toBe(true);
+      expect(j.join_rate < task8.min_join_rate || j.constant_on_cohort).toBe(true);
     }
     // And every included feature really does clear the gate.
-    for (const j of task5.join_rates.filter((x) => x.included_in_model)) {
-      expect(j.join_rate).toBeGreaterThanOrEqual(task5.min_join_rate);
+    for (const j of task8.join_rates.filter((x) => x.included_in_model)) {
+      expect(j.join_rate).toBeGreaterThanOrEqual(task8.min_join_rate);
     }
   });
 
   test("the DepMap common-essential flag is not counted for unscreened genes", () => {
     // It read 100% while it was defaulting absent genes to 0; a gene DepMap
     // never screened is unknown, not non-essential.
-    const ce = task5.join_rates.find((j) => j.feature === "depmap_common_essential");
-    const eff = task5.join_rates.find((j) => j.feature === "depmap_mean_gene_effect");
+    const ce = task8.join_rates.find((j) => j.feature === "depmap_common_essential");
+    const eff = task8.join_rates.find((j) => j.feature === "depmap_mean_gene_effect");
     expect(ce.join_rate).toBeLessThan(1);
     expect(ce.join_rate).toBe(eff.join_rate);
   });
 
   test("fitting never touches the held-out diseases", () => {
-    expect(task5.n_train_diseases).toBe(11);
-    expect(task5.n_test_diseases).toBe(11);
-    expect(task5.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
-    expect(task5.leakage_controls.join(" ")).toMatch(/training-set medians/i);
+    expect(task8.n_train_diseases).toBe(11);
+    expect(task8.n_test_diseases).toBe(11);
+    expect(task8.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
+    expect(task8.leakage_controls.join(" ")).toMatch(/training-set medians/i);
   });
 });
 
 describe("every validation section names a real source file", () => {
   // This guard is here because it was missed once: the tractability section
-  // referenced VALIDATION_SOURCES.task5Json, which was never defined, so the
+  // referenced VALIDATION_SOURCES.task8Json, which was never defined, so the
   // page rendered "Source: undefined" and shipped that way in cc7cecc. A
   // section whose provenance is undefined is exactly what this page exists to
   // prevent, so the check is structural rather than per-section.
@@ -611,5 +649,91 @@ describe("Task 7 cancer stratification figures trace to the committed run", () =
     expect(task7.models_fitted_on).toMatch(/full 11-disease training set/i);
     expect(task7.leakage_controls.join(" ")).toMatch(/No stratum is fitted on its own held-out data/i);
     expect(task7.leakage_controls.join(" ")).toMatch(/only the disease name/i);
+  });
+});
+
+describe("Task 8 residualised features and per-stratum contribution", () => {
+  const round = (x, d = 3) => Number(Number(x).toFixed(d));
+  const byFeature = (n) => task8.residualised.find((r) => r.feature === n);
+
+  test("every included feature has a residualised AUC", () => {
+    const included = task8.join_rates.filter((j) => j.included_in_model && j.kind).map((j) => j.feature);
+    expect(included.length).toBeGreaterThan(0);
+    for (const name of included) {
+      const r = byFeature(name);
+      expect(r).toBeDefined();
+      expect(Number.isFinite(r.held_out_roc_auc_residual)).toBe(true);
+      expect(r.regression_on_log1p_pub_count).toHaveProperty("r2");
+    }
+  });
+
+  test("compound count is not a publication-count proxy, and the report says so", () => {
+    // This is the correction Table 7 forced: R2 against attention is ~0, and the
+    // feature survives residualisation, so it is independent signal rather than
+    // attention measured twice. It is still effort, not biology.
+    const hq = byFeature("tract_sm_high_quality_compounds");
+    expect(round(hq.regression_on_log1p_pub_count.r2)).toBe(0.002);
+    expect(round(hq.held_out_roc_auc_residual)).toBe(0.699);
+    expect(hq.kind).toBe("effort");
+    expect(task8.finding).toMatch(/NOT a restatement of publication count/i);
+    expect(task8.finding).toMatch(/is still no/i);
+    expect(task8.finding).toMatch(/prior human effort/i);
+  });
+
+  test("DepMap contribution is reported per stratum, as Task 7 requires", () => {
+    expect(task8.cancer_labels_source).toBe("benchmark/docking/data/disease_cancer_labels.json");
+    const c = task8.per_stratum.cancer;
+    const n = task8.per_stratum.non_cancer;
+    expect(c.n_total).toBe(10308);
+    expect(n.n_total).toBe(1403);
+    for (const key of ["depmap_mean_gene_effect", "depmap_frac_dependent_lines", "depmap_common_essential"]) {
+      expect(Number.isFinite(c.solo_held_out_roc_auc[key])).toBe(true);
+      expect(Number.isFinite(n.solo_held_out_roc_auc[key])).toBe(true);
+    }
+  });
+
+  test("the tractability gain holds on the cancers and is withheld on one disease", () => {
+    const c = task8.per_stratum.cancer.paired_deltas.M3_vs_M1.roc_auc;
+    expect(round(c.delta)).toBe(0.083);
+    expect(c.includes_zero).toBe(false);
+    // One non-cancer disease: pair-level interval includes zero, and no
+    // disease-level interval is offered at all.
+    const n = task8.per_stratum.non_cancer.paired_deltas.M3_vs_M1.roc_auc;
+    expect(n.includes_zero).toBe(true);
+    expect(task8.per_stratum.non_cancer.clustered_withheld).toBeTruthy();
+  });
+
+  test("M3 beats M1 under disease-level resampling, which permits but does not compel shipping", () => {
+    // The brief's gate for a production change.
+    expect(task8.clustered_deltas.M3_vs_M1.roc_auc.includes_zero).toBe(false);
+    expect(task8.promotion.criterion_met).toBe(true);
+    // And nothing shipped anyway, for the reason recorded.
+    expect(task8.promotion.promoted_to_production).toBe(false);
+    expect(task8.promotion.note).toMatch(/Goodhart/i);
+  });
+});
+
+describe("the tractability section no longer calls compound count an attention proxy", () => {
+  // The page said "attention is just measured better in compounds than in
+  // papers" until Table 7 showed R2 0.002 against publication count. The claim
+  // was wrong in the direction that made the story tidier, so it was corrected.
+  const section = VALIDATION_SECTIONS.find((s) => s.id === "tractability-features");
+
+  test("it states the independence rather than the proxy claim", () => {
+    expect(section.body).not.toMatch(/measured better in compounds than in papers/i);
+    expect(section.body).toMatch(/not simply publication count again/i);
+    expect(section.body).toContain("0.002");
+    expect(section.body).toContain("0.699");
+    expect(section.body).toMatch(/independent predictor/i);
+  });
+
+  test("it still says the feature is not biology and nothing was promoted", () => {
+    expect(section.body).toMatch(/what it is not is biology/i);
+    expect(section.body).toMatch(/no score was promoted/i);
+  });
+
+  test("it carries the per-stratum result", () => {
+    expect(section.body).toContain("+0.083");
+    expect(section.body).toContain("9 held-out cancers");
   });
 });

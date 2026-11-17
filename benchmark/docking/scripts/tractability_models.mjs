@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Task 5, stage 2 — does adding pre-2021 tractability and biology features beat
+ * Task 8, stage 2 — does adding pre-2021 tractability and biology features beat
  * publication count?
  *
  * Task 4 established that the eight Open Targets evidence scores add ranking
@@ -37,7 +37,7 @@ import zlib from "zlib";
 import { fileURLToPath } from "url";
 
 import { buildOrLoadRetrospectiveSnapshot } from "./validate_novelty_retrospective.mjs";
-import { rocAuc } from "../../../server/benchmark/metrics.js";
+import { prAuc, rocAuc } from "../../../server/benchmark/metrics.js";
 import {
   BIOLOGY_FEATURE_KEYS,
   biologyFeature,
@@ -53,9 +53,10 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCKING_DIR = path.resolve(__dirname, "..");
 const REPO_ROOT = path.resolve(DOCKING_DIR, "../..");
-const FEATURES_PATH = path.join(DOCKING_DIR, "data", "task5_target_features.json.gz");
-const OUT_JSON = path.join(DOCKING_DIR, "results", "task5_tractability.json");
-const OUT_MD = path.join(DOCKING_DIR, "TASK5_TRACTABILITY.md");
+const FEATURES_PATH = path.join(DOCKING_DIR, "data", "task8_target_features.json.gz");
+const OUT_JSON = path.join(DOCKING_DIR, "results", "task8_tractability.json");
+const OUT_MD = path.join(DOCKING_DIR, "TASK8_TRACTABILITY.md");
+const CANCER_LABELS_PATH = path.join(DOCKING_DIR, "data", "disease_cancer_labels.json");
 
 const LABEL_KEY = "acquired_global_from_zero";
 const MIN_JOIN_RATE = 0.7;
@@ -123,6 +124,35 @@ function median(values) {
   if (!v.length) return 0;
   const m = Math.floor(v.length / 2);
   return v.length % 2 ? v[m] : (v[m - 1] + v[m]) / 2;
+}
+
+function fitOls1d(xs, ys) {
+  const n = xs.length;
+  if (n === 0) return { slope: 0, intercept: 0, r2: 0 };
+  let sx = 0;
+  let sy = 0;
+  for (let i = 0; i < n; i++) {
+    sx += xs[i];
+    sy += ys[i];
+  }
+  const mx = sx / n;
+  const my = sy / n;
+  let sxy = 0;
+  let sxx = 0;
+  let syy = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - mx;
+    const dy = ys[i] - my;
+    sxy += dx * dy;
+    sxx += dx * dx;
+    syy += dy * dy;
+  }
+  const slope = sxx === 0 ? 0 : sxy / sxx;
+  return {
+    slope,
+    intercept: my - slope * mx,
+    r2: sxx === 0 || syy === 0 ? 0 : (sxy * sxy) / (sxx * syy),
+  };
 }
 
 export async function runTractabilityModels({ refresh = false } = {}) {
@@ -345,6 +375,78 @@ export async function runTractabilityModels({ refresh = false } = {}) {
   const beatsM0Clustered = !c30.includes_zero && (c30.median_delta ?? 0) > 0;
   const promote = beatsM0PairLevel && beatsM0Clustered;
 
+  // ---- Residualised tractability features, as in Task 4 Table 3 -----------
+  // Each candidate feature is regressed on log1p(publication_count) across the
+  // TRAINING diseases, and the held-out AUC of the residual reported. This
+  // separates "correlated with attention" from "informative", which matters
+  // most for the effort features, since those are themselves attention.
+  const xTrain = trainRows.map(logPub);
+  const xTest = testRows.map(logPub);
+  const residualised = usedCandidates.map((c) => {
+    const valOf = (r) => {
+      const raw = c.get(featOf(r));
+      return raw === null || !Number.isFinite(Number(raw)) ? fills[c.name] : Number(raw);
+    };
+    const yTrain = trainRows.map(valOf);
+    const { slope, intercept, r2 } = fitOls1d(xTrain, yTrain);
+    const raw = testRows.map(valOf);
+    const resid = raw.map((v, i) => v - (intercept + slope * xTest[i]));
+    return {
+      feature: c.name,
+      kind: c.kind,
+      regression_on_log1p_pub_count: {
+        slope: Number(slope.toFixed(4)),
+        intercept: Number(intercept.toFixed(4)),
+        r2: Number(r2.toFixed(4)),
+      },
+      held_out_roc_auc_raw: Number(rocAuc(testLabels, raw).toFixed(4)),
+      held_out_roc_auc_residual: Number(rocAuc(testLabels, resid).toFixed(4)),
+      held_out_pr_auc_residual: Number(prAuc(testLabels, resid).toFixed(4)),
+    };
+  });
+
+  // ---- Per-stratum contribution (Task 7 asked for this specifically) -------
+  // DepMap is 15-of-22-cancers data, so its contribution is reported per
+  // stratum rather than pooled. Models stay fitted on the full training set;
+  // only which held-out rows are scored changes.
+  const cancerLabels = JSON.parse(fs.readFileSync(CANCER_LABELS_PATH, "utf8"));
+  const stratumById = new Map(cancerLabels.diseases.map((d) => [d.disease_id_2021, d.stratum]));
+  const perStratum = {};
+  for (const stratum of ["cancer", "non_cancer"]) {
+    const ds = testDiseases.filter((d) => stratumById.get(d.disease_id_2021) === stratum);
+    const rows = ds.flatMap((d) => d.targets.filter((r) => r.drugCount_2021 === 0));
+    if (!rows.length) {
+      perStratum[stratum] = { n_diseases: ds.length, n_total: 0, note: "no cohort-2 rows" };
+      continue;
+    }
+    const labels = rows.map((r) => (r[LABEL_KEY] ? 1 : 0));
+    const sc = {};
+    for (const id of ["M0", "M1", "M3", "M4"]) sc[id] = rows.map((r) => fitted[id].predict(r));
+    const soloHere = {};
+    for (const c of usedCandidates) {
+      const v = rows.map((r) => {
+        const raw = c.get(featOf(r));
+        return raw === null || !Number.isFinite(Number(raw)) ? fills[c.name] : Number(raw);
+      });
+      soloHere[c.name] = Number(rocAuc(labels, v).toFixed(4));
+    }
+    perStratum[stratum] = {
+      n_diseases: ds.filter((d) => d.targets.some((r) => r.drugCount_2021 === 0)).length,
+      n_total: rows.length,
+      n_positives: labels.reduce((a, b) => a + b, 0),
+      models: Object.fromEntries(
+        ["M0", "M1", "M3", "M4"].map((id) => [id, evaluate(labels, sc[id])])
+      ),
+      paired_deltas: {
+        M3_vs_M1: pairedDeltaCi(labels, sc.M1, sc.M3),
+        M3_vs_M0: pairedDeltaCi(labels, sc.M0, sc.M3),
+      },
+      solo_held_out_roc_auc: soloHere,
+      // Below 4 clusters a disease-level interval is withheld, same rule as Task 7.
+      clustered_withheld: ds.length < 4 ? `only ${ds.length} held-out disease(s) in this stratum` : null,
+    };
+  }
+
   // The effort/biology split decides how this result should be read, so the
   // headline is built from it rather than from M3 vs M0 alone.
   const p41 = pairedDeltas.M4_vs_M1.roc_auc;
@@ -386,10 +488,17 @@ export async function runTractabilityModels({ refresh = false } = {}) {
       `\`${topEffort.n}\` at solo held-out ROC-AUC ${fmt(topEffort.auc)} — higher than any ` +
       `model in Task 3 or Task 4. The best gene property is \`${topBiology.n}\` at ` +
       `${fmt(topBiology.auc)}.\n\n` +
-      `So the answer to "does biology predict progression beyond attention" is still no. ` +
-      `Attention simply turns out to be better measured in compounds than in papers. A target ` +
-      `with a hundred high-quality compounds and no drug is one the field has already chosen; ` +
-      `predicting that it enters the clinic is not target discovery.\n\n` +
+      `One correction to the obvious reading, from Table 7. Compound count is NOT a restatement ` +
+      `of publication count: regressed against \`log1p(publication_count)\` it has an R² of ` +
+      `${fmt(residualised.find((x) => x.feature === "tract_sm_high_quality_compounds").regression_on_log1p_pub_count.r2)}, ` +
+      `and residualised against attention it still scores ` +
+      `${fmt(residualised.find((x) => x.feature === "tract_sm_high_quality_compounds").held_out_roc_auc_residual)}. ` +
+      `So it is a genuinely independent predictor, not attention measured a second way. What it ` +
+      `is not is biology: it is a record of medicinal chemistry already done. The answer to "does ` +
+      `biology predict progression beyond attention" is still no; what beats attention is a ` +
+      `different measure of prior human effort.\n\n` +
+      `A target with a hundred high-quality compounds and no drug is one the field has already ` +
+      `chosen. Predicting that it enters the clinic is not target discovery.\n\n` +
       `**No production score is promoted.** A score dominated by existing compound count would ` +
       `rank highest precisely the targets a user could have found without it, and would rank ` +
       `an under-studied target last by construction. That is the Goodhart failure this ` +
@@ -429,7 +538,7 @@ export async function runTractabilityModels({ refresh = false } = {}) {
 
   const report = {
     generated_at: new Date().toISOString(),
-    task: "Task 5 — pre-2021 tractability features vs attention",
+    task: "Task 8 — pre-2021 tractability features vs attention",
     historical_release: snapshot.historical_release,
     current_release: snapshot.current_release,
     cohort: "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
@@ -447,6 +556,12 @@ export async function runTractabilityModels({ refresh = false } = {}) {
     },
     join_rates: joinReport,
     solo_held_out_roc_auc: soloAuc,
+    residualised,
+    per_stratum: perStratum,
+    cancer_labels_source: path
+      .relative(REPO_ROOT, CANCER_LABELS_PATH)
+      .split(path.sep)
+      .join("/"),
     feature_kinds: {
       effort: usedCandidates.filter((c) => c.kind === "effort").map((c) => c.name),
       biology: biologyOnlyCandidates.map((c) => c.name),
@@ -517,7 +632,7 @@ function renderMarkdown(report) {
   const L = [];
   const h = report.held_out;
 
-  L.push("# Task 5 — Do Pre-2021 Tractability Features Beat Attention?");
+  L.push("# Task 8 — Do Pre-2021 Tractability Features Beat Attention?");
   L.push("");
   L.push(`Generated: ${report.generated_at}`);
   L.push("");
@@ -655,6 +770,79 @@ function renderMarkdown(report) {
   }
   L.push("");
 
+  L.push("## Table 7 — Residualised tractability features");
+  L.push("");
+  L.push(
+    "Each feature regressed on `log1p(publication_count)` across the training diseases, with the " +
+      "held-out AUC of the residual reported. This matters most for the `effort` features, since " +
+      "those are themselves a measure of attention: if a feature's AUC survives residualisation it " +
+      "carries something publication count does not."
+  );
+  L.push("");
+  L.push("| Feature | Kind | R² vs attention | Raw AUC | Residualised AUC |");
+  L.push("|---|---|---:|---:|---:|");
+  for (const r2 of report.residualised) {
+    L.push(
+      `| \`${r2.feature}\` | ${r2.kind} | ${fmt(r2.regression_on_log1p_pub_count.r2)} | ` +
+        `${fmt(r2.held_out_roc_auc_raw)} | **${fmt(r2.held_out_roc_auc_residual)}** |`
+    );
+  }
+  L.push("");
+
+  L.push("## Table 8 — Contribution per cancer / non-cancer stratum");
+  L.push("");
+  L.push(
+    "Task 7 established that the held-out set is 9 cancers and effectively 1 non-cancer disease, " +
+      "and that every pooled figure is therefore an oncology result. DepMap CRISPR data in " +
+      "particular is cancer cell-line data, so its contribution is reported per stratum rather " +
+      `than pooled. Labelling: \`${report.cancer_labels_source}\`. Models stay fitted on the full ` +
+      "training set; only which held-out rows are scored changes."
+  );
+  L.push("");
+  L.push("| Stratum | Diseases | Pairs | Positives | M0 | M1 | M3 | M4 | M3 vs M1 (pairs) |");
+  L.push("|---|---:|---:|---:|---:|---:|---:|---:|---:|");
+  for (const key of ["cancer", "non_cancer"]) {
+    const s = report.per_stratum[key];
+    if (!s || !s.n_total) {
+      L.push(`| ${key} | ${s ? s.n_diseases : 0} | 0 | — | — | — | — | — | ${s ? s.note : "—"} |`);
+      continue;
+    }
+    const d = s.paired_deltas.M3_vs_M1.roc_auc;
+    L.push(
+      `| ${key} | ${s.n_diseases} | ${s.n_total} | ${s.n_positives} | ${fmt(s.models.M0.roc_auc)} | ` +
+        `${fmt(s.models.M1.roc_auc)} | ${fmt(s.models.M3.roc_auc)} | ${fmt(s.models.M4.roc_auc)} | ` +
+        `${signed(d.delta)} (${signed(d.ci_low)} to ${signed(d.ci_high)})${d.includes_zero ? " incl. 0" : ""} |`
+    );
+  }
+  L.push("");
+  for (const key of ["cancer", "non_cancer"]) {
+    const s = report.per_stratum[key];
+    if (s && s.clustered_withheld) {
+      L.push(
+        `No disease-level interval for \`${key}\`: ${s.clustered_withheld}, the same rule Task 7 applies.`
+      );
+      L.push("");
+    }
+  }
+  L.push("### The DepMap and tractability features, solo, per stratum");
+  L.push("");
+  L.push("| Feature | Kind | Solo AUC (cancer) | Solo AUC (non-cancer) |");
+  L.push("|---|---|---:|---:|");
+  for (const j of report.join_rates) {
+    if (!j.kind || !j.included_in_model) continue;
+    const c = report.per_stratum.cancer?.solo_held_out_roc_auc?.[j.feature];
+    const n = report.per_stratum.non_cancer?.solo_held_out_roc_auc?.[j.feature];
+    L.push(
+      `| \`${j.feature}\` | ${j.kind} | ${c === undefined ? "—" : fmt(c)} | ${n === undefined ? "—" : fmt(n)} |`
+    );
+  }
+  L.push("");
+  L.push(
+    "The non-cancer column is one disease. It is a count, not a comparison, and nothing should be " +
+      "concluded from the direction it points."
+  );
+  L.push("");
+
   L.push("## Promotion decision");
   L.push("");
   L.push(`- Criterion: ${report.promotion.criterion}`);
@@ -715,7 +903,7 @@ if (isMain) {
       process.stderr.write(`Wrote ${path.relative(REPO_ROOT, OUT_MD)}\n`);
     })
     .catch((err) => {
-      process.stderr.write(`[task5] ${err && err.stack ? err.stack : err}\n`);
+      process.stderr.write(`[features] ${err && err.stack ? err.stack : err}\n`);
       process.exitCode = 1;
     });
 }

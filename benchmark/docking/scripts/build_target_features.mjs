@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Task 5, stage 1 — build the pre-2021 target feature table.
+ * Task 8, stage 1 — build the pre-2021 target feature table.
  *
  * Extends the Task 3 snapshot, whose target records hold only symbol, targetId,
  * datatypeScores_2021, overallScore_2021, publicationCount_2021, drug counts and
@@ -39,7 +39,7 @@
  * 21.04 target ETL. That is recorded as the join key for that feature, and its
  * join rate is reported like any other.
  *
- * Output: benchmark/docking/data/task5_target_features.json.gz
+ * Output: benchmark/docking/data/task8_target_features.json.gz
  */
 import fs from "fs";
 import https from "https";
@@ -51,7 +51,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DOCKING_DIR = path.resolve(__dirname, "..");
 const DATA_DIR = path.join(DOCKING_DIR, "data");
 const SRC_DIR = path.join(DATA_DIR, "sources");
-const OUT_PATH = path.join(DATA_DIR, "task5_target_features.json.gz");
+const OUT_PATH = path.join(DATA_DIR, "task8_target_features.json.gz");
 
 const OT_21_04_BASE =
   "https://ftp.ebi.ac.uk/pub/databases/opentargets/platform/21.04/output/etl/json";
@@ -166,11 +166,11 @@ async function fetchOtTargets({ refresh = false }) {
       .map((l) => JSON.parse(l));
   }
 
-  process.stderr.write("[task5] listing Open Targets 21.04 target partitions...\n");
+  process.stderr.write("[features] listing Open Targets 21.04 target partitions...\n");
   const listing = await httpsGetTextRetrying(`${OT_21_04_BASE}/targets/`);
   const parts = [...new Set(listing.match(/part-\d+-[a-f0-9-]+-c000\.json/g) || [])].sort();
   if (parts.length === 0) throw new Error("no 21.04 target partitions found");
-  process.stderr.write(`[task5] fetching ${parts.length} partitions...\n`);
+  process.stderr.write(`[features] fetching ${parts.length} partitions...\n`);
 
   // Each partition is cached on disk the moment it arrives, so an aborted
   // socket costs one partition rather than the whole fetch.
@@ -220,7 +220,7 @@ async function fetchOtTargets({ refresh = false }) {
     const results = await Promise.all(batch.map(loadPart));
     for (const rs of results) records.push(...rs);
     done += batch.length;
-    process.stderr.write(`[task5]   ${done}/${parts.length} partitions, ${records.length} records\n`);
+    process.stderr.write(`[features]   ${done}/${parts.length} partitions, ${records.length} records\n`);
   }
 
   fs.mkdirSync(SRC_DIR, { recursive: true });
@@ -228,7 +228,7 @@ async function fetchOtTargets({ refresh = false }) {
     SOURCE_FILES.otTargets,
     zlib.gzipSync(Buffer.from(records.map((r) => JSON.stringify(r)).join("\n"), "utf8"), { level: 9 })
   );
-  process.stderr.write(`[task5] cached ${records.length} target records\n`);
+  process.stderr.write(`[features] cached ${records.length} target records\n`);
   return records;
 }
 
@@ -429,7 +429,7 @@ export async function buildTargetFeatures({ refresh = false } = {}) {
     if (r.symbol && !symbolToEnsembl.has(r.symbol)) symbolToEnsembl.set(r.symbol, r.id);
   }
 
-  process.stderr.write("[task5] parsing gnomAD v2.1.1...\n");
+  process.stderr.write("[features] parsing gnomAD v2.1.1...\n");
   const gnomad = parseGnomad();
   if (!gnomad) {
     skipped.push({
@@ -438,7 +438,7 @@ export async function buildTargetFeatures({ refresh = false } = {}) {
     });
   }
 
-  process.stderr.write("[task5] parsing GTEx v8...\n");
+  process.stderr.write("[features] parsing GTEx v8...\n");
   const gtex = parseGtex();
   if (!gtex) {
     skipped.push({
@@ -447,7 +447,7 @@ export async function buildTargetFeatures({ refresh = false } = {}) {
     });
   }
 
-  process.stderr.write("[task5] streaming DepMap 21Q2 gene effect (large)...\n");
+  process.stderr.write("[features] streaming DepMap 21Q2 gene effect (large)...\n");
   const depmap = await parseDepmapGeneEffect();
   if (!depmap) {
     skipped.push({
@@ -490,7 +490,7 @@ export async function buildTargetFeatures({ refresh = false } = {}) {
     schemaVersion: 1,
     generated_at: new Date().toISOString(),
     description:
-      "Pre-May-2021 target features for Task 5. Every feature's source release and date is " +
+      "Pre-May-2021 target features for Task 8. Every feature's source release and date is " +
       "recorded in `vintage`. Features whose vintage could not be established are listed in " +
       "`skipped` and are absent from the table.",
     n_targets: Object.keys(features).length,
@@ -534,7 +534,7 @@ if (isMain) {
         const n = f.filter(pred).length;
         return `${n} (${((100 * n) / f.length).toFixed(1)}%)`;
       };
-      process.stderr.write(`\n[task5] ${p.n_targets} targets in the feature table\n`);
+      process.stderr.write(`\n[features] ${p.n_targets} targets in the feature table\n`);
       process.stderr.write(`  tractability      ${cover((x) => x.tractability)}\n`);
       process.stderr.write(`  protein class l1  ${cover((x) => x.class_l1)}\n`);
       process.stderr.write(`  pLI               ${cover((x) => x.pli !== null)}\n`);
@@ -545,10 +545,10 @@ if (isMain) {
         process.stderr.write("  SKIPPED:\n");
         for (const s of p.skipped) process.stderr.write(`    ${s.feature}: ${s.reason}\n`);
       }
-      process.stderr.write(`\n[task5] wrote ${path.relative(path.resolve(DOCKING_DIR, "../.."), OUT_PATH)}\n`);
+      process.stderr.write(`\n[features] wrote ${path.relative(path.resolve(DOCKING_DIR, "../.."), OUT_PATH)}\n`);
     })
     .catch((err) => {
-      process.stderr.write(`[task5] ${err && err.stack ? err.stack : err}\n`);
+      process.stderr.write(`[features] ${err && err.stack ? err.stack : err}\n`);
       process.exitCode = 1;
     });
 }
