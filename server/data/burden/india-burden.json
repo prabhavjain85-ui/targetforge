@@ -1,0 +1,783 @@
+{
+  "schemaVersion": 1,
+  "description": "India national DALYs keyed by EFO/MONDO disease id. Only causes with an accepted exact-match mapping are present. A disease absent from this table has unknown burden and must be rendered as unavailable: there is no default value here and none should be substituted.",
+  "country": "India",
+  "referenceYear": 2023,
+  "units": "DALYs in thousands, as published",
+  "populationThousands": 1438069.589,
+  "totalDalyThousands": 514949.080210186,
+  "source": {
+    "producer": "World Health Organization, Department of Data and Analytics",
+    "dataset": "Global Health Estimates 2023: DALYs by cause, age and sex, by country",
+    "sheet": "All ages",
+    "country": "India",
+    "iso3": "IND",
+    "reference_year": 2023,
+    "release": "September 2026",
+    "url": "https://cdn.who.int/media/docs/default-source/gho-documents/global-health-estimates/daly_bycountry_age_sex_2023_2026-10-01.xlsx",
+    "landing_page": "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates/global-health-estimates-leading-causes-of-dalys",
+    "units": "DALYs in thousands, as published",
+    "not_the_requested_source": {
+      "requested": "India State-Level Disease Burden Initiative / GBD India (ICMR, PHFI, IHME)",
+      "why_not": "No machine-readable open extract: the IHME GBD Results Tool is an interactive query UI, and the ICMR/PHFI India State-Level report is a 22MB PDF of typeset tables. Transcribing DALYs from a PDF by eye would put unverifiable numbers in the repository.",
+      "consequence": "These are WHO national estimates, not ICMR/PHFI/IHME state-level estimates, and they will not match published GBD India figures."
+    }
+  },
+  "mappingCoverage": {
+    "n_causes_total": 218,
+    "n_aggregate_excluded": 29,
+    "n_attempted": 189,
+    "n_declined_by_curation": 0,
+    "n_mapped": 82,
+    "n_unmapped": 107,
+    "mapping_rate": 0.4339
+  },
+  "mappingResolver": {
+    "service": "Open Targets Platform GraphQL disease search",
+    "url": "https://api.platform.opentargets.org/api/v4/graphql",
+    "rule": "exact normalised label match; EFO_ or MONDO_ ids only",
+    "rejected_alternative": "top-hit-wins, which maps 'Cervix uteri cancer' to 'uterine cervix neoplasm' and 'Iron-deficiency anaemia' to an HP phenotype term",
+    "resolved_at": "2026-11-17T18:02:10.799Z"
+  },
+  "nDiseases": 82,
+  "byDisease": {
+    "MONDO_0018076": {
+      "efoId": "MONDO_0018076",
+      "efoLabel": "tuberculosis",
+      "gheCode": "30",
+      "gheLabel": "Tuberculosis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 14014.9324728712,
+      "shareOfTotalDaly": 0.027216
+    },
+    "MONDO_0005976": {
+      "efoId": "MONDO_0005976",
+      "efoLabel": "syphilis",
+      "gheCode": "50",
+      "gheLabel": "Syphilis",
+      "matchType": "exact",
+      "dalyThousands": 1464.69987849832,
+      "shareOfTotalDaly": 0.002844
+    },
+    "MONDO_0004277": {
+      "efoId": "MONDO_0004277",
+      "efoLabel": "gonorrhea",
+      "gheCode": "70",
+      "gheLabel": "Gonorrhoea",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 15.4635157385433,
+      "shareOfTotalDaly": 0.00003
+    },
+    "MONDO_0002154": {
+      "efoId": "MONDO_0002154",
+      "efoLabel": "trichomoniasis",
+      "gheCode": "80",
+      "gheLabel": "Trichomoniasis",
+      "matchType": "exact",
+      "dalyThousands": 23.5197726106286,
+      "shareOfTotalDaly": 0.000046
+    },
+    "MONDO_0005770": {
+      "efoId": "MONDO_0005770",
+      "efoLabel": "genital herpes",
+      "gheCode": "85",
+      "gheLabel": "Gential Herpes",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 19.8806877100418,
+      "shareOfTotalDaly": 0.000039
+    },
+    "MONDO_0005109": {
+      "efoId": "MONDO_0005109",
+      "efoLabel": "HIV infectious disease",
+      "gheCode": "100",
+      "gheLabel": "HIV/AIDS",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1933.19620175367,
+      "shareOfTotalDaly": 0.003754
+    },
+    "MONDO_0005504": {
+      "efoId": "MONDO_0005504",
+      "efoLabel": "diphtheria",
+      "gheCode": "140",
+      "gheLabel": "Diphtheria",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 12.8607808176634,
+      "shareOfTotalDaly": 0.000025
+    },
+    "MONDO_0004619": {
+      "efoId": "MONDO_0004619",
+      "efoLabel": "measles",
+      "gheCode": "150",
+      "gheLabel": "Measles",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1322.22999190138,
+      "shareOfTotalDaly": 0.002568
+    },
+    "MONDO_0005526": {
+      "efoId": "MONDO_0005526",
+      "efoLabel": "tetanus",
+      "gheCode": "160",
+      "gheLabel": "Tetanus",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 174.05059950967,
+      "shareOfTotalDaly": 0.000338
+    },
+    "MONDO_0021108": {
+      "efoId": "MONDO_0021108",
+      "efoLabel": "meningitis",
+      "gheCode": "170",
+      "gheLabel": "Meningitis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1599.31423219123,
+      "shareOfTotalDaly": 0.003106
+    },
+    "MONDO_0019956": {
+      "efoId": "MONDO_0019956",
+      "efoLabel": "encephalitis",
+      "gheCode": "180",
+      "gheLabel": "Encephalitis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1830.90009335909,
+      "shareOfTotalDaly": 0.003555
+    },
+    "MONDO_0005136": {
+      "efoId": "MONDO_0005136",
+      "efoLabel": "malaria",
+      "gheCode": "220",
+      "gheLabel": "Malaria",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 258.830591130258,
+      "shareOfTotalDaly": 0.000503
+    },
+    "MONDO_0000940": {
+      "efoId": "MONDO_0000940",
+      "efoLabel": "trypanosomiasis",
+      "gheCode": "230",
+      "gheLabel": "Trypanosomiasis",
+      "matchType": "exact",
+      "dalyThousands": 0,
+      "shareOfTotalDaly": 0
+    },
+    "MONDO_0015254": {
+      "efoId": "MONDO_0015254",
+      "efoLabel": "schistosomiasis",
+      "gheCode": "250",
+      "gheLabel": "Schistosomiasis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 0,
+      "shareOfTotalDaly": 0
+    },
+    "MONDO_0011989": {
+      "efoId": "MONDO_0011989",
+      "efoLabel": "leishmaniasis",
+      "gheCode": "260",
+      "gheLabel": "Leishmaniasis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 51.019662233261,
+      "shareOfTotalDaly": 0.000099
+    },
+    "MONDO_0005445": {
+      "efoId": "MONDO_0005445",
+      "efoLabel": "visceral leishmaniasis",
+      "gheCode": "261",
+      "gheLabel": "Visceral leishmaniasis",
+      "matchType": "exact",
+      "dalyThousands": 50.9650373399966,
+      "shareOfTotalDaly": 0.000099
+    },
+    "MONDO_0017137": {
+      "efoId": "MONDO_0017137",
+      "efoLabel": "onchocerciasis",
+      "gheCode": "280",
+      "gheLabel": "Onchocerciasis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 0,
+      "shareOfTotalDaly": 0
+    },
+    "MONDO_0015484": {
+      "efoId": "MONDO_0015484",
+      "efoLabel": "cysticercosis",
+      "gheCode": "285",
+      "gheLabel": "Cysticercosis",
+      "matchType": "exact",
+      "dalyThousands": 249.020232569715,
+      "shareOfTotalDaly": 0.000484
+    },
+    "MONDO_0005738": {
+      "efoId": "MONDO_0005738",
+      "efoLabel": "echinococcosis",
+      "gheCode": "295",
+      "gheLabel": "Echinococcosis",
+      "matchType": "exact",
+      "dalyThousands": 3.38267341684806,
+      "shareOfTotalDaly": 0.000007
+    },
+    "MONDO_0005502": {
+      "efoId": "MONDO_0005502",
+      "efoLabel": "dengue disease",
+      "gheCode": "300",
+      "gheLabel": "Dengue",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1933.84827616834,
+      "shareOfTotalDaly": 0.003755
+    },
+    "MONDO_0005654": {
+      "efoId": "MONDO_0005654",
+      "efoLabel": "ascariasis",
+      "gheCode": "340",
+      "gheLabel": "Ascariasis",
+      "matchType": "exact",
+      "dalyThousands": 56.4260794982388,
+      "shareOfTotalDaly": 0.00011
+    },
+    "MONDO_0005996": {
+      "efoId": "MONDO_0005996",
+      "efoLabel": "trichuriasis",
+      "gheCode": "350",
+      "gheLabel": "Trichuriasis",
+      "matchType": "exact",
+      "dalyThousands": 30.5402609283498,
+      "shareOfTotalDaly": 0.000059
+    },
+    "MONDO_0005124": {
+      "efoId": "MONDO_0005124",
+      "efoLabel": "leprosy",
+      "gheCode": "365",
+      "gheLabel": "Leprosy",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 8.23796792022124,
+      "shareOfTotalDaly": 0.000016
+    },
+    "MONDO_0100096": {
+      "efoId": "MONDO_0100096",
+      "efoLabel": "COVID-19",
+      "gheCode": "395",
+      "gheLabel": "COVID-19",
+      "matchType": "exact",
+      "dalyThousands": 4033.09040192598,
+      "shareOfTotalDaly": 0.007832
+    },
+    "MONDO_0005441": {
+      "efoId": "MONDO_0005441",
+      "efoLabel": "otitis media",
+      "gheCode": "410",
+      "gheLabel": "Otitis media",
+      "matchType": "exact",
+      "dalyThousands": 579.542601699962,
+      "shareOfTotalDaly": 0.001125
+    },
+    "EFO_0003917": {
+      "efoId": "EFO_0003917",
+      "efoLabel": "premature birth",
+      "gheCode": "500",
+      "gheLabel": "Preterm birth complications",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 22416.9947280414,
+      "shareOfTotalDaly": 0.043532
+    },
+    "MONDO_0001371": {
+      "efoId": "MONDO_0001371",
+      "efoLabel": "protein-energy malnutrition",
+      "gheCode": "550",
+      "gheLabel": "Protein-energy malnutrition",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2949.57221763343,
+      "shareOfTotalDaly": 0.005728
+    },
+    "MONDO_0007016": {
+      "efoId": "MONDO_0007016",
+      "efoLabel": "vitamin A deficiency",
+      "gheCode": "570",
+      "gheLabel": "Vitamin A deficiency",
+      "matchType": "exact",
+      "dalyThousands": 230.442181872543,
+      "shareOfTotalDaly": 0.000448
+    },
+    "MONDO_0005515": {
+      "efoId": "MONDO_0005515",
+      "efoLabel": "oral cavity cancer",
+      "gheCode": "621",
+      "gheLabel": "Lip and oral cavity",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3138.09265047217,
+      "shareOfTotalDaly": 0.006094
+    },
+    "MONDO_0007576": {
+      "efoId": "MONDO_0007576",
+      "efoLabel": "esophageal cancer",
+      "gheCode": "630",
+      "gheLabel": "Oesophagus cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2280.59665586799,
+      "shareOfTotalDaly": 0.004429
+    },
+    "MONDO_0005575": {
+      "efoId": "MONDO_0005575",
+      "efoLabel": "colorectal cancer",
+      "gheCode": "650",
+      "gheLabel": "Colon and rectum cancers",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1285.66912262877,
+      "shareOfTotalDaly": 0.002497
+    },
+    "MONDO_0002691": {
+      "efoId": "MONDO_0002691",
+      "efoLabel": "liver cancer",
+      "gheCode": "660",
+      "gheLabel": "Liver cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1168.34170585365,
+      "shareOfTotalDaly": 0.002269
+    },
+    "MONDO_0008903": {
+      "efoId": "MONDO_0008903",
+      "efoLabel": "lung cancer",
+      "gheCode": "680",
+      "gheLabel": "Trachea, bronchus, lung cancers",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2529.12801921881,
+      "shareOfTotalDaly": 0.004911
+    },
+    "MONDO_0005105": {
+      "efoId": "MONDO_0005105",
+      "efoLabel": "melanoma",
+      "gheCode": "690",
+      "gheLabel": "Melanoma and other skin cancers",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 178.883268502383,
+      "shareOfTotalDaly": 0.000347
+    },
+    "MONDO_0007254": {
+      "efoId": "MONDO_0007254",
+      "efoLabel": "breast cancer",
+      "gheCode": "700",
+      "gheLabel": "Breast cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3598.6147618971,
+      "shareOfTotalDaly": 0.006988
+    },
+    "MONDO_0002974": {
+      "efoId": "MONDO_0002974",
+      "efoLabel": "cervical cancer",
+      "gheCode": "710",
+      "gheLabel": "Cervix uteri cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2084.60501194936,
+      "shareOfTotalDaly": 0.004048
+    },
+    "MONDO_0011962": {
+      "efoId": "MONDO_0011962",
+      "efoLabel": "endometrial cancer",
+      "gheCode": "720",
+      "gheLabel": "Corpus uteri cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 204.304943472844,
+      "shareOfTotalDaly": 0.000397
+    },
+    "MONDO_0008170": {
+      "efoId": "MONDO_0008170",
+      "efoLabel": "ovarian cancer",
+      "gheCode": "730",
+      "gheLabel": "Ovary cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1081.17124631073,
+      "shareOfTotalDaly": 0.0021
+    },
+    "MONDO_0008315": {
+      "efoId": "MONDO_0008315",
+      "efoLabel": "prostate cancer",
+      "gheCode": "740",
+      "gheLabel": "Prostate cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 398.306193418318,
+      "shareOfTotalDaly": 0.000773
+    },
+    "MONDO_0005447": {
+      "efoId": "MONDO_0005447",
+      "efoLabel": "testicular cancer",
+      "gheCode": "742",
+      "gheLabel": "Testicular cancer",
+      "matchType": "exact",
+      "dalyThousands": 52.6769902779372,
+      "shareOfTotalDaly": 0.000102
+    },
+    "MONDO_0002367": {
+      "efoId": "MONDO_0002367",
+      "efoLabel": "kidney cancer",
+      "gheCode": "745",
+      "gheLabel": "Kidney cancer",
+      "matchType": "exact",
+      "dalyThousands": 266.793035594719,
+      "shareOfTotalDaly": 0.000518
+    },
+    "MONDO_0005499": {
+      "efoId": "MONDO_0005499",
+      "efoLabel": "brain glioma",
+      "gheCode": "751",
+      "gheLabel": "Brain and nervous system cancers",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1164.94474023057,
+      "shareOfTotalDaly": 0.002262
+    },
+    "MONDO_0005411": {
+      "efoId": "MONDO_0005411",
+      "efoLabel": "gallbladder cancer",
+      "gheCode": "752",
+      "gheLabel": "Gallbladder and biliary tract cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 656.551480553276,
+      "shareOfTotalDaly": 0.001275
+    },
+    "MONDO_0002358": {
+      "efoId": "MONDO_0002358",
+      "efoLabel": "laryngeal carcinoma",
+      "gheCode": "753",
+      "gheLabel": "Larynx cancer",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 601.265826518142,
+      "shareOfTotalDaly": 0.001168
+    },
+    "MONDO_0005065": {
+      "efoId": "MONDO_0005065",
+      "efoLabel": "mesothelioma",
+      "gheCode": "755",
+      "gheLabel": "Mesothelioma",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 33.2646144639563,
+      "shareOfTotalDaly": 0.000065
+    },
+    "MONDO_0018908": {
+      "efoId": "MONDO_0018908",
+      "efoLabel": "non-Hodgkin lymphoma",
+      "gheCode": "762",
+      "gheLabel": "Non-Hodgkin lymphoma",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 854.486870847626,
+      "shareOfTotalDaly": 0.001659
+    },
+    "MONDO_0005059": {
+      "efoId": "MONDO_0005059",
+      "efoLabel": "leukemia",
+      "gheCode": "770",
+      "gheLabel": "Leukaemia",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1691.23508908952,
+      "shareOfTotalDaly": 0.003284
+    },
+    "MONDO_0005015": {
+      "efoId": "MONDO_0005015",
+      "efoLabel": "diabetes mellitus",
+      "gheCode": "800",
+      "gheLabel": "Diabetes mellitus",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 24230.1916051348,
+      "shareOfTotalDaly": 0.047054
+    },
+    "MONDO_0019402": {
+      "efoId": "MONDO_0019402",
+      "efoLabel": "beta thalassemia",
+      "gheCode": "811",
+      "gheLabel": "Thalassaemias",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 333.697208882054,
+      "shareOfTotalDaly": 0.000648
+    },
+    "MONDO_0011382": {
+      "efoId": "MONDO_0011382",
+      "efoLabel": "sickle cell disease",
+      "gheCode": "812",
+      "gheLabel": "Sickle cell disorders and trait",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1453.39873985768,
+      "shareOfTotalDaly": 0.002822
+    },
+    "MONDO_0002009": {
+      "efoId": "MONDO_0002009",
+      "efoLabel": "major depressive disorder",
+      "gheCode": "831",
+      "gheLabel": "Major depressive disorder",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 8472.42596947005,
+      "shareOfTotalDaly": 0.016453
+    },
+    "MONDO_0004985": {
+      "efoId": "MONDO_0004985",
+      "efoLabel": "bipolar disorder",
+      "gheCode": "840",
+      "gheLabel": "Bipolar disorder",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1044.54266992223,
+      "shareOfTotalDaly": 0.002028
+    },
+    "MONDO_0005090": {
+      "efoId": "MONDO_0005090",
+      "efoLabel": "schizophrenia",
+      "gheCode": "850",
+      "gheLabel": "Schizophrenia",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3088.04951083048,
+      "shareOfTotalDaly": 0.005997
+    },
+    "MONDO_0002491": {
+      "efoId": "MONDO_0002491",
+      "efoLabel": "substance abuse",
+      "gheCode": "870",
+      "gheLabel": "Drug use disorders",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1336.98399654397,
+      "shareOfTotalDaly": 0.002596
+    },
+    "MONDO_0005618": {
+      "efoId": "MONDO_0005618",
+      "efoLabel": "anxiety disorder",
+      "gheCode": "880",
+      "gheLabel": "Anxiety disorders",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 10035.4956482974,
+      "shareOfTotalDaly": 0.019488
+    },
+    "MONDO_0005352": {
+      "efoId": "MONDO_0005352",
+      "efoLabel": "conduct disorder",
+      "gheCode": "912",
+      "gheLabel": "Conduct disorder",
+      "matchType": "exact",
+      "dalyThousands": 843.531030438637,
+      "shareOfTotalDaly": 0.001638
+    },
+    "MONDO_0004975": {
+      "efoId": "MONDO_0004975",
+      "efoLabel": "Alzheimer disease",
+      "gheCode": "950",
+      "gheLabel": "Alzheimer disease and other dementias",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3040.21557029675,
+      "shareOfTotalDaly": 0.005904
+    },
+    "MONDO_0005180": {
+      "efoId": "MONDO_0005180",
+      "efoLabel": "Parkinson disease",
+      "gheCode": "960",
+      "gheLabel": "Parkinson disease",
+      "matchType": "exact",
+      "dalyThousands": 1060.83705611821,
+      "shareOfTotalDaly": 0.00206
+    },
+    "MONDO_0005027": {
+      "efoId": "MONDO_0005027",
+      "efoLabel": "epilepsy",
+      "gheCode": "970",
+      "gheLabel": "Epilepsy",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3240.18405632983,
+      "shareOfTotalDaly": 0.006292
+    },
+    "MONDO_0005277": {
+      "efoId": "MONDO_0005277",
+      "efoLabel": "migraine disorder",
+      "gheCode": "990",
+      "gheLabel": "Migraine",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 7442.8520985648,
+      "shareOfTotalDaly": 0.014454
+    },
+    "MONDO_0005041": {
+      "efoId": "MONDO_0005041",
+      "efoLabel": "glaucoma",
+      "gheCode": "1030",
+      "gheLabel": "Glaucoma",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 146.691937219538,
+      "shareOfTotalDaly": 0.000285
+    },
+    "MONDO_0005129": {
+      "efoId": "MONDO_0005129",
+      "efoLabel": "cataract",
+      "gheCode": "1040",
+      "gheLabel": "Cataracts",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2116.40786805683,
+      "shareOfTotalDaly": 0.00411
+    },
+    "MONDO_0003004": {
+      "efoId": "MONDO_0003004",
+      "efoLabel": "macular degeneration",
+      "gheCode": "1060",
+      "gheLabel": "Macular degeneration",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 85.6285318885782,
+      "shareOfTotalDaly": 0.000166
+    },
+    "MONDO_0006955": {
+      "efoId": "MONDO_0006955",
+      "efoLabel": "rheumatic heart disease",
+      "gheCode": "1110",
+      "gheLabel": "Rheumatic heart disease",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 8164.91093167025,
+      "shareOfTotalDaly": 0.015856
+    },
+    "MONDO_0001302": {
+      "efoId": "MONDO_0001302",
+      "efoLabel": "hypertensive heart disease",
+      "gheCode": "1120",
+      "gheLabel": "Hypertensive heart disease",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 5617.78944109723,
+      "shareOfTotalDaly": 0.010909
+    },
+    "MONDO_0004994": {
+      "efoId": "MONDO_0004994",
+      "efoLabel": "cardiomyopathy",
+      "gheCode": "1150",
+      "gheLabel": "Cardiomyopathy, myocarditis, endocarditis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 3005.50416931393,
+      "shareOfTotalDaly": 0.005837
+    },
+    "MONDO_0005002": {
+      "efoId": "MONDO_0005002",
+      "efoLabel": "chronic obstructive pulmonary disease",
+      "gheCode": "1180",
+      "gheLabel": "Chronic obstructive pulmonary disease",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 25679.2174207504,
+      "shareOfTotalDaly": 0.049867
+    },
+    "MONDO_0004979": {
+      "efoId": "MONDO_0004979",
+      "efoLabel": "asthma",
+      "gheCode": "1190",
+      "gheLabel": "Asthma",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 6263.88539164932,
+      "shareOfTotalDaly": 0.012164
+    },
+    "MONDO_0004247": {
+      "efoId": "MONDO_0004247",
+      "efoLabel": "peptic ulcer disease",
+      "gheCode": "1220",
+      "gheLabel": "Peptic ulcer disease",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1690.42716217119,
+      "shareOfTotalDaly": 0.003283
+    },
+    "MONDO_0005649": {
+      "efoId": "MONDO_0005649",
+      "efoLabel": "appendicitis",
+      "gheCode": "1240",
+      "gheLabel": "Appendicitis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 618.937397976214,
+      "shareOfTotalDaly": 0.001202
+    },
+    "MONDO_0005265": {
+      "efoId": "MONDO_0005265",
+      "efoLabel": "inflammatory bowel disease",
+      "gheCode": "1244",
+      "gheLabel": "Inflammatory bowel disease",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 250.192151226771,
+      "shareOfTotalDaly": 0.000486
+    },
+    "MONDO_0004982": {
+      "efoId": "MONDO_0004982",
+      "efoLabel": "pancreatitis",
+      "gheCode": "1248",
+      "gheLabel": "Pancreatitis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 1020.05644338107,
+      "shareOfTotalDaly": 0.001981
+    },
+    "MONDO_0010811": {
+      "efoId": "MONDO_0010811",
+      "efoLabel": "benign prostatic hyperplasia",
+      "gheCode": "1280",
+      "gheLabel": "Benign prostatic hyperplasia",
+      "matchType": "exact",
+      "dalyThousands": 454.154163579657,
+      "shareOfTotalDaly": 0.000882
+    },
+    "MONDO_0024647": {
+      "efoId": "MONDO_0024647",
+      "efoLabel": "urolithiasis",
+      "gheCode": "1290",
+      "gheLabel": "Urolithiasis",
+      "matchType": "exact",
+      "dalyThousands": 336.294933963244,
+      "shareOfTotalDaly": 0.000653
+    },
+    "MONDO_0008383": {
+      "efoId": "MONDO_0008383",
+      "efoLabel": "rheumatoid arthritis",
+      "gheCode": "1350",
+      "gheLabel": "Rheumatoid arthritis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 595.953471044239,
+      "shareOfTotalDaly": 0.001157
+    },
+    "MONDO_0005178": {
+      "efoId": "MONDO_0005178",
+      "efoLabel": "osteoarthritis",
+      "gheCode": "1360",
+      "gheLabel": "Osteoarthritis",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 2910.86517693287,
+      "shareOfTotalDaly": 0.005653
+    },
+    "MONDO_0005393": {
+      "efoId": "MONDO_0005393",
+      "efoLabel": "gout",
+      "gheCode": "1370",
+      "gheLabel": "Gout",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 174.47938055047,
+      "shareOfTotalDaly": 0.000339
+    },
+    "MONDO_0018075": {
+      "efoId": "MONDO_0018075",
+      "efoLabel": "neural tube defect",
+      "gheCode": "1410",
+      "gheLabel": "Neural tube defects",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 637.920028777079,
+      "shareOfTotalDaly": 0.001239
+    },
+    "MONDO_0008608": {
+      "efoId": "MONDO_0008608",
+      "efoLabel": "Down syndrome",
+      "gheCode": "1430",
+      "gheLabel": "Down syndrome",
+      "matchType": "exact",
+      "dalyThousands": 255.233056200438,
+      "shareOfTotalDaly": 0.000496
+    },
+    "MONDO_0005453": {
+      "efoId": "MONDO_0005453",
+      "efoLabel": "congenital heart disease",
+      "gheCode": "1440",
+      "gheLabel": "Congenital heart anomalies",
+      "matchType": "curated-alias-exact",
+      "dalyThousands": 4811.61328444106,
+      "shareOfTotalDaly": 0.009344
+    },
+    "MONDO_0005276": {
+      "efoId": "MONDO_0005276",
+      "efoLabel": "dental caries",
+      "gheCode": "1480",
+      "gheLabel": "Dental caries",
+      "matchType": "exact",
+      "dalyThousands": 470.893404331915,
+      "shareOfTotalDaly": 0.000914
+    },
+    "EFO_0005303": {
+      "efoId": "EFO_0005303",
+      "efoLabel": "sudden infant death syndrome",
+      "gheCode": "1505",
+      "gheLabel": "Sudden infant death syndrome",
+      "matchType": "exact",
+      "dalyThousands": 236.668140196852,
+      "shareOfTotalDaly": 0.00046
+    }
+  }
+}

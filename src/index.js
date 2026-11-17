@@ -10,6 +10,7 @@ import MethodologyPage from "./MethodologyPage";
 import ValidationPage from "./ValidationPage";
 import RepurposingPage from "./RepurposingPage";
 import TargetDiscoveryPage from "./TargetDiscoveryPage";
+import NeglectScreenPage from "./NeglectScreenPage";
 import AdmePage from "./AdmePage";
 import HypothesisPage from "./HypothesisPage";
 import EvolutionPage from "./EvolutionPage";
@@ -28,6 +29,7 @@ root.render(
           <Route path="/" element={<App />} />
           <Route path="/hypothesis" element={<HypothesisPage />} />
           <Route path="/target-discovery" element={<TargetDiscoveryPage />} />
+          <Route path="/neglect-screen" element={<NeglectScreenPage />} />
           <Route path="/repurposing" element={<RepurposingPage />} />
           <Route path="/adme" element={<AdmePage />} />
           <Route

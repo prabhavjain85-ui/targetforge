@@ -152,6 +152,8 @@ export const getEvolutionSeedPicks = remote("getEvolutionSeedPicks");
 // Target discovery
 export const searchDiseases = remote("searchDiseases");
 export const runTargetDiscovery = remote("runTargetDiscovery");
+/** The neglect screen: evidence-ranked, effort-filtered targets. */
+export const runNeglectScreen = remote("runNeglectScreen");
 export const getTargetExpressionProfile = remote("getTargetExpressionProfile");
 export const fetchTargetClinicalActivity = remote("fetchTargetClinicalActivity");
 

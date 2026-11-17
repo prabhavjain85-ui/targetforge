@@ -1,0 +1,1553 @@
+{
+  "schemaVersion": 1,
+  "generated_at": "2026-11-17T18:02:10.797Z",
+  "description": "India national DALYs by cause. Every figure is reproduced from the source workbook as published; nothing is rescaled, rounded or interpolated.",
+  "source": {
+    "producer": "World Health Organization, Department of Data and Analytics",
+    "dataset": "Global Health Estimates 2023: DALYs by cause, age and sex, by country",
+    "sheet": "All ages",
+    "country": "India",
+    "iso3": "IND",
+    "reference_year": 2023,
+    "release": "September 2026",
+    "url": "https://cdn.who.int/media/docs/default-source/gho-documents/global-health-estimates/daly_bycountry_age_sex_2023_2026-10-01.xlsx",
+    "landing_page": "https://www.who.int/data/gho/data/themes/mortality-and-global-health-estimates/global-health-estimates-leading-causes-of-dalys",
+    "units": "DALYs in thousands, as published",
+    "not_the_requested_source": {
+      "requested": "India State-Level Disease Burden Initiative / GBD India (ICMR, PHFI, IHME)",
+      "why_not": "No machine-readable open extract: the IHME GBD Results Tool is an interactive query UI, and the ICMR/PHFI India State-Level report is a 22MB PDF of typeset tables. Transcribing DALYs from a PDF by eye would put unverifiable numbers in the repository.",
+      "consequence": "These are WHO national estimates, not ICMR/PHFI/IHME state-level estimates, and they will not match published GBD India figures."
+    }
+  },
+  "population_thousands": 1438069.589,
+  "total_daly_thousands": 514949.080210186,
+  "n_causes": 218,
+  "causes": [
+    {
+      "ghe_code": "0",
+      "label": "All Causes",
+      "depth": 0,
+      "is_aggregate": true,
+      "daly_thousands": 514949.080210186
+    },
+    {
+      "ghe_code": "10",
+      "label": "Communicable, maternal, perinatal and nutritional conditions",
+      "depth": 1,
+      "is_aggregate": true,
+      "daly_thousands": 126431.016989622
+    },
+    {
+      "ghe_code": "20",
+      "label": "Infectious and parasitic diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 50008.4625029946
+    },
+    {
+      "ghe_code": "30",
+      "label": "Tuberculosis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 14014.9324728712
+    },
+    {
+      "ghe_code": "40",
+      "label": "STDs excluding HIV",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 1678.25212630346
+    },
+    {
+      "ghe_code": "50",
+      "label": "Syphilis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1464.69987849832
+    },
+    {
+      "ghe_code": "60",
+      "label": "Chlamydia",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 44.3795472948325
+    },
+    {
+      "ghe_code": "70",
+      "label": "Gonorrhoea",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 15.4635157385433
+    },
+    {
+      "ghe_code": "80",
+      "label": "Trichomoniasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 23.5197726106286
+    },
+    {
+      "ghe_code": "85",
+      "label": "Gential Herpes",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 19.8806877100418
+    },
+    {
+      "ghe_code": "90",
+      "label": "Other STDs",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 110.308724451089
+    },
+    {
+      "ghe_code": "100",
+      "label": "HIV/AIDS",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1933.19620175367
+    },
+    {
+      "ghe_code": "110",
+      "label": "Diarrhoeal diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 15994.6469810957
+    },
+    {
+      "ghe_code": "120",
+      "label": "Childhood-cluster diseases",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 2975.21448693714
+    },
+    {
+      "ghe_code": "130",
+      "label": "Whooping cough",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1466.07311470843
+    },
+    {
+      "ghe_code": "140",
+      "label": "Diphtheria",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 12.8607808176634
+    },
+    {
+      "ghe_code": "150",
+      "label": "Measles",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1322.22999190138
+    },
+    {
+      "ghe_code": "160",
+      "label": "Tetanus",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 174.05059950967
+    },
+    {
+      "ghe_code": "170",
+      "label": "Meningitis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1599.31423219123
+    },
+    {
+      "ghe_code": "180",
+      "label": "Encephalitis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1830.90009335909
+    },
+    {
+      "ghe_code": "185",
+      "label": "Hepatitis",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 2883.39471929869
+    },
+    {
+      "ghe_code": "186",
+      "label": "Acute hepatitis A",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1585.68161966259
+    },
+    {
+      "ghe_code": "190",
+      "label": "Acute hepatitis B",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1021.0174262168
+    },
+    {
+      "ghe_code": "200",
+      "label": "Acute hepatitis C",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 125.534384772146
+    },
+    {
+      "ghe_code": "205",
+      "label": "Acute hepatitis E",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 151.161288647154
+    },
+    {
+      "ghe_code": "210",
+      "label": "Parasitic and vector diseases",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 3798.24525677241
+    },
+    {
+      "ghe_code": "220",
+      "label": "Malaria",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 258.830591130258
+    },
+    {
+      "ghe_code": "230",
+      "label": "Trypanosomiasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0
+    },
+    {
+      "ghe_code": "240",
+      "label": "Chagas disease",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0
+    },
+    {
+      "ghe_code": "250",
+      "label": "Schistosomiasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0
+    },
+    {
+      "ghe_code": "260",
+      "label": "Leishmaniasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 51.019662233261
+    },
+    {
+      "ghe_code": "261",
+      "label": "Visceral leishmaniasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 50.9650373399966
+    },
+    {
+      "ghe_code": "262",
+      "label": "Cutaneous and mucocutaneous leishmaniasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0.0546248932643732
+    },
+    {
+      "ghe_code": "270",
+      "label": "lymphatic filariasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 801.429908407929
+    },
+    {
+      "ghe_code": "280",
+      "label": "Onchocerciasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0
+    },
+    {
+      "ghe_code": "285",
+      "label": "Cysticercosis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 249.020232569715
+    },
+    {
+      "ghe_code": "295",
+      "label": "Echinococcosis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 3.38267341684806
+    },
+    {
+      "ghe_code": "300",
+      "label": "Dengue",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1933.84827616834
+    },
+    {
+      "ghe_code": "310",
+      "label": "Trachoma",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 34.6262969325297
+    },
+    {
+      "ghe_code": "315",
+      "label": "Yellow fever",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0
+    },
+    {
+      "ghe_code": "320",
+      "label": "Rabies",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 466.087615913529
+    },
+    {
+      "ghe_code": "330",
+      "label": "Intestinal nematode infections",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 117.162680857923
+    },
+    {
+      "ghe_code": "340",
+      "label": "Ascariasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 56.4260794982388
+    },
+    {
+      "ghe_code": "350",
+      "label": "Trichuriasis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 30.5402609283498
+    },
+    {
+      "ghe_code": "360",
+      "label": "Hookworm disease",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 30.1521210883432
+    },
+    {
+      "ghe_code": "362",
+      "label": "Food-borne trematodes",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 0.0442193429911557
+    },
+    {
+      "ghe_code": "365",
+      "label": "Leprosy",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 8.23796792022124
+    },
+    {
+      "ghe_code": "370",
+      "label": "Other infectious diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3225.98494586713
+    },
+    {
+      "ghe_code": "380",
+      "label": "Respiratory Infectious",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 19597.0938128386
+    },
+    {
+      "ghe_code": "390",
+      "label": "Lower respiratory infections",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 14286.8429332889
+    },
+    {
+      "ghe_code": "395",
+      "label": "COVID-19",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 4033.09040192598
+    },
+    {
+      "ghe_code": "400",
+      "label": "Upper respiratory infections",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 697.617875923671
+    },
+    {
+      "ghe_code": "410",
+      "label": "Otitis media",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 579.542601699962
+    },
+    {
+      "ghe_code": "420",
+      "label": "Maternal conditions",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 1536.13989828741
+    },
+    {
+      "ghe_code": "490",
+      "label": "Neonatal conditions",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 36978.3024986793
+    },
+    {
+      "ghe_code": "500",
+      "label": "Preterm birth complications",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 22416.9947280414
+    },
+    {
+      "ghe_code": "510",
+      "label": "Birth asphyxia and birth trauma",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 7755.86029246845
+    },
+    {
+      "ghe_code": "520",
+      "label": "Neonatal sepsis and infections",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3651.21970051018
+    },
+    {
+      "ghe_code": "530",
+      "label": "Other neonatal conditions",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3154.22777765928
+    },
+    {
+      "ghe_code": "540",
+      "label": "Nutritional deficiencies",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 18259.9986145887
+    },
+    {
+      "ghe_code": "550",
+      "label": "Protein-energy malnutrition",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2949.57221763343
+    },
+    {
+      "ghe_code": "560",
+      "label": "Iodine deficiency",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 904.410167444799
+    },
+    {
+      "ghe_code": "570",
+      "label": "Vitamin A deficiency",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 230.442181872543
+    },
+    {
+      "ghe_code": "580",
+      "label": "Iron-deficiency anaemia",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 13294.9515012342
+    },
+    {
+      "ghe_code": "590",
+      "label": "Other nutritional deficiencies",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 880.622546403769
+    },
+    {
+      "ghe_code": "600",
+      "label": "Noncommunicable diseases",
+      "depth": 1,
+      "is_aggregate": true,
+      "daly_thousands": 328607.353509226
+    },
+    {
+      "ghe_code": "610",
+      "label": "Malignant neoplasms",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 31064.2860433907
+    },
+    {
+      "ghe_code": "620",
+      "label": "Mouth and oropharynx cancers",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 4249.87620524904
+    },
+    {
+      "ghe_code": "621",
+      "label": "Lip and oral cavity",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 3138.09265047217
+    },
+    {
+      "ghe_code": "622",
+      "label": "Nasopharynx",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 188.066985416768
+    },
+    {
+      "ghe_code": "623",
+      "label": "Other pharynx",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 923.716569360097
+    },
+    {
+      "ghe_code": "630",
+      "label": "Oesophagus cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2280.59665586799
+    },
+    {
+      "ghe_code": "640",
+      "label": "Stomach cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1670.90514372054
+    },
+    {
+      "ghe_code": "650",
+      "label": "Colon and rectum cancers",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1285.66912262877
+    },
+    {
+      "ghe_code": "660",
+      "label": "Liver cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1168.34170585365
+    },
+    {
+      "ghe_code": "661",
+      "label": "Liver cancer secondary to hepatitis B",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 512.066051822854
+    },
+    {
+      "ghe_code": "662",
+      "label": "Liver cancer secondary to hepatitis C",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 166.54737032022
+    },
+    {
+      "ghe_code": "663",
+      "label": "Liver cancer secondary to alcohol use",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 421.42726763516
+    },
+    {
+      "ghe_code": "664",
+      "label": "Other liver cancer",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 68.3010160754197
+    },
+    {
+      "ghe_code": "670",
+      "label": "Pancreas cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 492.998205591275
+    },
+    {
+      "ghe_code": "680",
+      "label": "Trachea, bronchus, lung cancers",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2529.12801921881
+    },
+    {
+      "ghe_code": "690",
+      "label": "Melanoma and other skin cancers",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 178.883268502383
+    },
+    {
+      "ghe_code": "691",
+      "label": "Malignant skin melanoma",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 61.2409610904929
+    },
+    {
+      "ghe_code": "692",
+      "label": "Non-melanoma skin cancer",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 117.642307411891
+    },
+    {
+      "ghe_code": "700",
+      "label": "Breast cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3598.6147618971
+    },
+    {
+      "ghe_code": "710",
+      "label": "Cervix uteri cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2084.60501194936
+    },
+    {
+      "ghe_code": "720",
+      "label": "Corpus uteri cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 204.304943472844
+    },
+    {
+      "ghe_code": "730",
+      "label": "Ovary cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1081.17124631073
+    },
+    {
+      "ghe_code": "740",
+      "label": "Prostate cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 398.306193418318
+    },
+    {
+      "ghe_code": "742",
+      "label": "Testicular cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 52.6769902779372
+    },
+    {
+      "ghe_code": "745",
+      "label": "Kidney cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 266.793035594719
+    },
+    {
+      "ghe_code": "750",
+      "label": "Bladder cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 289.322739212779
+    },
+    {
+      "ghe_code": "751",
+      "label": "Brain and nervous system cancers",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1164.94474023057
+    },
+    {
+      "ghe_code": "752",
+      "label": "Gallbladder and biliary tract cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 656.551480553276
+    },
+    {
+      "ghe_code": "753",
+      "label": "Larynx cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 601.265826518142
+    },
+    {
+      "ghe_code": "754",
+      "label": "Thyroid cancer",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 174.375886229592
+    },
+    {
+      "ghe_code": "755",
+      "label": "Mesothelioma",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 33.2646144639563
+    },
+    {
+      "ghe_code": "760",
+      "label": "Lymphomas, multiple myeloma",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1406.29382481316
+    },
+    {
+      "ghe_code": "761",
+      "label": "Hodgkin lymphoma",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 136.04699458961
+    },
+    {
+      "ghe_code": "762",
+      "label": "Non-Hodgkin lymphoma",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 854.486870847626
+    },
+    {
+      "ghe_code": "763",
+      "label": "Multiple myeloma",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 415.759959375922
+    },
+    {
+      "ghe_code": "770",
+      "label": "Leukaemia",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1691.23508908952
+    },
+    {
+      "ghe_code": "780",
+      "label": "Other malignant neoplasms",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3504.16133272629
+    },
+    {
+      "ghe_code": "790",
+      "label": "Other neoplasms",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 250.553484092055
+    },
+    {
+      "ghe_code": "800",
+      "label": "Diabetes mellitus",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 24230.1916051348
+    },
+    {
+      "ghe_code": "810",
+      "label": "Endocrine, blood, immune disorders",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 4210.58395925104
+    },
+    {
+      "ghe_code": "811",
+      "label": "Thalassaemias",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 333.697208882054
+    },
+    {
+      "ghe_code": "812",
+      "label": "Sickle cell disorders and trait",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1453.39873985768
+    },
+    {
+      "ghe_code": "813",
+      "label": "Other haemoglobinopathies and haemolytic anaemias",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1354.18799512926
+    },
+    {
+      "ghe_code": "814",
+      "label": "Other endocrine, blood and immune disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1069.30001538205
+    },
+    {
+      "ghe_code": "820",
+      "label": "Mental and substance use disorders",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 34577.4529134322
+    },
+    {
+      "ghe_code": "830",
+      "label": "Depressive disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 9822.46417140727
+    },
+    {
+      "ghe_code": "831",
+      "label": "Major depressive disorder",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 8472.42596947005
+    },
+    {
+      "ghe_code": "832",
+      "label": "Dysthymia",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1350.03820193722
+    },
+    {
+      "ghe_code": "840",
+      "label": "Bipolar disorder",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1044.54266992223
+    },
+    {
+      "ghe_code": "850",
+      "label": "Schizophrenia",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3088.04951083048
+    },
+    {
+      "ghe_code": "860",
+      "label": "Alcohol use disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2956.41396559842
+    },
+    {
+      "ghe_code": "870",
+      "label": "Drug use disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1336.98399654397
+    },
+    {
+      "ghe_code": "871",
+      "label": "Opioid use disorders",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1034.07684635296
+    },
+    {
+      "ghe_code": "872",
+      "label": "Cocaine use disorders",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 61.0121661156626
+    },
+    {
+      "ghe_code": "873",
+      "label": "Amphetamine use disorders",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 45.2872411181604
+    },
+    {
+      "ghe_code": "874",
+      "label": "Cannabis use disorders",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 111.088647043216
+    },
+    {
+      "ghe_code": "875",
+      "label": "Other drug use disorders",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 85.5190959139725
+    },
+    {
+      "ghe_code": "880",
+      "label": "Anxiety disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 10035.4956482974
+    },
+    {
+      "ghe_code": "890",
+      "label": "Eating disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 667.001617601495
+    },
+    {
+      "ghe_code": "900",
+      "label": "Austism and Asperger syndrome",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1385.69719235075
+    },
+    {
+      "ghe_code": "910",
+      "label": "Childhood behavioural disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1317.58840403222
+    },
+    {
+      "ghe_code": "911",
+      "label": "Attention deficit/hyperactivity syndrome",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 474.057373593578
+    },
+    {
+      "ghe_code": "912",
+      "label": "Conduct disorder",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 843.531030438637
+    },
+    {
+      "ghe_code": "920",
+      "label": "Idiopathic intellectual disability",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1362.64361340686
+    },
+    {
+      "ghe_code": "930",
+      "label": "Other mental and behavioural disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1560.57212344109
+    },
+    {
+      "ghe_code": "940",
+      "label": "Neurological conditions",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 15984.1510499219
+    },
+    {
+      "ghe_code": "950",
+      "label": "Alzheimer disease and other dementias",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3040.21557029675
+    },
+    {
+      "ghe_code": "960",
+      "label": "Parkinson disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1060.83705611821
+    },
+    {
+      "ghe_code": "970",
+      "label": "Epilepsy",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3240.18405632983
+    },
+    {
+      "ghe_code": "980",
+      "label": "Multiple sclerosis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 50.427088060893
+    },
+    {
+      "ghe_code": "990",
+      "label": "Migraine",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 7442.8520985648
+    },
+    {
+      "ghe_code": "1000",
+      "label": "Non-migrane headache",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 770.017845659488
+    },
+    {
+      "ghe_code": "1010",
+      "label": "Other neurological conditions",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 379.617334891967
+    },
+    {
+      "ghe_code": "1020",
+      "label": "Sense organ diseases",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 14336.9578163549
+    },
+    {
+      "ghe_code": "1030",
+      "label": "Glaucoma",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 146.691937219538
+    },
+    {
+      "ghe_code": "1040",
+      "label": "Cataracts",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2116.40786805683
+    },
+    {
+      "ghe_code": "1050",
+      "label": "Uncorrected refractive errors",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1363.71548577818
+    },
+    {
+      "ghe_code": "1060",
+      "label": "Macular degeneration",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 85.6285318885782
+    },
+    {
+      "ghe_code": "1070",
+      "label": "Other vision loss",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1552.42903229906
+    },
+    {
+      "ghe_code": "1080",
+      "label": "Other hearing loss",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 8621.67531338328
+    },
+    {
+      "ghe_code": "1090",
+      "label": "Other sense organ disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 450.409647729398
+    },
+    {
+      "ghe_code": "1100",
+      "label": "Cardiovascular diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 92020.7833912313
+    },
+    {
+      "ghe_code": "1110",
+      "label": "Rheumatic heart disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 8164.91093167025
+    },
+    {
+      "ghe_code": "1120",
+      "label": "Hypertensive heart disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 5617.78944109723
+    },
+    {
+      "ghe_code": "1130",
+      "label": "Ischaemic heart disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 44234.1211377842
+    },
+    {
+      "ghe_code": "1140",
+      "label": "Stroke",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 27298.6595970982
+    },
+    {
+      "ghe_code": "1141",
+      "label": "Ischaemic stroke",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 10008.0083976017
+    },
+    {
+      "ghe_code": "1142",
+      "label": "Haemorrhagic stroke",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 17290.6511874075
+    },
+    {
+      "ghe_code": "1150",
+      "label": "Cardiomyopathy, myocarditis, endocarditis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3005.50416931393
+    },
+    {
+      "ghe_code": "1160",
+      "label": "Other circulatory diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3699.79811426755
+    },
+    {
+      "ghe_code": "1170",
+      "label": "Respiratory diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 34228.0047123771
+    },
+    {
+      "ghe_code": "1180",
+      "label": "Chronic obstructive pulmonary disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 25679.2174207504
+    },
+    {
+      "ghe_code": "1190",
+      "label": "Asthma",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 6263.88539164932
+    },
+    {
+      "ghe_code": "1200",
+      "label": "Other respiratory diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2284.90189997742
+    },
+    {
+      "ghe_code": "1210",
+      "label": "Digestive diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 17615.002883249
+    },
+    {
+      "ghe_code": "1220",
+      "label": "Peptic ulcer disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1690.42716217119
+    },
+    {
+      "ghe_code": "1230",
+      "label": "Cirrhosis of the liver",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 9044.7722980445
+    },
+    {
+      "ghe_code": "1231",
+      "label": "Cirrhosis due to hepatitis B",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1597.44307551127
+    },
+    {
+      "ghe_code": "1232",
+      "label": "Cirrhosis due to hepatitis C",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1300.46616950095
+    },
+    {
+      "ghe_code": "1233",
+      "label": "Cirrhosis due to alcohol use",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 3871.7742870642
+    },
+    {
+      "ghe_code": "1234",
+      "label": "Other liver cirrhosis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 2275.08876596808
+    },
+    {
+      "ghe_code": "1240",
+      "label": "Appendicitis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 618.937397976214
+    },
+    {
+      "ghe_code": "1241",
+      "label": "Gastritis and duodenitis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 470.849659146904
+    },
+    {
+      "ghe_code": "1242",
+      "label": "Paralytic ileus and intestinal obstruction",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1903.44615851023
+    },
+    {
+      "ghe_code": "1244",
+      "label": "Inflammatory bowel disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 250.192151226771
+    },
+    {
+      "ghe_code": "1246",
+      "label": "Gallbladder and biliary diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 366.607124013263
+    },
+    {
+      "ghe_code": "1248",
+      "label": "Pancreatitis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1020.05644338107
+    },
+    {
+      "ghe_code": "1250",
+      "label": "Other digestive diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2249.71448877885
+    },
+    {
+      "ghe_code": "1260",
+      "label": "Genitourinary diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 14746.8100297581
+    },
+    {
+      "ghe_code": "1270",
+      "label": "Kidney diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 6409.12540715593
+    },
+    {
+      "ghe_code": "1271",
+      "label": "Acute glomerulonephritis",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 9.98339087298653
+    },
+    {
+      "ghe_code": "1272",
+      "label": "Chronic kidney disease due to diabetes",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 1632.90736069786
+    },
+    {
+      "ghe_code": "1273",
+      "label": "Other chronic kidney disease",
+      "depth": 4,
+      "is_aggregate": false,
+      "daly_thousands": 4766.23465558509
+    },
+    {
+      "ghe_code": "1280",
+      "label": "Benign prostatic hyperplasia",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 454.154163579657
+    },
+    {
+      "ghe_code": "1290",
+      "label": "Urolithiasis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 336.294933963244
+    },
+    {
+      "ghe_code": "1300",
+      "label": "Other urinary diseases",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 2167.88449881867
+    },
+    {
+      "ghe_code": "1310",
+      "label": "Infertility",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 235.574124707316
+    },
+    {
+      "ghe_code": "1320",
+      "label": "Gynecological diseases",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 5143.7769015333
+    },
+    {
+      "ghe_code": "1330",
+      "label": "Skin diseases",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 5698.68564355444
+    },
+    {
+      "ghe_code": "1340",
+      "label": "Musculoskeletal diseases",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 26933.4500142059
+    },
+    {
+      "ghe_code": "1350",
+      "label": "Rheumatoid arthritis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 595.953471044239
+    },
+    {
+      "ghe_code": "1360",
+      "label": "Osteoarthritis",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2910.86517693287
+    },
+    {
+      "ghe_code": "1370",
+      "label": "Gout",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 174.47938055047
+    },
+    {
+      "ghe_code": "1380",
+      "label": "Back and neck pain",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 12300.7762163203
+    },
+    {
+      "ghe_code": "1390",
+      "label": "Other musculoskeletal disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 10951.375769358
+    },
+    {
+      "ghe_code": "1400",
+      "label": "Congenital anomalies",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 8600.81812183231
+    },
+    {
+      "ghe_code": "1410",
+      "label": "Neural tube defects",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 637.920028777079
+    },
+    {
+      "ghe_code": "1420",
+      "label": "Cleft lip and cleft palate",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 86.746686149567
+    },
+    {
+      "ghe_code": "1430",
+      "label": "Down syndrome",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 255.233056200438
+    },
+    {
+      "ghe_code": "1440",
+      "label": "Congenital heart anomalies",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 4811.61328444106
+    },
+    {
+      "ghe_code": "1450",
+      "label": "Other chromosomal anomalies",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 305.384345146524
+    },
+    {
+      "ghe_code": "1460",
+      "label": "Other congenital anomalies",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 2503.92072111764
+    },
+    {
+      "ghe_code": "1470",
+      "label": "Oral conditions",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 3872.95370124347
+    },
+    {
+      "ghe_code": "1480",
+      "label": "Dental caries",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 470.893404331915
+    },
+    {
+      "ghe_code": "1490",
+      "label": "Periodontal disease",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1608.05539925791
+    },
+    {
+      "ghe_code": "1500",
+      "label": "Edentulism",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1002.9577736347
+    },
+    {
+      "ghe_code": "1502",
+      "label": "Other oral disorders",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 791.047124018945
+    },
+    {
+      "ghe_code": "1505",
+      "label": "Sudden infant death syndrome",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 236.668140196852
+    },
+    {
+      "ghe_code": "1510",
+      "label": "Injuries",
+      "depth": 1,
+      "is_aggregate": true,
+      "daly_thousands": 59910.7097113383
+    },
+    {
+      "ghe_code": "1520",
+      "label": "Unintentional injuries",
+      "depth": 2,
+      "is_aggregate": false,
+      "daly_thousands": 45422.0420760768
+    },
+    {
+      "ghe_code": "1530",
+      "label": "Road injury",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 12551.0443794609
+    },
+    {
+      "ghe_code": "1540",
+      "label": "Poisonings",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 486.925306255601
+    },
+    {
+      "ghe_code": "1550",
+      "label": "Falls",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 13901.3820768828
+    },
+    {
+      "ghe_code": "1560",
+      "label": "Fire, heat and hot substances",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 3091.8127801644
+    },
+    {
+      "ghe_code": "1570",
+      "label": "Drowning",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 4258.70095497973
+    },
+    {
+      "ghe_code": "1575",
+      "label": "Exposure to mechanical forces",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 1242.93523659354
+    },
+    {
+      "ghe_code": "1580",
+      "label": "Natural disasters",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 149.306052045253
+    },
+    {
+      "ghe_code": "1590",
+      "label": "Other unintentional injuries",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 9739.9352896945
+    },
+    {
+      "ghe_code": "1600",
+      "label": "Intentional injuries",
+      "depth": 2,
+      "is_aggregate": true,
+      "daly_thousands": 14488.6676352616
+    },
+    {
+      "ghe_code": "1610",
+      "label": "Self-harm",
+      "depth": 3,
+      "is_aggregate": false,
+      "daly_thousands": 11064.4294065007
+    },
+    {
+      "ghe_code": "1620",
+      "label": "Interpersonal violence",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 3338.09434885863
+    },
+    {
+      "ghe_code": "1630",
+      "label": "Collective violence and legal intervention",
+      "depth": 3,
+      "is_aggregate": true,
+      "daly_thousands": 86.143879902184
+    }
+  ]
+}

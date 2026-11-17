@@ -1,0 +1,4674 @@
+{
+  "schemaVersion": 1,
+  "generated_at": "2026-11-17T18:02:10.799Z",
+  "description": "GHE cause -> EFO/MONDO mapping. A mapping is accepted only on an exact normalised label match to an EFO or MONDO disease id. Unmapped causes keep their candidates so the decision can be reviewed; an unmapped disease must render burden as unavailable, never as zero or a default.",
+  "resolver": {
+    "service": "Open Targets Platform GraphQL disease search",
+    "url": "https://api.platform.opentargets.org/api/v4/graphql",
+    "rule": "exact normalised label match; EFO_ or MONDO_ ids only",
+    "rejected_alternative": "top-hit-wins, which maps 'Cervix uteri cancer' to 'uterine cervix neoplasm' and 'Iron-deficiency anaemia' to an HP phenotype term",
+    "resolved_at": "2026-11-17T18:02:10.799Z"
+  },
+  "coverage": {
+    "n_causes_total": 218,
+    "n_aggregate_excluded": 29,
+    "n_attempted": 189,
+    "n_declined_by_curation": 0,
+    "n_mapped": 82,
+    "n_unmapped": 107,
+    "mapping_rate": 0.4339
+  },
+  "mappings": [
+    {
+      "ghe_code": "30",
+      "ghe_label": "Tuberculosis",
+      "query": "tuberculosis",
+      "efo_id": "MONDO_0018076",
+      "efo_label": "tuberculosis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0018076",
+          "name": "tuberculosis"
+        },
+        {
+          "id": "MONDO_0006052",
+          "name": "pulmonary tuberculosis"
+        },
+        {
+          "id": "MONDO_0005848",
+          "name": "miliary tuberculosis"
+        },
+        {
+          "id": "MONDO_0005768",
+          "name": "gastrointestinal tuberculosis"
+        },
+        {
+          "id": "MONDO_0005922",
+          "name": "pleural tuberculosis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "50",
+      "ghe_label": "Syphilis",
+      "query": "Syphilis",
+      "efo_id": "MONDO_0005976",
+      "efo_label": "syphilis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005976",
+          "name": "syphilis"
+        },
+        {
+          "id": "MONDO_0005714",
+          "name": "congenital syphilis"
+        },
+        {
+          "id": "MONDO_0004497",
+          "name": "tertiary syphilis"
+        },
+        {
+          "id": "MONDO_0005822",
+          "name": "latent syphilis"
+        },
+        {
+          "id": "MONDO_0006718",
+          "name": "cutaneous syphilis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "60",
+      "ghe_label": "Chlamydia",
+      "query": "Chlamydia",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0021697",
+          "name": "chlamydia infectious disease"
+        },
+        {
+          "id": "MONDO_0005701",
+          "name": "chlamydia trachomatis infectious disease"
+        },
+        {
+          "id": "MONDO_0020776",
+          "name": "chlamydiaceae infections"
+        },
+        {
+          "id": "MONDO_0025598",
+          "name": "pneumonia caused by chlamydia"
+        },
+        {
+          "id": "MONDO_0005808",
+          "name": "inclusion conjunctivitis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "70",
+      "ghe_label": "Gonorrhoea",
+      "query": "gonorrhea",
+      "efo_id": "MONDO_0004277",
+      "efo_label": "gonorrhea",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004277",
+          "name": "gonorrhea"
+        },
+        {
+          "id": "MONDO_0000922",
+          "name": "pelvic inflammatory disease"
+        },
+        {
+          "id": "MONDO_0021157",
+          "name": "gonococcal cervicitis"
+        },
+        {
+          "id": "MONDO_0002029",
+          "name": "chronic gonorrhea of cervix"
+        }
+      ]
+    },
+    {
+      "ghe_code": "80",
+      "ghe_label": "Trichomoniasis",
+      "query": "Trichomoniasis",
+      "efo_id": "MONDO_0002154",
+      "efo_label": "trichomoniasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002154",
+          "name": "trichomoniasis"
+        },
+        {
+          "id": "MONDO_0005993",
+          "name": "Trichomonas vaginitis urogenital infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "85",
+      "ghe_label": "Gential Herpes",
+      "query": "genital herpes",
+      "efo_id": "MONDO_0005770",
+      "efo_label": "genital herpes",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005770",
+          "name": "genital herpes"
+        },
+        {
+          "id": "MONDO_0017381",
+          "name": "congenital herpes simplex virus infection"
+        },
+        {
+          "id": "MONDO_0015302",
+          "name": "nodular cutaneous amyloidosis"
+        },
+        {
+          "id": "MONDO_0970993",
+          "name": "immunodeficiency 119"
+        },
+        {
+          "id": "MONDO_0975749",
+          "name": "immunodeficiency 125"
+        }
+      ]
+    },
+    {
+      "ghe_code": "90",
+      "ghe_label": "Other STDs",
+      "query": "Other STDs",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "100",
+      "ghe_label": "HIV/AIDS",
+      "query": "HIV infectious disease",
+      "efo_id": "MONDO_0005109",
+      "efo_label": "HIV infectious disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005109",
+          "name": "HIV infectious disease"
+        },
+        {
+          "id": "MONDO_0005550",
+          "name": "infectious disease"
+        },
+        {
+          "id": "MONDO_0005108",
+          "name": "viral infectious disease"
+        },
+        {
+          "id": "MONDO_0100329",
+          "name": "primary viral infectious disease"
+        },
+        {
+          "id": "MONDO_0005763",
+          "name": "Flaviviridae infectious disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "110",
+      "ghe_label": "Diarrhoeal diseases",
+      "query": "Diarrhoeal diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "130",
+      "ghe_label": "Whooping cough",
+      "query": "whooping cough",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0031247",
+          "name": "Whooping cough"
+        },
+        {
+          "id": "MONDO_0005077",
+          "name": "pertussis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "140",
+      "ghe_label": "Diphtheria",
+      "query": "diphtheria",
+      "efo_id": "MONDO_0005504",
+      "efo_label": "diphtheria",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005504",
+          "name": "diphtheria"
+        },
+        {
+          "id": "EFO_1000683",
+          "name": "cutaneous diphtheria"
+        },
+        {
+          "id": "MONDO_0020863",
+          "name": "laryngeal diphtheria"
+        },
+        {
+          "id": "EFO_0920011",
+          "name": "diffusion tensor imaging measurement"
+        },
+        {
+          "id": "EFO_0008399",
+          "name": "mean fractional anisotropy measurement"
+        }
+      ]
+    },
+    {
+      "ghe_code": "150",
+      "ghe_label": "Measles",
+      "query": "measles",
+      "efo_id": "MONDO_0004619",
+      "efo_label": "measles",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004619",
+          "name": "measles"
+        },
+        {
+          "id": "MONDO_0009835",
+          "name": "subacute sclerosing panencephalitis"
+        },
+        {
+          "id": "MONDO_0004656",
+          "name": "rubella"
+        },
+        {
+          "id": "MONDO_0003832",
+          "name": "complement deficiency"
+        },
+        {
+          "id": "MONDO_0019737",
+          "name": "thrombotic microangiopathy"
+        }
+      ]
+    },
+    {
+      "ghe_code": "160",
+      "ghe_label": "Tetanus",
+      "query": "tetanus",
+      "efo_id": "MONDO_0005526",
+      "efo_label": "tetanus",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005526",
+          "name": "tetanus"
+        },
+        {
+          "id": "HP_0008736",
+          "name": "Hypoplasia of penis"
+        },
+        {
+          "id": "HP_0000054",
+          "name": "Micropenis"
+        },
+        {
+          "id": "MONDO_0006446",
+          "name": "testicular embryonal carcinoma"
+        },
+        {
+          "id": "MONDO_0958013",
+          "name": "immunodeficiency, common variable, 15"
+        }
+      ]
+    },
+    {
+      "ghe_code": "170",
+      "ghe_label": "Meningitis",
+      "query": "meningitis",
+      "efo_id": "MONDO_0021108",
+      "efo_label": "meningitis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0021108",
+          "name": "meningitis"
+        },
+        {
+          "id": "MONDO_0004796",
+          "name": "infectious meningitis"
+        },
+        {
+          "id": "MONDO_0018059",
+          "name": "meningococcal meningitis"
+        },
+        {
+          "id": "EFO_0008411",
+          "name": "susceptibility to bacterial meningitis measurement"
+        },
+        {
+          "id": "MONDO_0006764",
+          "name": "fungal meningitis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "180",
+      "ghe_label": "Encephalitis",
+      "query": "encephalitis",
+      "efo_id": "MONDO_0019956",
+      "efo_label": "encephalitis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0019956",
+          "name": "encephalitis"
+        },
+        {
+          "id": "MONDO_0005156",
+          "name": "encephalomyelitis"
+        },
+        {
+          "id": "MONDO_0006009",
+          "name": "viral encephalitis"
+        },
+        {
+          "id": "MONDO_0012521",
+          "name": "herpes simplex encephalitis"
+        },
+        {
+          "id": "MONDO_0005969",
+          "name": "st. Louis encephalitis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "186",
+      "ghe_label": "Acute hepatitis A",
+      "query": "hepatitis A",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005790",
+          "name": "hepatitis A virus infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "190",
+      "ghe_label": "Acute hepatitis B",
+      "query": "hepatitis B",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005344",
+          "name": "hepatitis B virus infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "200",
+      "ghe_label": "Acute hepatitis C",
+      "query": "hepatitis C",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005231",
+          "name": "hepatitis C virus infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "205",
+      "ghe_label": "Acute hepatitis E",
+      "query": "hepatitis E",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005788",
+          "name": "hepatitis E virus infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "220",
+      "ghe_label": "Malaria",
+      "query": "malaria",
+      "efo_id": "MONDO_0005136",
+      "efo_label": "malaria",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005136",
+          "name": "malaria"
+        },
+        {
+          "id": "MONDO_0005920",
+          "name": "Plasmodium falciparum malaria"
+        },
+        {
+          "id": "MONDO_0005921",
+          "name": "Plasmodium vivax malaria"
+        },
+        {
+          "id": "EFO_0010970",
+          "name": "severe malarial anemia"
+        },
+        {
+          "id": "MONDO_0005625",
+          "name": "cerebral malaria"
+        }
+      ]
+    },
+    {
+      "ghe_code": "230",
+      "ghe_label": "Trypanosomiasis",
+      "query": "Trypanosomiasis",
+      "efo_id": "MONDO_0000940",
+      "efo_label": "trypanosomiasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0000940",
+          "name": "trypanosomiasis"
+        },
+        {
+          "id": "EFO_0008559",
+          "name": "American trypanosomiasis"
+        },
+        {
+          "id": "MONDO_0005459",
+          "name": "human African trypanosomiasis"
+        },
+        {
+          "id": "EFO_0600031",
+          "name": "response to benznidazole"
+        }
+      ]
+    },
+    {
+      "ghe_code": "240",
+      "ghe_label": "Chagas disease",
+      "query": "Chagas disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0008559",
+          "name": "American trypanosomiasis"
+        },
+        {
+          "id": "MONDO_0005491",
+          "name": "Chagas cardiomyopathy"
+        },
+        {
+          "id": "MONDO_0005445",
+          "name": "visceral leishmaniasis"
+        },
+        {
+          "id": "EFO_0600031",
+          "name": "response to benznidazole"
+        }
+      ]
+    },
+    {
+      "ghe_code": "250",
+      "ghe_label": "Schistosomiasis",
+      "query": "schistosomiasis",
+      "efo_id": "MONDO_0015254",
+      "efo_label": "schistosomiasis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0015254",
+          "name": "schistosomiasis"
+        },
+        {
+          "id": "EFO_1001419",
+          "name": "Schistosomiasis japonica"
+        },
+        {
+          "id": "EFO_1001420",
+          "name": "Schistosomiasis mansoni"
+        },
+        {
+          "id": "MONDO_0006001",
+          "name": "urinary schistosomiasis"
+        },
+        {
+          "id": "MONDO_0008412",
+          "name": "intestinal schistosomiasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "260",
+      "ghe_label": "Leishmaniasis",
+      "query": "leishmaniasis",
+      "efo_id": "MONDO_0011989",
+      "efo_label": "leishmaniasis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0011989",
+          "name": "leishmaniasis"
+        },
+        {
+          "id": "MONDO_0005446",
+          "name": "cutaneous leishmaniasis"
+        },
+        {
+          "id": "MONDO_0005859",
+          "name": "mucocutaneous leishmaniasis"
+        },
+        {
+          "id": "MONDO_0005445",
+          "name": "visceral leishmaniasis"
+        },
+        {
+          "id": "EFO_1001784",
+          "name": "diffuse cutaneous Leishmaniasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "261",
+      "ghe_label": "Visceral leishmaniasis",
+      "query": "Visceral leishmaniasis",
+      "efo_id": "MONDO_0005445",
+      "efo_label": "visceral leishmaniasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005445",
+          "name": "visceral leishmaniasis"
+        },
+        {
+          "id": "MONDO_0011989",
+          "name": "leishmaniasis"
+        },
+        {
+          "id": "EFO_1001784",
+          "name": "diffuse cutaneous Leishmaniasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "262",
+      "ghe_label": "Cutaneous and mucocutaneous leishmaniasis",
+      "query": "Cutaneous and mucocutaneous leishmaniasis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0011989",
+          "name": "leishmaniasis"
+        },
+        {
+          "id": "MONDO_0005859",
+          "name": "mucocutaneous leishmaniasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "270",
+      "ghe_label": "lymphatic filariasis",
+      "query": "lymphatic filariasis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0016075",
+          "name": "filariasis"
+        },
+        {
+          "id": "MONDO_0005761",
+          "name": "filarial elephantiasis"
+        },
+        {
+          "id": "MONDO_0016566",
+          "name": "loiasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "280",
+      "ghe_label": "Onchocerciasis",
+      "query": "onchocerciasis",
+      "efo_id": "MONDO_0017137",
+      "efo_label": "onchocerciasis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0017137",
+          "name": "onchocerciasis"
+        },
+        {
+          "id": "MONDO_0005878",
+          "name": "ocular onchocerciasis"
+        },
+        {
+          "id": "MONDO_0016075",
+          "name": "filariasis"
+        },
+        {
+          "id": "MONDO_0016566",
+          "name": "loiasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "285",
+      "ghe_label": "Cysticercosis",
+      "query": "Cysticercosis",
+      "efo_id": "MONDO_0015484",
+      "efo_label": "cysticercosis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0015484",
+          "name": "cysticercosis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "295",
+      "ghe_label": "Echinococcosis",
+      "query": "Echinococcosis",
+      "efo_id": "MONDO_0005738",
+      "efo_label": "echinococcosis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005738",
+          "name": "echinococcosis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "300",
+      "ghe_label": "Dengue",
+      "query": "dengue disease",
+      "efo_id": "MONDO_0005502",
+      "efo_label": "dengue disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005502",
+          "name": "dengue disease"
+        },
+        {
+          "id": "MONDO_0005358",
+          "name": "Dengue hemorrhagic fever"
+        },
+        {
+          "id": "MONDO_0013196",
+          "name": "Lynch syndrome 8"
+        },
+        {
+          "id": "MONDO_0012953",
+          "name": "colorectal cancer, susceptibility to, 10"
+        },
+        {
+          "id": "MONDO_0009383",
+          "name": "transient familial neonatal hyperbilirubinemia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "310",
+      "ghe_label": "Trachoma",
+      "query": "trachoma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005701",
+          "name": "chlamydia trachomatis infectious disease"
+        },
+        {
+          "id": "EFO_0010903",
+          "name": "anti-chlamydia trachomatis antibody measurement"
+        },
+        {
+          "id": "MONDO_0006713",
+          "name": "corneal neovascularization"
+        },
+        {
+          "id": "MONDO_0043885",
+          "name": "eye infectious disorder"
+        },
+        {
+          "id": "MONDO_0003619",
+          "name": "salpingitis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "315",
+      "ghe_label": "Yellow fever",
+      "query": "Yellow fever",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005306",
+          "name": "ankylosing spondylitis"
+        },
+        {
+          "id": "MONDO_0005101",
+          "name": "ulcerative colitis"
+        },
+        {
+          "id": "MONDO_0005825",
+          "name": "leptospirosis"
+        },
+        {
+          "id": "MONDO_0030970",
+          "name": "immunodeficiency 106, susceptibility to viral infections"
+        }
+      ]
+    },
+    {
+      "ghe_code": "320",
+      "ghe_label": "Rabies",
+      "query": "rabies",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005944",
+          "name": "Rhabdoviridae infectious disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "330",
+      "ghe_label": "Intestinal nematode infections",
+      "query": "intestinal nematode infection",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "340",
+      "ghe_label": "Ascariasis",
+      "query": "Ascariasis",
+      "efo_id": "MONDO_0005654",
+      "efo_label": "ascariasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005654",
+          "name": "ascariasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "350",
+      "ghe_label": "Trichuriasis",
+      "query": "Trichuriasis",
+      "efo_id": "MONDO_0005996",
+      "efo_label": "trichuriasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005996",
+          "name": "trichuriasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "360",
+      "ghe_label": "Hookworm disease",
+      "query": "Hookworm disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005799",
+          "name": "hookworm infectious disease"
+        },
+        {
+          "id": "MONDO_0005645",
+          "name": "ancylostomiasis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "362",
+      "ghe_label": "Food-borne trematodes",
+      "query": "Food-borne trematodes",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "365",
+      "ghe_label": "Leprosy",
+      "query": "leprosy",
+      "efo_id": "MONDO_0005124",
+      "efo_label": "leprosy",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005124",
+          "name": "leprosy"
+        },
+        {
+          "id": "MONDO_0005126",
+          "name": "tuberculoid leprosy"
+        },
+        {
+          "id": "EFO_1001358",
+          "name": "Leprosy, Paucibacillary"
+        },
+        {
+          "id": "MONDO_0005127",
+          "name": "lepromatous leprosy"
+        },
+        {
+          "id": "MONDO_0005125",
+          "name": "borderline leprosy"
+        }
+      ]
+    },
+    {
+      "ghe_code": "370",
+      "ghe_label": "Other infectious diseases",
+      "query": "Other infectious diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0025294",
+          "name": "tick-borne infectious disease"
+        },
+        {
+          "id": "MONDO_0001517",
+          "name": "dysentery"
+        },
+        {
+          "id": "MONDO_0009194",
+          "name": "immunodeficiency 32B"
+        },
+        {
+          "id": "MONDO_0011429",
+          "name": "juvenile idiopathic arthritis"
+        },
+        {
+          "id": "MONDO_0030483",
+          "name": "immunodeficiency 88"
+        }
+      ]
+    },
+    {
+      "ghe_code": "390",
+      "ghe_label": "Lower respiratory infections",
+      "query": "lower respiratory tract infection",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0024352",
+          "name": "viral respiratory tract infection"
+        },
+        {
+          "id": "HP_0002783",
+          "name": "Recurrent lower respiratory tract infections"
+        },
+        {
+          "id": "HP_0011947",
+          "name": "Respiratory tract infection"
+        },
+        {
+          "id": "HP_0002788",
+          "name": "Recurrent upper respiratory tract infections"
+        },
+        {
+          "id": "MONDO_0859370",
+          "name": "respiratory infections, recurrent, and failure to thrive with or without diarrhea"
+        }
+      ]
+    },
+    {
+      "ghe_code": "395",
+      "ghe_label": "COVID-19",
+      "query": "COVID-19",
+      "efo_id": "MONDO_0100096",
+      "efo_label": "COVID-19",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0100096",
+          "name": "COVID-19"
+        }
+      ]
+    },
+    {
+      "ghe_code": "400",
+      "ghe_label": "Upper respiratory infections",
+      "query": "upper respiratory tract infection",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0002788",
+          "name": "Recurrent upper respiratory tract infections"
+        },
+        {
+          "id": "MONDO_0024352",
+          "name": "viral respiratory tract infection"
+        },
+        {
+          "id": "HP_0011947",
+          "name": "Respiratory tract infection"
+        },
+        {
+          "id": "MONDO_0024355",
+          "name": "respiratory tract infectious disorder"
+        },
+        {
+          "id": "MONDO_0005141",
+          "name": "Pseudomonas infection"
+        }
+      ]
+    },
+    {
+      "ghe_code": "410",
+      "ghe_label": "Otitis media",
+      "query": "Otitis media",
+      "efo_id": "MONDO_0005441",
+      "efo_label": "otitis media",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005441",
+          "name": "otitis media"
+        },
+        {
+          "id": "MONDO_0024330",
+          "name": "infectious otitis media"
+        },
+        {
+          "id": "HP_0000403",
+          "name": "Recurrent otitis media"
+        },
+        {
+          "id": "MONDO_0005892",
+          "name": "otitis media with effusion"
+        },
+        {
+          "id": "MONDO_0001212",
+          "name": "non-suppurative otitis media"
+        }
+      ]
+    },
+    {
+      "ghe_code": "500",
+      "ghe_label": "Preterm birth complications",
+      "query": "premature birth",
+      "efo_id": "EFO_0003917",
+      "efo_label": "premature birth",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "EFO_0003917",
+          "name": "premature birth"
+        },
+        {
+          "id": "HP_0011649",
+          "name": "Patent ductus arteriosus after premature birth"
+        },
+        {
+          "id": "MONDO_0001119",
+          "name": "premature menopause"
+        },
+        {
+          "id": "HP_0005458",
+          "name": "Premature closure of fontanelles"
+        },
+        {
+          "id": "MONDO_0009971",
+          "name": "respiratory distress syndrome in premature infants"
+        }
+      ]
+    },
+    {
+      "ghe_code": "510",
+      "ghe_label": "Birth asphyxia and birth trauma",
+      "query": "Birth asphyxia and birth trauma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "520",
+      "ghe_label": "Neonatal sepsis and infections",
+      "query": "Neonatal sepsis and infections",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0010265",
+          "name": "Simpson-Golabi-Behmel syndrome type 2"
+        },
+        {
+          "id": "MONDO_0020740",
+          "name": "ectodermal dysplasia and immunodeficiency 1"
+        },
+        {
+          "id": "MONDO_0010293",
+          "name": "ectodermal dysplasia and immune deficiency"
+        },
+        {
+          "id": "MONDO_0013875",
+          "name": "3-methylglutaconic aciduria with deafness, encephalopathy, and Leigh-like syndrome"
+        },
+        {
+          "id": "MONDO_0957780",
+          "name": "developmental and epileptic encephalopathy 111"
+        }
+      ]
+    },
+    {
+      "ghe_code": "530",
+      "ghe_label": "Other neonatal conditions",
+      "query": "Other neonatal conditions",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005087",
+          "name": "respiratory system disorder"
+        },
+        {
+          "id": "MONDO_0019139",
+          "name": "acquired hemophilia"
+        },
+        {
+          "id": "MONDO_0001567",
+          "name": "nephrocalcinosis"
+        },
+        {
+          "id": "MONDO_0005152",
+          "name": "hypopituitarism"
+        },
+        {
+          "id": "MONDO_0012812",
+          "name": "developmental and epileptic encephalopathy, 4"
+        }
+      ]
+    },
+    {
+      "ghe_code": "550",
+      "ghe_label": "Protein-energy malnutrition",
+      "query": "protein-energy malnutrition",
+      "efo_id": "MONDO_0001371",
+      "efo_label": "protein-energy malnutrition",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0001371",
+          "name": "protein-energy malnutrition"
+        },
+        {
+          "id": "MONDO_0006848",
+          "name": "marasmus"
+        }
+      ]
+    },
+    {
+      "ghe_code": "560",
+      "ghe_label": "Iodine deficiency",
+      "query": "Iodine deficiency",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0008614",
+          "name": "Iodine Deficiency Hypothyroidism"
+        },
+        {
+          "id": "MONDO_0018612",
+          "name": "congenital hypothyroidism"
+        },
+        {
+          "id": "MONDO_0006382",
+          "name": "poorly differentiated thyroid gland carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "570",
+      "ghe_label": "Vitamin A deficiency",
+      "query": "Vitamin A deficiency",
+      "efo_id": "MONDO_0007016",
+      "efo_label": "vitamin A deficiency",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0007016",
+          "name": "vitamin A deficiency"
+        }
+      ]
+    },
+    {
+      "ghe_code": "580",
+      "ghe_label": "Iron-deficiency anaemia",
+      "query": "iron deficiency anemia",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0001891",
+          "name": "Iron deficiency anemia"
+        },
+        {
+          "id": "MONDO_0008787",
+          "name": "microcytic anemia with liver iron overload"
+        },
+        {
+          "id": "MONDO_0002280",
+          "name": "anemia"
+        },
+        {
+          "id": "MONDO_0001639",
+          "name": "deficiency anemia"
+        },
+        {
+          "id": "HP_0010972",
+          "name": "Anemia of inadequate production"
+        }
+      ]
+    },
+    {
+      "ghe_code": "590",
+      "ghe_label": "Other nutritional deficiencies",
+      "query": "Other nutritional deficiencies",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "620",
+      "ghe_label": "Mouth and oropharynx cancers",
+      "query": "Mouth and oropharynx cancers",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "621",
+      "ghe_label": "Lip and oral cavity",
+      "query": "oral cavity cancer",
+      "efo_id": "MONDO_0005515",
+      "efo_label": "oral cavity cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005515",
+          "name": "oral cavity cancer"
+        },
+        {
+          "id": "MONDO_0044925",
+          "name": "oral cavity carcinoma"
+        },
+        {
+          "id": "MONDO_0021245",
+          "name": "oral cavity neoplasm"
+        },
+        {
+          "id": "MONDO_0023644",
+          "name": "lip and oral cavity carcinoma"
+        },
+        {
+          "id": "MONDO_0004958",
+          "name": "oral cavity squamous cell carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "622",
+      "ghe_label": "Nasopharynx",
+      "query": "Nasopharynx",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0021315",
+          "name": "malignant tumor of nasopharynx"
+        },
+        {
+          "id": "MONDO_0021478",
+          "name": "benign neoplasm of nasopharynx"
+        },
+        {
+          "id": "MONDO_0021297",
+          "name": "carcinoma in situ of nasopharynx"
+        },
+        {
+          "id": "MONDO_0021537",
+          "name": "undifferentiated carcinoma of nasopharynx"
+        },
+        {
+          "id": "MONDO_0005375",
+          "name": "nasopharyngeal neoplasm"
+        }
+      ]
+    },
+    {
+      "ghe_code": "623",
+      "ghe_label": "Other pharynx",
+      "query": "Other pharynx",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005806",
+          "name": "hypopharynx cancer"
+        },
+        {
+          "id": "MONDO_0010150",
+          "name": "head and neck squamous cell carcinoma"
+        },
+        {
+          "id": "MONDO_0005398",
+          "name": "upper aerodigestive tract neoplasm"
+        },
+        {
+          "id": "MONDO_0005504",
+          "name": "diphtheria"
+        },
+        {
+          "id": "EFO_1000674",
+          "name": "carbuncle"
+        }
+      ]
+    },
+    {
+      "ghe_code": "630",
+      "ghe_label": "Oesophagus cancer",
+      "query": "esophageal cancer",
+      "efo_id": "MONDO_0007576",
+      "efo_label": "esophageal cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0007576",
+          "name": "esophageal cancer"
+        },
+        {
+          "id": "MONDO_0019086",
+          "name": "carcinoma of esophagus"
+        },
+        {
+          "id": "MONDO_0005580",
+          "name": "esophageal squamous cell carcinoma"
+        },
+        {
+          "id": "MONDO_0003749",
+          "name": "esophageal disorder"
+        },
+        {
+          "id": "MONDO_0008586",
+          "name": "esophageal atresia/tracheoesophageal fistula"
+        }
+      ]
+    },
+    {
+      "ghe_code": "640",
+      "ghe_label": "Stomach cancer",
+      "query": "stomach cancer",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0001056",
+          "name": "gastric cancer"
+        },
+        {
+          "id": "MONDO_0021085",
+          "name": "gastric neoplasm"
+        },
+        {
+          "id": "MONDO_0004950",
+          "name": "gastric carcinoma"
+        },
+        {
+          "id": "MONDO_0004298",
+          "name": "stomach disorder"
+        },
+        {
+          "id": "MONDO_0018502",
+          "name": "hereditary gastric cancer"
+        }
+      ]
+    },
+    {
+      "ghe_code": "650",
+      "ghe_label": "Colon and rectum cancers",
+      "query": "colorectal cancer",
+      "efo_id": "MONDO_0005575",
+      "efo_label": "colorectal cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005575",
+          "name": "colorectal cancer"
+        },
+        {
+          "id": "MONDO_0024331",
+          "name": "colorectal carcinoma"
+        },
+        {
+          "id": "MONDO_0023113",
+          "name": "familial colorectal cancer"
+        },
+        {
+          "id": "MONDO_0012132",
+          "name": "colorectal cancer, susceptibility to, 1"
+        },
+        {
+          "id": "MONDO_0100287",
+          "name": "POLE-related polyposis and colorectal cancer syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "660",
+      "ghe_label": "Liver cancer",
+      "query": "liver cancer",
+      "efo_id": "MONDO_0002691",
+      "efo_label": "liver cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002691",
+          "name": "liver cancer"
+        },
+        {
+          "id": "MONDO_0018531",
+          "name": "carcinoma of liver and intrahepatic biliary tract"
+        },
+        {
+          "id": "MONDO_0007256",
+          "name": "hepatocellular carcinoma"
+        },
+        {
+          "id": "EFO_1001513",
+          "name": "liver neoplasm"
+        },
+        {
+          "id": "HP_0002896",
+          "name": "Neoplasm of the liver"
+        }
+      ]
+    },
+    {
+      "ghe_code": "661",
+      "ghe_label": "Liver cancer secondary to hepatitis B",
+      "query": "Liver cancer secondary to hepatitis B",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "662",
+      "ghe_label": "Liver cancer secondary to hepatitis C",
+      "query": "Liver cancer secondary to hepatitis C",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "663",
+      "ghe_label": "Liver cancer secondary to alcohol use",
+      "query": "Liver cancer secondary to alcohol use",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "664",
+      "ghe_label": "Other liver cancer",
+      "query": "Other liver cancer",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_1001471",
+          "name": "Merkel cell skin cancer"
+        },
+        {
+          "id": "MONDO_0005575",
+          "name": "colorectal cancer"
+        },
+        {
+          "id": "MONDO_0004992",
+          "name": "cancer"
+        },
+        {
+          "id": "MONDO_0007256",
+          "name": "hepatocellular carcinoma"
+        },
+        {
+          "id": "MONDO_0700269",
+          "name": "BRCA2-related cancer predisposition"
+        }
+      ]
+    },
+    {
+      "ghe_code": "670",
+      "ghe_label": "Pancreas cancer",
+      "query": "pancreatic cancer",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0021040",
+          "name": "pancreatic neoplasm"
+        },
+        {
+          "id": "MONDO_0005192",
+          "name": "exocrine pancreatic carcinoma"
+        },
+        {
+          "id": "MONDO_0009831",
+          "name": "malignant pancreatic neoplasm"
+        },
+        {
+          "id": "MONDO_0013685",
+          "name": "pancreatic cancer, susceptibility to, 4"
+        },
+        {
+          "id": "MONDO_0015278",
+          "name": "familial pancreatic carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "680",
+      "ghe_label": "Trachea, bronchus, lung cancers",
+      "query": "lung cancer",
+      "efo_id": "MONDO_0008903",
+      "efo_label": "lung cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0008903",
+          "name": "lung cancer"
+        },
+        {
+          "id": "MONDO_0005138",
+          "name": "lung carcinoma"
+        },
+        {
+          "id": "MONDO_0021117",
+          "name": "lung neoplasm"
+        },
+        {
+          "id": "EFO_0022194",
+          "name": "EGFR-related lung cancer"
+        },
+        {
+          "id": "EFO_0006953",
+          "name": "family history of lung cancer"
+        }
+      ]
+    },
+    {
+      "ghe_code": "690",
+      "ghe_label": "Melanoma and other skin cancers",
+      "query": "melanoma",
+      "efo_id": "MONDO_0005105",
+      "efo_label": "melanoma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005105",
+          "name": "melanoma"
+        },
+        {
+          "id": "MONDO_0005012",
+          "name": "cutaneous melanoma"
+        },
+        {
+          "id": "MONDO_0006486",
+          "name": "uveal melanoma"
+        },
+        {
+          "id": "OBA_2050157",
+          "name": "melanoma-derived growth regulatory protein  level"
+        },
+        {
+          "id": "MONDO_0013759",
+          "name": "melanoma, cutaneous malignant, susceptibility to, 8"
+        }
+      ]
+    },
+    {
+      "ghe_code": "691",
+      "ghe_label": "Malignant skin melanoma",
+      "query": "Malignant skin melanoma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005012",
+          "name": "cutaneous melanoma"
+        },
+        {
+          "id": "MONDO_0000930",
+          "name": "nodular malignant melanoma"
+        },
+        {
+          "id": "MONDO_0005105",
+          "name": "melanoma"
+        },
+        {
+          "id": "MONDO_0005208",
+          "name": "amelanotic skin melanoma"
+        },
+        {
+          "id": "MONDO_0002898",
+          "name": "skin cancer"
+        }
+      ]
+    },
+    {
+      "ghe_code": "692",
+      "ghe_label": "Non-melanoma skin cancer",
+      "query": "Non-melanoma skin cancer",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0002656",
+          "name": "skin carcinoma"
+        },
+        {
+          "id": "EFO_0009260",
+          "name": "non-melanoma skin carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "700",
+      "ghe_label": "Breast cancer",
+      "query": "breast cancer",
+      "efo_id": "MONDO_0007254",
+      "efo_label": "breast cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0007254",
+          "name": "breast cancer"
+        },
+        {
+          "id": "MONDO_0004989",
+          "name": "breast carcinoma"
+        },
+        {
+          "id": "MONDO_0003582",
+          "name": "hereditary breast ovarian cancer syndrome"
+        },
+        {
+          "id": "MONDO_0011450",
+          "name": "breast-ovarian cancer, familial, susceptibility to, 1"
+        },
+        {
+          "id": "MONDO_0012933",
+          "name": "breast-ovarian cancer, familial, susceptibility to, 2"
+        }
+      ]
+    },
+    {
+      "ghe_code": "710",
+      "ghe_label": "Cervix uteri cancer",
+      "query": "cervical cancer",
+      "efo_id": "MONDO_0002974",
+      "efo_label": "cervical cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002974",
+          "name": "cervical cancer"
+        },
+        {
+          "id": "MONDO_0005131",
+          "name": "cervical carcinoma"
+        },
+        {
+          "id": "MONDO_0006143",
+          "name": "cervical squamous cell carcinoma"
+        },
+        {
+          "id": "MONDO_0001416",
+          "name": "female reproductive organ cancer"
+        },
+        {
+          "id": "MONDO_0005153",
+          "name": "cervical adenocarcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "720",
+      "ghe_label": "Corpus uteri cancer",
+      "query": "endometrial cancer",
+      "efo_id": "MONDO_0011962",
+      "efo_label": "endometrial cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0011962",
+          "name": "endometrial cancer"
+        },
+        {
+          "id": "MONDO_0002447",
+          "name": "endometrial carcinoma"
+        },
+        {
+          "id": "MONDO_0006003",
+          "name": "uterine corpus cancer"
+        },
+        {
+          "id": "MONDO_0003812",
+          "name": "ovarian endometrial cancer"
+        },
+        {
+          "id": "MONDO_0000931",
+          "name": "endometrial disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "730",
+      "ghe_label": "Ovary cancer",
+      "query": "ovarian cancer",
+      "efo_id": "MONDO_0008170",
+      "efo_label": "ovarian cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0008170",
+          "name": "ovarian cancer"
+        },
+        {
+          "id": "MONDO_0005140",
+          "name": "ovarian carcinoma"
+        },
+        {
+          "id": "MONDO_0003582",
+          "name": "hereditary breast ovarian cancer syndrome"
+        },
+        {
+          "id": "MONDO_0016249",
+          "name": "hereditary site-specific ovarian cancer syndrome"
+        },
+        {
+          "id": "MONDO_0003812",
+          "name": "ovarian endometrial cancer"
+        }
+      ]
+    },
+    {
+      "ghe_code": "740",
+      "ghe_label": "Prostate cancer",
+      "query": "prostate cancer",
+      "efo_id": "MONDO_0008315",
+      "efo_label": "prostate cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0008315",
+          "name": "prostate cancer"
+        },
+        {
+          "id": "MONDO_0005159",
+          "name": "prostate carcinoma"
+        },
+        {
+          "id": "MONDO_0013872",
+          "name": "prostate cancer, hereditary, 2"
+        },
+        {
+          "id": "Orphanet_1331",
+          "name": "Familial prostate cancer"
+        },
+        {
+          "id": "MONDO_0700275",
+          "name": "prostate cancer, hereditary"
+        }
+      ]
+    },
+    {
+      "ghe_code": "742",
+      "ghe_label": "Testicular cancer",
+      "query": "Testicular cancer",
+      "efo_id": "MONDO_0005447",
+      "efo_label": "testicular cancer",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005447",
+          "name": "testicular cancer"
+        },
+        {
+          "id": "MONDO_0003510",
+          "name": "malignant testicular germ cell tumor"
+        },
+        {
+          "id": "EFO_0004281",
+          "name": "testicular neoplasm"
+        },
+        {
+          "id": "MONDO_0003403",
+          "name": "testicular non-seminomatous germ cell cancer"
+        },
+        {
+          "id": "MONDO_0005836",
+          "name": "male reproductive organ cancer"
+        }
+      ]
+    },
+    {
+      "ghe_code": "745",
+      "ghe_label": "Kidney cancer",
+      "query": "Kidney cancer",
+      "efo_id": "MONDO_0002367",
+      "efo_label": "kidney cancer",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002367",
+          "name": "kidney cancer"
+        },
+        {
+          "id": "MONDO_0021163",
+          "name": "kidney neoplasm"
+        },
+        {
+          "id": "MONDO_0005206",
+          "name": "renal carcinoma"
+        },
+        {
+          "id": "HP_0000077",
+          "name": "Abnormality of the kidney"
+        },
+        {
+          "id": "MONDO_0100191",
+          "name": "inherited kidney disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "750",
+      "ghe_label": "Bladder cancer",
+      "query": "bladder cancer",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0004986",
+          "name": "urinary bladder carcinoma"
+        },
+        {
+          "id": "MONDO_0001187",
+          "name": "urinary bladder cancer"
+        },
+        {
+          "id": "MONDO_0003715",
+          "name": "bladder urachal carcinoma"
+        },
+        {
+          "id": "MONDO_0004987",
+          "name": "urinary bladder neoplasm"
+        },
+        {
+          "id": "MONDO_0006026",
+          "name": "urinary bladder disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "751",
+      "ghe_label": "Brain and nervous system cancers",
+      "query": "brain glioma",
+      "efo_id": "MONDO_0005499",
+      "efo_label": "brain glioma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005499",
+          "name": "brain glioma"
+        },
+        {
+          "id": "MONDO_0002911",
+          "name": "brain stem glioma"
+        },
+        {
+          "id": "MONDO_0003869",
+          "name": "childhood brain stem glioma"
+        },
+        {
+          "id": "MONDO_0021637",
+          "name": "low grade glioma"
+        },
+        {
+          "id": "MONDO_0100342",
+          "name": "malignant glioma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "752",
+      "ghe_label": "Gallbladder and biliary tract cancer",
+      "query": "gallbladder cancer",
+      "efo_id": "MONDO_0005411",
+      "efo_label": "gallbladder cancer",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005411",
+          "name": "gallbladder cancer"
+        },
+        {
+          "id": "MONDO_0003220",
+          "name": "gallbladder carcinoma"
+        },
+        {
+          "id": "MONDO_0018918",
+          "name": "carcinoma of gallbladder and extrahepatic biliary tract"
+        },
+        {
+          "id": "MONDO_0006219",
+          "name": "gallbladder small cell neuroendocrine carcinoma"
+        },
+        {
+          "id": "MONDO_0018536",
+          "name": "adenocarcinoma of gallbladder and extrahepatic biliary tract"
+        }
+      ]
+    },
+    {
+      "ghe_code": "753",
+      "ghe_label": "Larynx cancer",
+      "query": "laryngeal carcinoma",
+      "efo_id": "MONDO_0002358",
+      "efo_label": "laryngeal carcinoma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002358",
+          "name": "laryngeal carcinoma"
+        },
+        {
+          "id": "MONDO_0005595",
+          "name": "laryngeal squamous cell carcinoma"
+        },
+        {
+          "id": "MONDO_0006264",
+          "name": "laryngeal adenoid cystic carcinoma"
+        },
+        {
+          "id": "MONDO_0002038",
+          "name": "head and neck carcinoma"
+        },
+        {
+          "id": "MONDO_0006265",
+          "name": "laryngeal small cell carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "754",
+      "ghe_label": "Thyroid cancer",
+      "query": "thyroid carcinoma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0015075",
+          "name": "thyroid gland carcinoma"
+        },
+        {
+          "id": "MONDO_0005034",
+          "name": "thyroid gland follicular carcinoma"
+        },
+        {
+          "id": "MONDO_0015277",
+          "name": "medullary thyroid gland carcinoma"
+        },
+        {
+          "id": "MONDO_0015447",
+          "name": "differentiated thyroid carcinoma"
+        },
+        {
+          "id": "EFO_1000592",
+          "name": "Thyroid Gland Oncocytic Follicular Carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "755",
+      "ghe_label": "Mesothelioma",
+      "query": "mesothelioma",
+      "efo_id": "MONDO_0005065",
+      "efo_label": "mesothelioma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005065",
+          "name": "mesothelioma"
+        },
+        {
+          "id": "MONDO_0003308",
+          "name": "pleural mesothelioma"
+        },
+        {
+          "id": "MONDO_0005112",
+          "name": "malignant pleural mesothelioma"
+        },
+        {
+          "id": "MONDO_0006378",
+          "name": "pleural epithelioid mesothelioma"
+        },
+        {
+          "id": "MONDO_0006407",
+          "name": "sarcomatoid mesothelioma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "760",
+      "ghe_label": "Lymphomas, multiple myeloma",
+      "query": "Lymphomas, multiple myeloma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0003641",
+          "name": "central nervous system hematopoietic neoplasm"
+        },
+        {
+          "id": "MONDO_0044881",
+          "name": "hematopoietic and lymphoid cell neoplasm"
+        },
+        {
+          "id": "MONDO_0015813",
+          "name": "primary cutaneous marginal zone B-cell lymphoma"
+        },
+        {
+          "id": "MONDO_0005157",
+          "name": "lymphoid neoplasm"
+        }
+      ]
+    },
+    {
+      "ghe_code": "761",
+      "ghe_label": "Hodgkin lymphoma",
+      "query": "Hodgkin lymphoma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0004952",
+          "name": "Hodgkins lymphoma"
+        },
+        {
+          "id": "MONDO_0009348",
+          "name": "classic Hodgkin lymphoma"
+        },
+        {
+          "id": "MONDO_0004665",
+          "name": "nodular sclerosis classical Hodgkin lymphoma"
+        },
+        {
+          "id": "MONDO_0004633",
+          "name": "Hodgkin's lymphoma, mixed cellularity"
+        },
+        {
+          "id": "MONDO_0015759",
+          "name": "B-cell non-Hodgkin lymphoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "762",
+      "ghe_label": "Non-Hodgkin lymphoma",
+      "query": "non-Hodgkin lymphoma",
+      "efo_id": "MONDO_0018908",
+      "efo_label": "non-Hodgkin lymphoma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0018908",
+          "name": "non-Hodgkin lymphoma"
+        },
+        {
+          "id": "MONDO_0031219",
+          "name": "mismatch repair cancer syndrome"
+        },
+        {
+          "id": "MONDO_0010159",
+          "name": "mismatch repair cancer syndrome 1"
+        },
+        {
+          "id": "MONDO_0008840",
+          "name": "ataxia telangiectasia"
+        },
+        {
+          "id": "Orphanet_99817",
+          "name": "Non-polyposis Turcot syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "763",
+      "ghe_label": "Multiple myeloma",
+      "query": "multiple myeloma",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0009693",
+          "name": "plasma cell myeloma"
+        },
+        {
+          "id": "MONDO_0005235",
+          "name": "smoldering plasma cell myeloma"
+        },
+        {
+          "id": "MONDO_0006336",
+          "name": "ovarian endometrioid adenocarcinoma with squamous differentiation"
+        },
+        {
+          "id": "MONDO_0021634",
+          "name": "epithelial skin neoplasm"
+        },
+        {
+          "id": "MONDO_0002656",
+          "name": "skin carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "770",
+      "ghe_label": "Leukaemia",
+      "query": "leukemia",
+      "efo_id": "MONDO_0005059",
+      "efo_label": "leukemia",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005059",
+          "name": "leukemia"
+        },
+        {
+          "id": "MONDO_0004355",
+          "name": "childhood leukemia"
+        },
+        {
+          "id": "MONDO_0004967",
+          "name": "acute lymphoblastic leukemia"
+        },
+        {
+          "id": "MONDO_0004643",
+          "name": "myeloid leukemia"
+        },
+        {
+          "id": "MONDO_0005402",
+          "name": "lymphoid leukemia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "780",
+      "ghe_label": "Other malignant neoplasms",
+      "query": "Other malignant neoplasms",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0044881",
+          "name": "hematopoietic and lymphoid cell neoplasm"
+        },
+        {
+          "id": "MONDO_0004992",
+          "name": "cancer"
+        },
+        {
+          "id": "MONDO_0005070",
+          "name": "neoplasm"
+        },
+        {
+          "id": "MONDO_0004952",
+          "name": "Hodgkins lymphoma"
+        },
+        {
+          "id": "MONDO_0015690",
+          "name": "myeloid neoplasm associated with PDGFRB rearrangement"
+        }
+      ]
+    },
+    {
+      "ghe_code": "790",
+      "ghe_label": "Other neoplasms",
+      "query": "Other neoplasms",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0044881",
+          "name": "hematopoietic and lymphoid cell neoplasm"
+        },
+        {
+          "id": "MONDO_0005070",
+          "name": "neoplasm"
+        },
+        {
+          "id": "MONDO_0004952",
+          "name": "Hodgkins lymphoma"
+        },
+        {
+          "id": "MONDO_0004992",
+          "name": "cancer"
+        },
+        {
+          "id": "MONDO_0005615",
+          "name": "plasmacytoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "800",
+      "ghe_label": "Diabetes mellitus",
+      "query": "diabetes mellitus",
+      "efo_id": "MONDO_0005015",
+      "efo_label": "diabetes mellitus",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005015",
+          "name": "diabetes mellitus"
+        },
+        {
+          "id": "MONDO_0005148",
+          "name": "type 2 diabetes mellitus"
+        },
+        {
+          "id": "MONDO_0012480",
+          "name": "diabetes mellitus, transient neonatal, 2"
+        },
+        {
+          "id": "MONDO_0005147",
+          "name": "type 1 diabetes mellitus"
+        },
+        {
+          "id": "MONDO_0016391",
+          "name": "neonatal diabetes mellitus"
+        }
+      ]
+    },
+    {
+      "ghe_code": "811",
+      "ghe_label": "Thalassaemias",
+      "query": "beta-thalassemia",
+      "efo_id": "MONDO_0019402",
+      "efo_label": "beta thalassemia",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0019402",
+          "name": "beta thalassemia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "812",
+      "ghe_label": "Sickle cell disorders and trait",
+      "query": "sickle cell disease",
+      "efo_id": "MONDO_0011382",
+      "efo_label": "sickle cell disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0011382",
+          "name": "sickle cell disease"
+        },
+        {
+          "id": "MONDO_0016669",
+          "name": "sickle cell-hemoglobin c disease syndrome"
+        },
+        {
+          "id": "MONDO_0016670",
+          "name": "sickle cell-hemoglobin d disease syndrome"
+        },
+        {
+          "id": "MONDO_0016668",
+          "name": "sickle cell-beta-thalassemia disease syndrome"
+        },
+        {
+          "id": "EFO_0700066",
+          "name": "sickle cell disease and related diseases"
+        }
+      ]
+    },
+    {
+      "ghe_code": "813",
+      "ghe_label": "Other haemoglobinopathies and haemolytic anaemias",
+      "query": "Other haemoglobinopathies and haemolytic anaemias",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "814",
+      "ghe_label": "Other endocrine, blood and immune disorders",
+      "query": "Other endocrine, blood and immune disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "830",
+      "ghe_label": "Depressive disorders",
+      "query": "Depressive disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0002009",
+          "name": "major depressive disorder"
+        },
+        {
+          "id": "EFO_0007704",
+          "name": "depressive episode measurement"
+        },
+        {
+          "id": "MONDO_0004985",
+          "name": "bipolar disorder"
+        },
+        {
+          "id": "MONDO_0005379",
+          "name": "neurotic disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "831",
+      "ghe_label": "Major depressive disorder",
+      "query": "major depressive disorder",
+      "efo_id": "MONDO_0002009",
+      "efo_label": "major depressive disorder",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002009",
+          "name": "major depressive disorder"
+        },
+        {
+          "id": "EFO_0007634",
+          "name": "major depressive episode"
+        },
+        {
+          "id": "MONDO_1060152",
+          "name": "schizoaffective depressive disorder"
+        },
+        {
+          "id": "MONDO_0004985",
+          "name": "bipolar disorder"
+        },
+        {
+          "id": "MONDO_0005379",
+          "name": "neurotic disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "832",
+      "ghe_label": "Dysthymia",
+      "query": "Dysthymia",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0001442",
+          "name": "dysthymic disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "840",
+      "ghe_label": "Bipolar disorder",
+      "query": "bipolar disorder",
+      "efo_id": "MONDO_0004985",
+      "efo_label": "bipolar disorder",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004985",
+          "name": "bipolar disorder"
+        },
+        {
+          "id": "EFO_0009963",
+          "name": "bipolar I disorder"
+        },
+        {
+          "id": "EFO_0009964",
+          "name": "bipolar II disorder"
+        },
+        {
+          "id": "MONDO_0015286",
+          "name": "congenital disorder of glycosylation"
+        },
+        {
+          "id": "MONDO_0012117",
+          "name": "ALG9-congenital disorder of glycosylation"
+        }
+      ]
+    },
+    {
+      "ghe_code": "850",
+      "ghe_label": "Schizophrenia",
+      "query": "schizophrenia",
+      "efo_id": "MONDO_0005090",
+      "efo_label": "schizophrenia",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005090",
+          "name": "schizophrenia"
+        },
+        {
+          "id": "MONDO_0013498",
+          "name": "schizophrenia 15"
+        },
+        {
+          "id": "EFO_0007927",
+          "name": "schizophrenia symptom severity measurement"
+        },
+        {
+          "id": "MONDO_0005414",
+          "name": "treatment-refractory schizophrenia"
+        },
+        {
+          "id": "MONDO_0033312",
+          "name": "schizophrenia 19"
+        }
+      ]
+    },
+    {
+      "ghe_code": "860",
+      "ghe_label": "Alcohol use disorders",
+      "query": "alcohol use disorder",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0009458",
+          "name": "alcohol use disorder measurement"
+        },
+        {
+          "id": "EFO_0010702",
+          "name": "opioid use disorder"
+        },
+        {
+          "id": "MONDO_0006642",
+          "name": "alcohol withdrawal delirium"
+        },
+        {
+          "id": "EFO_0006848",
+          "name": "mental or behavioural disorder biomarker"
+        },
+        {
+          "id": "MONDO_0005303",
+          "name": "drug dependence"
+        }
+      ]
+    },
+    {
+      "ghe_code": "870",
+      "ghe_label": "Drug use disorders",
+      "query": "substance abuse",
+      "efo_id": "MONDO_0002491",
+      "efo_label": "substance abuse",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0002491",
+          "name": "substance abuse"
+        },
+        {
+          "id": "MONDO_0002494",
+          "name": "substance-related disorder"
+        },
+        {
+          "id": "MONDO_0016677",
+          "name": "toxic or drug-related embryofetopathy"
+        },
+        {
+          "id": "EFO_0010702",
+          "name": "opioid use disorder"
+        },
+        {
+          "id": "EFO_0010445",
+          "name": "cocaine use disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "871",
+      "ghe_label": "Opioid use disorders",
+      "query": "Opioid use disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0024417",
+          "name": "perceptual disorders"
+        },
+        {
+          "id": "MONDO_0005303",
+          "name": "drug dependence"
+        },
+        {
+          "id": "EFO_0009458",
+          "name": "alcohol use disorder measurement"
+        },
+        {
+          "id": "MONDO_0008575",
+          "name": "nicotine dependence"
+        },
+        {
+          "id": "EFO_0011049",
+          "name": "drug misuse"
+        }
+      ]
+    },
+    {
+      "ghe_code": "872",
+      "ghe_label": "Cocaine use disorders",
+      "query": "Cocaine use disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0004456",
+          "name": "cocaine abuse"
+        }
+      ]
+    },
+    {
+      "ghe_code": "873",
+      "ghe_label": "Amphetamine use disorders",
+      "query": "Amphetamine use disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005419",
+          "name": "methamphetamine dependence"
+        },
+        {
+          "id": "MONDO_0005303",
+          "name": "drug dependence"
+        },
+        {
+          "id": "MONDO_0004456",
+          "name": "cocaine abuse"
+        }
+      ]
+    },
+    {
+      "ghe_code": "874",
+      "ghe_label": "Cannabis use disorders",
+      "query": "Cannabis use disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0008575",
+          "name": "nicotine dependence"
+        }
+      ]
+    },
+    {
+      "ghe_code": "875",
+      "ghe_label": "Other drug use disorders",
+      "query": "Other drug use disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005303",
+          "name": "drug dependence"
+        },
+        {
+          "id": "MONDO_0011429",
+          "name": "juvenile idiopathic arthritis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "880",
+      "ghe_label": "Anxiety disorders",
+      "query": "anxiety disorder",
+      "efo_id": "MONDO_0005618",
+      "efo_label": "anxiety disorder",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005618",
+          "name": "anxiety disorder"
+        },
+        {
+          "id": "MONDO_0001942",
+          "name": "generalized anxiety disorder"
+        },
+        {
+          "id": "MONDO_0001098",
+          "name": "separation anxiety disorder"
+        },
+        {
+          "id": "EFO_0007795",
+          "name": "anxiety disorder measurement"
+        },
+        {
+          "id": "MONDO_0005146",
+          "name": "post-traumatic stress disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "890",
+      "ghe_label": "Eating disorders",
+      "query": "Eating disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005451",
+          "name": "eating disorder"
+        },
+        {
+          "id": "MONDO_0010198",
+          "name": "Wernicke-Korsakoff syndrome"
+        },
+        {
+          "id": "EFO_1001790",
+          "name": "female athlete triad syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "900",
+      "ghe_label": "Austism and Asperger syndrome",
+      "query": "Austism and Asperger syndrome",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "910",
+      "ghe_label": "Childhood behavioural disorders",
+      "query": "Childhood behavioural disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "911",
+      "ghe_label": "Attention deficit/hyperactivity syndrome",
+      "query": "Attention deficit/hyperactivity syndrome",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "912",
+      "ghe_label": "Conduct disorder",
+      "query": "Conduct disorder",
+      "efo_id": "MONDO_0005352",
+      "efo_label": "conduct disorder",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005352",
+          "name": "conduct disorder"
+        },
+        {
+          "id": "MONDO_0005449",
+          "name": "conduction system disorder"
+        },
+        {
+          "id": "MONDO_0000992",
+          "name": "heart conduction disease"
+        },
+        {
+          "id": "MONDO_0020679",
+          "name": "conductive hearing loss disorder"
+        },
+        {
+          "id": "MONDO_0100042",
+          "name": "cardiac conduction defect"
+        }
+      ]
+    },
+    {
+      "ghe_code": "920",
+      "ghe_label": "Idiopathic intellectual disability",
+      "query": "Idiopathic intellectual disability",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0014631",
+          "name": "hypomagnesemia, seizures, and intellectual disability"
+        },
+        {
+          "id": "MONDO_0020788",
+          "name": "hypomagnesemia, seizures, and intellectual disability 2"
+        },
+        {
+          "id": "MONDO_0005579",
+          "name": "idiopathic generalized epilepsy"
+        },
+        {
+          "id": "EFO_0009155",
+          "name": "growth retardation, intellectual developmental disorder, hypotonia, and hepatopathy"
+        },
+        {
+          "id": "MONDO_0008152",
+          "name": "multicentric carpo-tarsal osteolysis with or without nephropathy"
+        }
+      ]
+    },
+    {
+      "ghe_code": "930",
+      "ghe_label": "Other mental and behavioural disorders",
+      "query": "Other mental and behavioural disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "950",
+      "ghe_label": "Alzheimer disease and other dementias",
+      "query": "Alzheimer disease",
+      "efo_id": "MONDO_0004975",
+      "efo_label": "Alzheimer disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004975",
+          "name": "Alzheimer disease"
+        },
+        {
+          "id": "MONDO_0100087",
+          "name": "familial Alzheimer disease"
+        },
+        {
+          "id": "MONDO_0015140",
+          "name": "early-onset autosomal dominant Alzheimer disease"
+        },
+        {
+          "id": "EFO_1001870",
+          "name": "late-onset Alzheimers disease"
+        },
+        {
+          "id": "MONDO_0011913",
+          "name": "Alzheimer disease 3"
+        }
+      ]
+    },
+    {
+      "ghe_code": "960",
+      "ghe_label": "Parkinson disease",
+      "query": "Parkinson disease",
+      "efo_id": "MONDO_0005180",
+      "efo_label": "Parkinson disease",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005180",
+          "name": "Parkinson disease"
+        },
+        {
+          "id": "MONDO_0021095",
+          "name": "parkinsonian disorder"
+        },
+        {
+          "id": "MONDO_0017279",
+          "name": "young-onset Parkinson disease"
+        },
+        {
+          "id": "OBA_2001009",
+          "name": "age of onset of Parkinson disease"
+        },
+        {
+          "id": "MONDO_0008199",
+          "name": "late-onset Parkinson disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "970",
+      "ghe_label": "Epilepsy",
+      "query": "epilepsy",
+      "efo_id": "MONDO_0005027",
+      "efo_label": "epilepsy",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005027",
+          "name": "epilepsy"
+        },
+        {
+          "id": "HP_0001250",
+          "name": "Seizure"
+        },
+        {
+          "id": "MONDO_0100577",
+          "name": "myoclonic epilepsy"
+        },
+        {
+          "id": "MONDO_0019448",
+          "name": "benign adult familial myoclonic epilepsy"
+        },
+        {
+          "id": "MONDO_0100619",
+          "name": "variable age epilepsy syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "980",
+      "ghe_label": "Multiple sclerosis",
+      "query": "multiple sclerosis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0803536",
+          "name": "multiple sclerosis symptom measurement"
+        },
+        {
+          "id": "MONDO_0005284",
+          "name": "chronic progressive multiple sclerosis"
+        },
+        {
+          "id": "MONDO_0005314",
+          "name": "relapsing-remitting multiple sclerosis"
+        },
+        {
+          "id": "MONDO_0017837",
+          "name": "multiple sclerosis-ichthyosis-factor VIII deficiency syndrome"
+        },
+        {
+          "id": "MONDO_0000451",
+          "name": "primary progressive multiple sclerosis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "990",
+      "ghe_label": "Migraine",
+      "query": "migraine disorder",
+      "efo_id": "MONDO_0005277",
+      "efo_label": "migraine disorder",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005277",
+          "name": "migraine disorder"
+        },
+        {
+          "id": "OBA_2001026",
+          "name": "age of onset of migraine disorder"
+        },
+        {
+          "id": "MONDO_0000700",
+          "name": "familial hemiplegic migraine"
+        },
+        {
+          "id": "MONDO_0005475",
+          "name": "migraine with aura"
+        },
+        {
+          "id": "MONDO_0100431",
+          "name": "migraine without aura"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1010",
+      "ghe_label": "Other neurological conditions",
+      "query": "Other neurological conditions",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0004840",
+          "name": "cortical thickness"
+        },
+        {
+          "id": "MONDO_0800502",
+          "name": "childhood-onset self-limited focal epilepsy syndrome"
+        },
+        {
+          "id": "MONDO_0012812",
+          "name": "developmental and epileptic encephalopathy, 4"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1020",
+      "ghe_label": "Sense organ diseases",
+      "query": "Sense organ diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1030",
+      "ghe_label": "Glaucoma",
+      "query": "glaucoma",
+      "efo_id": "MONDO_0005041",
+      "efo_label": "glaucoma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005041",
+          "name": "glaucoma"
+        },
+        {
+          "id": "MONDO_0018174",
+          "name": "hereditary glaucoma"
+        },
+        {
+          "id": "MONDO_0020367",
+          "name": "juvenile open angle glaucoma"
+        },
+        {
+          "id": "MONDO_0005338",
+          "name": "open-angle glaucoma"
+        },
+        {
+          "id": "MONDO_0001868",
+          "name": "primary angle-closure glaucoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1040",
+      "ghe_label": "Cataracts",
+      "query": "cataract",
+      "efo_id": "MONDO_0005129",
+      "efo_label": "cataract",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005129",
+          "name": "cataract"
+        },
+        {
+          "id": "MONDO_0011060",
+          "name": "early-onset non-syndromic cataract"
+        },
+        {
+          "id": "HP_0000519",
+          "name": "Developmental cataract"
+        },
+        {
+          "id": "MONDO_0010544",
+          "name": "cataract 40"
+        },
+        {
+          "id": "MONDO_0015300",
+          "name": "cataract - microcornea syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1050",
+      "ghe_label": "Uncorrected refractive errors",
+      "query": "Uncorrected refractive errors",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1060",
+      "ghe_label": "Macular degeneration",
+      "query": "macular degeneration",
+      "efo_id": "MONDO_0003004",
+      "efo_label": "macular degeneration",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0003004",
+          "name": "macular degeneration"
+        },
+        {
+          "id": "MONDO_0005150",
+          "name": "age-related macular degeneration"
+        },
+        {
+          "id": "MONDO_0012659",
+          "name": "age related macular degeneration 9"
+        },
+        {
+          "id": "MONDO_0013420",
+          "name": "age related macular degeneration 12"
+        },
+        {
+          "id": "MONDO_0004580",
+          "name": "retinal degeneration"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1070",
+      "ghe_label": "Other vision loss",
+      "query": "Other vision loss",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0000572",
+          "name": "Visual loss"
+        },
+        {
+          "id": "MONDO_0044749",
+          "name": "X-linked congenital stationary night blindness"
+        },
+        {
+          "id": "MONDO_0016295",
+          "name": "neuronal ceroid lipofuscinosis"
+        },
+        {
+          "id": "MONDO_0014024",
+          "name": "hereditary spastic paraplegia 43"
+        },
+        {
+          "id": "MONDO_0100339",
+          "name": "Friedreich ataxia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1080",
+      "ghe_label": "Other hearing loss",
+      "query": "Other hearing loss",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0016298",
+          "name": "postlingual non-syndromic genetic hearing loss"
+        },
+        {
+          "id": "MONDO_0016297",
+          "name": "prelingual non-syndromic genetic hearing loss"
+        },
+        {
+          "id": "MONDO_0009569",
+          "name": "Hennekam-Beemer syndrome"
+        },
+        {
+          "id": "EFO_0009076",
+          "name": "nonsyndromic deafness"
+        },
+        {
+          "id": "Orphanet_169346",
+          "name": "DNA repair defect other than combined T-cell and B-cell immunodeficiencies"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1090",
+      "ghe_label": "Other sense organ disorders",
+      "query": "Other sense organ disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1110",
+      "ghe_label": "Rheumatic heart disease",
+      "query": "rheumatic heart disease",
+      "efo_id": "MONDO_0006955",
+      "efo_label": "rheumatic heart disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0006955",
+          "name": "rheumatic heart disease"
+        },
+        {
+          "id": "MONDO_0004582",
+          "name": "rheumatic myocarditis"
+        },
+        {
+          "id": "MONDO_0017767",
+          "name": "rheumatic fever"
+        },
+        {
+          "id": "MONDO_0008383",
+          "name": "rheumatoid arthritis"
+        },
+        {
+          "id": "MONDO_0000471",
+          "name": "tricuspid valve disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1120",
+      "ghe_label": "Hypertensive heart disease",
+      "query": "hypertensive heart disease",
+      "efo_id": "MONDO_0001302",
+      "efo_label": "hypertensive heart disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0001302",
+          "name": "hypertensive heart disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1130",
+      "ghe_label": "Ischaemic heart disease",
+      "query": "coronary artery disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005010",
+          "name": "coronary artery disorder"
+        },
+        {
+          "id": "EFO_0003776",
+          "name": "coronary artery bypass"
+        },
+        {
+          "id": "MONDO_0012586",
+          "name": "coronary artery disease, autosomal dominant 2"
+        },
+        {
+          "id": "MONDO_0021661",
+          "name": "coronary atherosclerosis"
+        },
+        {
+          "id": "EFO_0004723",
+          "name": "coronary artery calcification"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1140",
+      "ghe_label": "Stroke",
+      "query": "stroke",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005098",
+          "name": "stroke disorder"
+        },
+        {
+          "id": "MONDO_0011057",
+          "name": "cerebrovascular disorder"
+        },
+        {
+          "id": "MONDO_1060198",
+          "name": "ischemic stroke"
+        },
+        {
+          "id": "EFO_0020921",
+          "name": "hemorrhagic stroke"
+        },
+        {
+          "id": "MONDO_0005490",
+          "name": "large artery stroke"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1141",
+      "ghe_label": "Ischaemic stroke",
+      "query": "Ischaemic stroke",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_1060198",
+          "name": "ischemic stroke"
+        },
+        {
+          "id": "MONDO_0018585",
+          "name": "pediatric arterial ischemic stroke"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1142",
+      "ghe_label": "Haemorrhagic stroke",
+      "query": "Haemorrhagic stroke",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0020921",
+          "name": "hemorrhagic stroke"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1150",
+      "ghe_label": "Cardiomyopathy, myocarditis, endocarditis",
+      "query": "cardiomyopathy",
+      "efo_id": "MONDO_0004994",
+      "efo_label": "cardiomyopathy",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004994",
+          "name": "cardiomyopathy"
+        },
+        {
+          "id": "MONDO_0005021",
+          "name": "dilated cardiomyopathy"
+        },
+        {
+          "id": "MONDO_0005217",
+          "name": "familial cardiomyopathy"
+        },
+        {
+          "id": "MONDO_0700335",
+          "name": "familial isolated dilated cardiomyopathy"
+        },
+        {
+          "id": "MONDO_0000591",
+          "name": "intrinsic cardiomyopathy"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1160",
+      "ghe_label": "Other circulatory diseases",
+      "query": "Other circulatory diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0004995",
+          "name": "cardiovascular disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1180",
+      "ghe_label": "Chronic obstructive pulmonary disease",
+      "query": "chronic obstructive pulmonary disease",
+      "efo_id": "MONDO_0005002",
+      "efo_label": "chronic obstructive pulmonary disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005002",
+          "name": "chronic obstructive pulmonary disease"
+        },
+        {
+          "id": "OBA_2055786",
+          "name": "age of onset of chronic obstructive pulmonary disease"
+        },
+        {
+          "id": "MONDO_0005087",
+          "name": "respiratory system disorder"
+        },
+        {
+          "id": "MONDO_0005607",
+          "name": "chronic bronchitis"
+        },
+        {
+          "id": "MONDO_0004849",
+          "name": "pulmonary emphysema"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1190",
+      "ghe_label": "Asthma",
+      "query": "asthma",
+      "efo_id": "MONDO_0004979",
+      "efo_label": "asthma",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004979",
+          "name": "asthma"
+        },
+        {
+          "id": "MONDO_0005405",
+          "name": "childhood onset asthma"
+        },
+        {
+          "id": "MONDO_0004784",
+          "name": "allergic asthma"
+        },
+        {
+          "id": "OBA_2001001",
+          "name": "age of onset of asthma"
+        },
+        {
+          "id": "EFO_0010638",
+          "name": "atopic asthma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1200",
+      "ghe_label": "Other respiratory diseases",
+      "query": "Other respiratory diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005087",
+          "name": "respiratory system disorder"
+        },
+        {
+          "id": "EFO_1001840",
+          "name": "respiratory paralysis"
+        },
+        {
+          "id": "MONDO_0020121",
+          "name": "muscular dystrophy"
+        },
+        {
+          "id": "MONDO_0004069",
+          "name": "inborn mitochondrial metabolism disorder"
+        },
+        {
+          "id": "MONDO_0009194",
+          "name": "immunodeficiency 32B"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1220",
+      "ghe_label": "Peptic ulcer disease",
+      "query": "peptic ulcer disease",
+      "efo_id": "MONDO_0004247",
+      "efo_label": "peptic ulcer disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004247",
+          "name": "peptic ulcer disease"
+        },
+        {
+          "id": "EFO_0009923",
+          "name": "Peptic ulcer and gastro-oesophageal reflux disease (GORD) drug use measurement"
+        },
+        {
+          "id": "MONDO_0001126",
+          "name": "gastric ulcer"
+        },
+        {
+          "id": "MONDO_0006781",
+          "name": "Helicobacter pylori infectious disease"
+        },
+        {
+          "id": "MONDO_0019610",
+          "name": "Zollinger-Ellison syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1230",
+      "ghe_label": "Cirrhosis of the liver",
+      "query": "liver cirrhosis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005155",
+          "name": "cirrhosis of liver"
+        },
+        {
+          "id": "MONDO_0006644",
+          "name": "alcoholic liver cirrhosis"
+        },
+        {
+          "id": "EFO_0004267",
+          "name": "biliary liver cirrhosis"
+        },
+        {
+          "id": "MONDO_0007329",
+          "name": "cirrhosis, familial"
+        },
+        {
+          "id": "MONDO_0011497",
+          "name": "hereditary North American Indian childhood cirrhosis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1231",
+      "ghe_label": "Cirrhosis due to hepatitis B",
+      "query": "Cirrhosis due to hepatitis B",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1232",
+      "ghe_label": "Cirrhosis due to hepatitis C",
+      "query": "Cirrhosis due to hepatitis C",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1233",
+      "ghe_label": "Cirrhosis due to alcohol use",
+      "query": "Cirrhosis due to alcohol use",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1234",
+      "ghe_label": "Other liver cirrhosis",
+      "query": "Other liver cirrhosis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0007256",
+          "name": "hepatocellular carcinoma"
+        },
+        {
+          "id": "MONDO_0004694",
+          "name": "hepatopulmonary syndrome"
+        },
+        {
+          "id": "MONDO_0012436",
+          "name": "neonatal diabetes mellitus with congenital hypothyroidism"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1240",
+      "ghe_label": "Appendicitis",
+      "query": "appendicitis",
+      "efo_id": "MONDO_0005649",
+      "efo_label": "appendicitis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005649",
+          "name": "appendicitis"
+        },
+        {
+          "id": "EFO_0022612",
+          "name": "complicated appendicitis"
+        },
+        {
+          "id": "MONDO_0018330",
+          "name": "mucinous adenocarcinoma of the appendix"
+        },
+        {
+          "id": "EFO_1001836",
+          "name": "pyogenic liver abscess"
+        },
+        {
+          "id": "EFO_0022613",
+          "name": "gangrenous appendicits"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1241",
+      "ghe_label": "Gastritis and duodenitis",
+      "query": "Gastritis and duodenitis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0033643",
+          "name": "inflammatory bowel disease 30"
+        },
+        {
+          "id": "MONDO_0859177",
+          "name": "VISS syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1242",
+      "ghe_label": "Paralytic ileus and intestinal obstruction",
+      "query": "Paralytic ileus and intestinal obstruction",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1244",
+      "ghe_label": "Inflammatory bowel disease",
+      "query": "inflammatory bowel disease",
+      "efo_id": "MONDO_0005265",
+      "efo_label": "inflammatory bowel disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005265",
+          "name": "inflammatory bowel disease"
+        },
+        {
+          "id": "HP_0002037",
+          "name": "Inflammation of the large intestine"
+        },
+        {
+          "id": "MONDO_0009960",
+          "name": "inflammatory bowel disease 1"
+        },
+        {
+          "id": "MONDO_0011661",
+          "name": "inflammatory bowel disease 5"
+        },
+        {
+          "id": "MONDO_0016542",
+          "name": "IL10-related early-onset inflammatory bowel disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1246",
+      "ghe_label": "Gallbladder and biliary diseases",
+      "query": "gallbladder disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005281",
+          "name": "gallbladder disorder"
+        },
+        {
+          "id": "MONDO_0018536",
+          "name": "adenocarcinoma of gallbladder and extrahepatic biliary tract"
+        },
+        {
+          "id": "HP_0012438",
+          "name": "Abnormal gallbladder physiology"
+        },
+        {
+          "id": "MONDO_0010939",
+          "name": "gallbladder disease 1"
+        },
+        {
+          "id": "MONDO_0006476",
+          "name": "undifferentiated gallbladder carcinoma"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1248",
+      "ghe_label": "Pancreatitis",
+      "query": "pancreatitis",
+      "efo_id": "MONDO_0004982",
+      "efo_label": "pancreatitis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0004982",
+          "name": "pancreatitis"
+        },
+        {
+          "id": "MONDO_0008185",
+          "name": "hereditary chronic pancreatitis"
+        },
+        {
+          "id": "MONDO_0011986",
+          "name": "tropical pancreatitis"
+        },
+        {
+          "id": "MONDO_0015175",
+          "name": "autoimmune pancreatitis"
+        },
+        {
+          "id": "MONDO_0017227",
+          "name": "autoimmune pancreatitis type 1"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1250",
+      "ghe_label": "Other digestive diseases",
+      "query": "Other digestive diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1270",
+      "ghe_label": "Kidney diseases",
+      "query": "Kidney diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005240",
+          "name": "kidney disorder"
+        },
+        {
+          "id": "MONDO_0002473",
+          "name": "cystic kidney disease"
+        },
+        {
+          "id": "MONDO_0005016",
+          "name": "diabetic kidney disease"
+        },
+        {
+          "id": "MONDO_0002118",
+          "name": "urinary system disorder"
+        },
+        {
+          "id": "MONDO_0004995",
+          "name": "cardiovascular disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1271",
+      "ghe_label": "Acute glomerulonephritis",
+      "query": "Acute glomerulonephritis",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0001644",
+          "name": "acute proliferative glomerulonephritis"
+        },
+        {
+          "id": "MONDO_0002462",
+          "name": "glomerulonephritis"
+        },
+        {
+          "id": "MONDO_0009303",
+          "name": "anti-glomerular basement membrane disease"
+        },
+        {
+          "id": "MONDO_0007179",
+          "name": "autoimmune disease"
+        },
+        {
+          "id": "MONDO_0009458",
+          "name": "Schimke immuno-osseous dysplasia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1272",
+      "ghe_label": "Chronic kidney disease due to diabetes",
+      "query": "Chronic kidney disease due to diabetes",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005148",
+          "name": "type 2 diabetes mellitus"
+        },
+        {
+          "id": "MONDO_0001106",
+          "name": "kidney failure"
+        },
+        {
+          "id": "MONDO_0009216",
+          "name": "glycogen storage disease due to GLUT2 deficiency"
+        },
+        {
+          "id": "MONDO_0024327",
+          "name": "chronic renal failure syndrome"
+        },
+        {
+          "id": "MONDO_0009340",
+          "name": "non-spherocytic hemolytic anemia due to hexokinase deficiency"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1273",
+      "ghe_label": "Other chronic kidney disease",
+      "query": "Other chronic kidney disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "EFO_0009909",
+          "name": "stage 5 chronic kidney disease"
+        },
+        {
+          "id": "MONDO_0001567",
+          "name": "nephrocalcinosis"
+        },
+        {
+          "id": "EFO_0004997",
+          "name": "type 2 diabetes nephropathy"
+        },
+        {
+          "id": "MONDO_0005960",
+          "name": "silicosis"
+        },
+        {
+          "id": "MONDO_0026045",
+          "name": "prurigo nodularis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1280",
+      "ghe_label": "Benign prostatic hyperplasia",
+      "query": "Benign prostatic hyperplasia",
+      "efo_id": "MONDO_0010811",
+      "efo_label": "benign prostatic hyperplasia",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0010811",
+          "name": "benign prostatic hyperplasia"
+        },
+        {
+          "id": "MONDO_0002450",
+          "name": "prostatic adenoma"
+        },
+        {
+          "id": "MONDO_0024582",
+          "name": "male reproductive system neoplasm"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1290",
+      "ghe_label": "Urolithiasis",
+      "query": "Urolithiasis",
+      "efo_id": "MONDO_0024647",
+      "efo_label": "urolithiasis",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0024647",
+          "name": "urolithiasis"
+        },
+        {
+          "id": "EFO_0010826",
+          "name": "cystine urolithiasis"
+        },
+        {
+          "id": "EFO_0009065",
+          "name": "calcium oxalate urolithiasis"
+        },
+        {
+          "id": "MONDO_0004828",
+          "name": "lower urinary tract calculus"
+        },
+        {
+          "id": "MONDO_0018106",
+          "name": "hereditary xanthinuria"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1310",
+      "ghe_label": "Infertility",
+      "query": "Infertility",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0000789",
+          "name": "Infertility"
+        },
+        {
+          "id": "MONDO_0005047",
+          "name": "infertility disorder"
+        },
+        {
+          "id": "MONDO_0005372",
+          "name": "male infertility"
+        },
+        {
+          "id": "EFO_0700067",
+          "name": "non-syndromic male infertility due to sperm motility disorder"
+        },
+        {
+          "id": "EFO_0700088",
+          "name": "male infertility with azoospermia or oligozoospermia due to single gene mutation"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1320",
+      "ghe_label": "Gynecological diseases",
+      "query": "Gynecological diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0002263",
+          "name": "female reproductive system disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1330",
+      "ghe_label": "Skin diseases",
+      "query": "Skin diseases",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0006617",
+          "name": "vesiculobullous skin disease"
+        },
+        {
+          "id": "MONDO_0024294",
+          "name": "skin disorder caused by infection"
+        },
+        {
+          "id": "MONDO_0024610",
+          "name": "parasitic skin disorder"
+        },
+        {
+          "id": "MONDO_0100118",
+          "name": "hereditary skin disorder"
+        },
+        {
+          "id": "MONDO_0005093",
+          "name": "skin disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1350",
+      "ghe_label": "Rheumatoid arthritis",
+      "query": "rheumatoid arthritis",
+      "efo_id": "MONDO_0008383",
+      "efo_label": "rheumatoid arthritis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0008383",
+          "name": "rheumatoid arthritis"
+        },
+        {
+          "id": "EFO_0009460",
+          "name": "ACPA-negative rheumatoid arthritis"
+        },
+        {
+          "id": "EFO_0009459",
+          "name": "ACPA-positive rheumatoid arthritis"
+        },
+        {
+          "id": "MONDO_0019435",
+          "name": "rheumatoid factor-positive polyarticular juvenile idiopathic arthritis"
+        },
+        {
+          "id": "MONDO_0019432",
+          "name": "rheumatoid factor-negative juvenile idiopathic arthritis"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1360",
+      "ghe_label": "Osteoarthritis",
+      "query": "osteoarthritis",
+      "efo_id": "MONDO_0005178",
+      "efo_label": "osteoarthritis",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005178",
+          "name": "osteoarthritis"
+        },
+        {
+          "id": "MONDO_0006632",
+          "name": "osteoarthritis, hand"
+        },
+        {
+          "id": "EFO_0007942",
+          "name": "hip osteoarthritis symptom severity measurement"
+        },
+        {
+          "id": "MONDO_0005416",
+          "name": "osteoarthritis, knee"
+        },
+        {
+          "id": "EFO_0005890",
+          "name": "osteoarthritis biomarker measurement"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1370",
+      "ghe_label": "Gout",
+      "query": "gout",
+      "efo_id": "MONDO_0005393",
+      "efo_label": "gout",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005393",
+          "name": "gout"
+        },
+        {
+          "id": "EFO_0021525",
+          "name": "renal overload-type gout"
+        },
+        {
+          "id": "EFO_0004761",
+          "name": "uric acid measurement"
+        },
+        {
+          "id": "MONDO_0010299",
+          "name": "hypoxanthine guanine phosphoribosyltransferase partial deficiency"
+        },
+        {
+          "id": "MONDO_0010395",
+          "name": "phosphoribosylpyrophosphate synthetase superactivity"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1380",
+      "ghe_label": "Back and neck pain",
+      "query": "Back and neck pain",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0030833",
+          "name": "Neck pain"
+        },
+        {
+          "id": "MONDO_0019625",
+          "name": "familial thoracic aortic aneurysm and aortic dissection"
+        },
+        {
+          "id": "MONDO_0006982",
+          "name": "subacute thyroiditis"
+        },
+        {
+          "id": "MONDO_0000481",
+          "name": "cervical dystonia"
+        },
+        {
+          "id": "MONDO_0005546",
+          "name": "fibromyalgia"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1390",
+      "ghe_label": "Other musculoskeletal disorders",
+      "query": "Other musculoskeletal disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0013308",
+          "name": "CBL-related disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1400",
+      "ghe_label": "Congenital anomalies",
+      "query": "Congenital anomalies",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0043009",
+          "name": "hereditary lethal multiple congenital anomalies/dysmorphic syndrome"
+        },
+        {
+          "id": "MONDO_0015159",
+          "name": "multiple congenital anomalies/dysmorphic syndrome-intellectual disability"
+        },
+        {
+          "id": "MONDO_0015161",
+          "name": "multiple congenital anomalies/dysmorphic syndrome without intellectual disability"
+        },
+        {
+          "id": "MONDO_0015160",
+          "name": "multiple congenital anomalies/dysmorphic syndrome-variable intellectual disability syndrome"
+        },
+        {
+          "id": "MONDO_0013563",
+          "name": "multiple congenital anomalies-hypotonia-seizures syndrome 1"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1410",
+      "ghe_label": "Neural tube defects",
+      "query": "neural tube defect",
+      "efo_id": "MONDO_0018075",
+      "efo_label": "neural tube defect",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0018075",
+          "name": "neural tube defect"
+        },
+        {
+          "id": "MONDO_0011120",
+          "name": "neural tube defects, folate-sensitive"
+        },
+        {
+          "id": "MONDO_0008449",
+          "name": "spina bifida"
+        },
+        {
+          "id": "MONDO_0010930",
+          "name": "anophthalmia plus syndrome"
+        },
+        {
+          "id": "MONDO_0017078",
+          "name": "cephalocele"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1430",
+      "ghe_label": "Down syndrome",
+      "query": "Down syndrome",
+      "efo_id": "MONDO_0008608",
+      "efo_label": "Down syndrome",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0008608",
+          "name": "Down syndrome"
+        },
+        {
+          "id": "EFO_0022028",
+          "name": "down syndrome cell adhesion molecule measurement"
+        },
+        {
+          "id": "MONDO_0018004",
+          "name": "acute megakaryoblastic leukemia without down syndrome"
+        },
+        {
+          "id": "HP_0000494",
+          "name": "Downslanted palpebral fissures"
+        },
+        {
+          "id": "MONDO_0020526",
+          "name": "acute megakaryoblastic leukemia in down syndrome"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1440",
+      "ghe_label": "Congenital heart anomalies",
+      "query": "congenital heart disease",
+      "efo_id": "MONDO_0005453",
+      "efo_label": "congenital heart disease",
+      "match_type": "curated-alias-exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005453",
+          "name": "congenital heart disease"
+        },
+        {
+          "id": "MONDO_0800441",
+          "name": "NKX2.5-related congenital, conduction and myopathic heart disease"
+        },
+        {
+          "id": "EFO_0009054",
+          "name": "Pulmonary arterial hypertension associated with congenital heart disease"
+        },
+        {
+          "id": "MONDO_0100614",
+          "name": "syndromic congenital heart disease"
+        },
+        {
+          "id": "MONDO_0019512",
+          "name": "congenital heart malformation"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1450",
+      "ghe_label": "Other chromosomal anomalies",
+      "query": "Other chromosomal anomalies",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0011331",
+          "name": "congenital chylothorax"
+        },
+        {
+          "id": "MONDO_0016659",
+          "name": "8p23.1 duplication syndrome"
+        },
+        {
+          "id": "MONDO_0019893",
+          "name": "distal monosomy 19p13.3"
+        },
+        {
+          "id": "MONDO_0015580",
+          "name": "distal monosomy 7q36"
+        },
+        {
+          "id": "MONDO_0015435",
+          "name": "ring chromosome 19"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1460",
+      "ghe_label": "Other congenital anomalies",
+      "query": "Other congenital anomalies",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0014165",
+          "name": "multiple congenital anomalies-hypotonia-seizures syndrome 3"
+        },
+        {
+          "id": "MONDO_0010672",
+          "name": "linear skin defects with multiple congenital anomalies"
+        },
+        {
+          "id": "MONDO_0100614",
+          "name": "syndromic congenital heart disease"
+        },
+        {
+          "id": "MONDO_0016046",
+          "name": "familial clubfoot with or without associated lower limb anomalies"
+        },
+        {
+          "id": "MONDO_0011331",
+          "name": "congenital chylothorax"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1470",
+      "ghe_label": "Oral conditions",
+      "query": "Oral conditions",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0004844",
+          "name": "oral mucosa leukoplakia"
+        },
+        {
+          "id": "MONDO_0005002",
+          "name": "chronic obstructive pulmonary disease"
+        },
+        {
+          "id": "MONDO_0004980",
+          "name": "atopic eczema"
+        },
+        {
+          "id": "MONDO_0000594",
+          "name": "pervasive developmental disorder"
+        },
+        {
+          "id": "MONDO_0005416",
+          "name": "osteoarthritis, knee"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1480",
+      "ghe_label": "Dental caries",
+      "query": "Dental caries",
+      "efo_id": "MONDO_0005276",
+      "efo_label": "dental caries",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "MONDO_0005276",
+          "name": "dental caries"
+        },
+        {
+          "id": "MONDO_0005591",
+          "name": "pit and fissure surface dental caries"
+        },
+        {
+          "id": "MONDO_0006957",
+          "name": "root caries"
+        },
+        {
+          "id": "MONDO_0002233",
+          "name": "enamel caries"
+        },
+        {
+          "id": "EFO_0600095",
+          "name": "primary dental caries"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1490",
+      "ghe_label": "Periodontal disease",
+      "query": "Periodontal disease",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0002635",
+          "name": "periodontal disorder"
+        },
+        {
+          "id": "Orphanet_164001",
+          "name": "Rare odontal or periodontal disorder"
+        },
+        {
+          "id": "MONDO_0009490",
+          "name": "Papillon-Lefevre disease"
+        },
+        {
+          "id": "Orphanet_77830",
+          "name": "Rare genetic odontologic disease"
+        },
+        {
+          "id": "MONDO_0022736",
+          "name": "occupational lung disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1500",
+      "ghe_label": "Edentulism",
+      "query": "Edentulism",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1502",
+      "ghe_label": "Other oral disorders",
+      "query": "Other oral disorders",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "MONDO_0005258",
+          "name": "autism spectrum disorder"
+        },
+        {
+          "id": "MONDO_0005090",
+          "name": "schizophrenia"
+        },
+        {
+          "id": "MONDO_0005083",
+          "name": "psoriasis"
+        },
+        {
+          "id": "MONDO_0004995",
+          "name": "cardiovascular disorder"
+        },
+        {
+          "id": "MONDO_0005151",
+          "name": "endocrine system disorder"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1505",
+      "ghe_label": "Sudden infant death syndrome",
+      "query": "Sudden infant death syndrome",
+      "efo_id": "EFO_0005303",
+      "efo_label": "sudden infant death syndrome",
+      "match_type": "exact",
+      "reason": null,
+      "candidates": [
+        {
+          "id": "EFO_0005303",
+          "name": "sudden infant death syndrome"
+        },
+        {
+          "id": "MONDO_0012124",
+          "name": "sudden infant death-dysgenesis of the testes syndrome"
+        },
+        {
+          "id": "EFO_0004278",
+          "name": "sudden cardiac arrest"
+        },
+        {
+          "id": "MONDO_0018097",
+          "name": "infantile spasms"
+        },
+        {
+          "id": "MONDO_0010771",
+          "name": "histiocytoid cardiomyopathy"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1520",
+      "ghe_label": "Unintentional injuries",
+      "query": "Unintentional injuries",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1530",
+      "ghe_label": "Road injury",
+      "query": "Road injury",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1550",
+      "ghe_label": "Falls",
+      "query": "Falls",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0002527",
+          "name": "Falls"
+        },
+        {
+          "id": "HP_0002359",
+          "name": "Frequent falls"
+        },
+        {
+          "id": "EFO_0004340",
+          "name": "body mass index"
+        },
+        {
+          "id": "EFO_0009885",
+          "name": "frailty measurement"
+        },
+        {
+          "id": "MONDO_0017279",
+          "name": "young-onset Parkinson disease"
+        }
+      ]
+    },
+    {
+      "ghe_code": "1560",
+      "ghe_label": "Fire, heat and hot substances",
+      "query": "Fire, heat and hot substances",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1570",
+      "ghe_label": "Drowning",
+      "query": "Drowning",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1575",
+      "ghe_label": "Exposure to mechanical forces",
+      "query": "Exposure to mechanical forces",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1580",
+      "ghe_label": "Natural disasters",
+      "query": "Natural disasters",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1590",
+      "ghe_label": "Other unintentional injuries",
+      "query": "Other unintentional injuries",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": []
+    },
+    {
+      "ghe_code": "1610",
+      "ghe_label": "Self-harm",
+      "query": "Self-harm",
+      "efo_id": null,
+      "efo_label": null,
+      "match_type": "unmapped",
+      "reason": "no candidate's label matched the query exactly after normalisation; left unmapped rather than guessed",
+      "candidates": [
+        {
+          "id": "HP_0100716",
+          "name": "Self-injurious behavior"
+        }
+      ]
+    }
+  ]
+}

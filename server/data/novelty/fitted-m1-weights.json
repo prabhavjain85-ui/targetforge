@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "id": "evidence-m1",
+  "description": "Fitted M1 coefficients: log1p(publication_count) / 8 plus the eight Open Targets biology datatype scores. This is the evidence axis of the neglect screen. It contains no term for drug count, compound count or any other measure of prior effort, by construction.",
+  "feature_order": [
+    "log1p_pub_count",
+    "genetic_association",
+    "genetic_literature",
+    "somatic_mutation",
+    "overall",
+    "literature",
+    "affected_pathway",
+    "animal_model",
+    "rna_expression"
+  ],
+  "intercept": -0.2711,
+  "coefficients": {
+    "log1p_pub_count": 1.601,
+    "genetic_association": 0.0059,
+    "genetic_literature": -0.0099,
+    "somatic_mutation": 0.5358,
+    "overall": 0.3612,
+    "literature": 0.255,
+    "affected_pathway": -0.2925,
+    "animal_model": 0,
+    "rna_expression": -0.0324
+  },
+  "pub_count_scale": 8,
+  "heldOutPerformance": {
+    "rocAuc": 0.7214,
+    "prAuc": 0.069,
+    "precisionAt25": 0.24,
+    "recallAt25": 0.0233,
+    "nPairs": 11711,
+    "nPositives": 258,
+    "baseRate": 0.022
+  },
+  "comparators": {
+    "publicationCountAlone": 0.6672,
+    "biologyFeaturesAlone": 0.683
+  },
+  "gainOverPublicationCount": {
+    "rocAucDelta": 0.0542,
+    "ciPairs": [
+      0.0214,
+      0.0887
+    ],
+    "ciDiseases": [
+      0.003,
+      0.1122
+    ],
+    "prAucSurvivesDiseaseResampling": false
+  },
+  "scopeLimit": {
+    "verdict": "oncology-scoped",
+    "detail": "Task 7 stratified the held-out set: of the diseases contributing data, 9 were cancers and 1 was not. The cancer stratum reproduces the pooled result and the single non-cancer disease showed no benefit, so this score is an oncology result and generalisation beyond cancer is untested.",
+    "cancerDiseases": 9,
+    "nonCancerDiseases": 1,
+    "nonCancerRocAucM0": 0.7295,
+    "nonCancerRocAucM1": 0.722,
+    "source": "benchmark/docking/results/task7_cancer_stratification.json"
+  },
+  "provenance": {
+    "releasePair": "21.04 (2021-05-05) -> 26.09 (2026-09)",
+    "cohort": "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
+    "diseases": {
+      "training": 11,
+      "heldOut": 11
+    },
+    "generator": "benchmark/docking/scripts/attention_control.mjs",
+    "generatedAt": "2026-11-17T04:12:54.908Z",
+    "sourceFiles": [
+      "benchmark/docking/results/task4_attention_control.json",
+      "benchmark/docking/results/task7_cancer_stratification.json"
+    ]
+  },
+  "caveat": "Fitted and tested on targets with no approved or clinical drug in 2021, on a panel that is predominantly cancers. Applying it to current Open Targets data is an extrapolation in time; applying it outside oncology is an extrapolation in scope."
+}
