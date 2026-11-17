@@ -162,6 +162,7 @@ export default function Header() {
         <NavLink to="/methodology" className={({ isActive }) => "site-nav-link" + (isActive ? " active" : "")}>
           Methodology
         </NavLink>
+        <NavLink to="/validation" className={({ isActive }) => "site-nav-link" + (isActive ? " active" : "")}>Validation</NavLink>
         <NavLink to="/contact" className={({ isActive }) => "site-nav-link" + (isActive ? " active" : "")}>
           Contact
         </NavLink>

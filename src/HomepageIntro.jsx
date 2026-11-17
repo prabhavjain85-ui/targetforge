@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const STEPS = [
   { n: "1", title: "Pick a protein target", detail: "RCSB PDB, gene, or disease handoff" },
   { n: "2", title: "Add 2–5 compounds", detail: "PubChem search & drug-likeness pre-check" },
-  { n: "3", title: "Rank & follow up", detail: "Knowledge-based triage score, then ADME" },
+  { n: "3", title: "Rank & follow up", detail: "Similarity to the bound ligand, then ADME" },
 ];
 
 export default function HomepageIntro({ onLoadDemo, onStartBlank, demoLoading }) {
@@ -13,7 +13,7 @@ export default function HomepageIntro({ onLoadDemo, onStartBlank, demoLoading })
       <div className="hero-eyebrow">TargetForge · computational drug discovery</div>
       <h1>Rank compounds against a protein target — in minutes</h1>
       <p className="hero-lead">
-        Stage a structure, shortlist molecules, and get a transparent, critiqued knowledge-based triage ranking
+        Stage a structure, shortlist molecules, and rank them by similarity to the co-crystallised ligand
         before ADME follow-up (in-browser docking is under validation).
       </p>
 

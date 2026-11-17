@@ -156,7 +156,7 @@ export default function LibraryScreenPanel({
           </div>
 
           <div className="lipinski-note">
-            Scores are a knowledge-based triage heuristic, not a binding or activity prediction.
+            heuristic-v2 is a drug-likeness and liability filter, not a binding or activity prediction (held-out ROC-AUC 0.523 against 0.520 for random).
             The similarity column is Morgan fingerprint (radius 2, 2048-bit) Tanimoto against the
             ligand co-crystallised in this structure — chemical resemblance only.
             {result.library?.generatedAt
