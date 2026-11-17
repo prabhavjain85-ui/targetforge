@@ -98,6 +98,33 @@ export const VALIDATION_SECTIONS = [
       "yourself rather than have it folded into a single number.",
   },
   {
+    id: "attention-control",
+    title: "Do the biology scores beat counting papers?",
+    source: VALIDATION_SOURCES.task4Json,
+    body:
+      "Because the fitted model is mostly a publication-count proxy, the question " +
+      "worth testing is whether Open Targets evidence adds anything once attention " +
+      "is controlled for. Three nested models on the same cohort, fitted on the 11 " +
+      "training diseases and evaluated on the 11 held out.\n" +
+      "Publication count alone: ROC-AUC 0.667 (PR-AUC 0.057).\n" +
+      "Publication count + the 8 biology features: ROC-AUC 0.721 (PR-AUC 0.069).\n" +
+      "The 8 biology features alone: ROC-AUC 0.683 (PR-AUC 0.049).\n" +
+      "Paired difference, biology added to publication count: ROC-AUC +0.054 (95% CI " +
+      "+0.021 to +0.089), PR-AUC +0.012 (95% CI +0.001 to +0.025). Both intervals " +
+      "exclude zero, so the evidence scores do add ranking signal beyond attention.\n" +
+      "That result is weaker than it looks. The held-out rows cluster into 10 " +
+      "diseases rather than being independent, and resampling whole diseases widens " +
+      "the ROC-AUC interval to +0.003 to +0.112 — still excluding zero, but barely — " +
+      "while the PR-AUC interval becomes −0.004 to +0.026, which includes zero. The " +
+      "gain in ranking holds; the gain in precision among the rare positives does " +
+      "not. The biology features alone do not beat publication count under disease " +
+      "resampling, so they are an addition to attention, not a replacement.\n" +
+      "Only the literature feature is substantially explained by publication count " +
+      "(R² 0.340). The next largest is RNA expression at 0.070 and the rest are " +
+      "lower, so residualising each feature against attention changes little: " +
+      "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).",
+  },
+  {
     id: "compound-triage",
     title: "Compound triage",
     source: VALIDATION_SOURCES.task2Md,

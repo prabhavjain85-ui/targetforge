@@ -10,7 +10,11 @@
  */
 import fs from "fs";
 import path from "path";
-import { SCORE_CHIPS, VALIDATION_COMMIT_SHORT } from "./shared/validationCopy";
+import {
+  SCORE_CHIPS,
+  VALIDATION_COMMIT_SHORT,
+  VALIDATION_SECTIONS,
+} from "./shared/validationCopy";
 
 const repoRoot = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(repoRoot, p), "utf8");
@@ -23,6 +27,7 @@ const validationCopy = read("src/shared/validationCopy.js");
 const validationPage = read("src/ValidationPage.jsx");
 const discoveryPage = read("src/TargetDiscoveryPage.jsx");
 const task3 = JSON.parse(read("benchmark/docking/results/task3_novelty_validation.json"));
+const task4 = JSON.parse(read("benchmark/docking/results/task4_attention_control.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
 
 /** Every metric-looking number a user can read, across the validation copy. */
@@ -166,7 +171,7 @@ describe("/validation page figures trace to committed artifacts", () => {
   });
 
   test("every three-decimal figure in the copy appears in a benchmark file", () => {
-    const artifacts = results + task1 + task2 + JSON.stringify(task3);
+    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4);
     const unmatched = [];
     for (const n of new Set(COPY_NUMBERS)) {
       const asText = n.toFixed(3);
@@ -249,5 +254,88 @@ describe("heuristic-v2 is not described as predicting activity", () => {
     expect(sortBlock).toMatch(/haveSimilarity/);
     // similarity is consulted before the heuristic score
     expect(sortBlock.indexOf("simB !== simA")).toBeLessThan(sortBlock.indexOf("b.score !== a.score"));
+  });
+});
+
+describe("Task 4 attention control figures trace to the committed run", () => {
+  const h = task4.held_out;
+  const paired = task4.paired_deltas.M1_vs_M0;
+  const clustered = task4.clustered_deltas.M1_vs_M0;
+  const section = VALIDATION_SECTIONS.find((s) => s.id === "attention-control");
+  const round = (x, d = 3) => Number(Number(x).toFixed(d));
+
+  test("the three nested models match the artifact", () => {
+    expect(round(h.models.M0.roc_auc)).toBe(0.667);
+    expect(round(h.models.M1.roc_auc)).toBe(0.721);
+    expect(round(h.models.M2.roc_auc)).toBe(0.683);
+    expect(round(h.models.M0.pr_auc)).toBe(0.057);
+    expect(round(h.models.M1.pr_auc)).toBe(0.069);
+    expect(round(h.models.M2.pr_auc)).toBe(0.049);
+    for (const n of ["0.667", "0.721", "0.683", "0.057", "0.069", "0.049"]) {
+      expect(section.body).toContain(n);
+    }
+  });
+
+  test("M0 reproduces the Task 3 publication-count baseline", () => {
+    // Different script, same cohort and split: if these drift apart, one of the
+    // two pipelines has changed and the comparison is no longer like for like.
+    const task3Pub =
+      task3.cohort2_globally_undrugged_first_in_class.held_out_test.predictors
+        .baseline_publication_count.roc_auc;
+    expect(round(h.models.M0.roc_auc)).toBe(round(task3Pub));
+    expect(h.n_total).toBe(11711);
+    expect(h.n_positives).toBe(258);
+  });
+
+  test("the paired delta and its CI are committed, as the acceptance requires", () => {
+    expect(round(paired.roc_auc.delta)).toBe(0.054);
+    expect(round(paired.roc_auc.ci_low)).toBe(0.021);
+    expect(round(paired.roc_auc.ci_high)).toBe(0.089);
+    expect(round(paired.pr_auc.delta)).toBe(0.012);
+    expect(round(paired.pr_auc.ci_low)).toBe(0.001);
+    expect(round(paired.pr_auc.ci_high)).toBe(0.025);
+    expect(paired.roc_auc.includes_zero).toBe(false);
+  });
+
+  test("the page reports the weaker clustered interval, not only the pair-level one", () => {
+    // Anti-hype: the stricter test must be on the page, including the part of it
+    // that fails. PR-AUC does not survive disease-level resampling.
+    expect(clustered.pr_auc.includes_zero).toBe(true);
+    expect(section.body).toContain("0.003");
+    expect(section.body).toContain("0.112");
+    expect(section.body).toMatch(/includes zero/i);
+    expect(section.body).toMatch(/does\s+not/i);
+  });
+
+  test("the headline finding is governed by the conservative bootstrap", () => {
+    const md = read("benchmark/docking/TASK4_ATTENTION_CONTROL.md");
+    expect(task4.finding).toMatch(/ranking signal beyond attention/i);
+    expect(task4.finding).toMatch(/PR-AUC does not survive/i);
+    expect(md).toContain(task4.finding);
+  });
+
+  test("residualisation shows only literature is attention-driven", () => {
+    const byKey = Object.fromEntries(task4.residualised.map((r) => [r.feature, r]));
+    expect(round(byKey.literature.regression_on_log1p_pub_count.r2)).toBe(0.34);
+    // The next largest is rna_expression at 0.0701; the copy names that value
+    // rather than claiming a bound the data does not support.
+    const others = Object.keys(byKey)
+      .filter((k) => k !== "literature")
+      .map((k) => byKey[k].regression_on_log1p_pub_count.r2);
+    expect(Math.max(...others)).toBe(byKey.rna_expression.regression_on_log1p_pub_count.r2);
+    expect(round(byKey.rna_expression.regression_on_log1p_pub_count.r2)).toBe(0.07);
+    expect(Math.max(...others)).toBeLessThan(0.1);
+    expect(section.body).toContain("RNA expression at 0.070");
+    expect(round(byKey.somatic_mutation.held_out_roc_auc_residual)).toBe(0.709);
+    expect(round(byKey.somatic_mutation.held_out_roc_auc_raw)).toBe(0.564);
+    expect(section.body).toContain("0.340");
+    expect(section.body).toContain("0.709");
+  });
+
+  test("nothing in the run is fitted on the held-out diseases", () => {
+    expect(task4.n_train_diseases).toBe(11);
+    expect(task4.n_test_diseases).toBe(11);
+    expect(task4.historical_release).toMatch(/21\.04/);
+    expect(task4.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
   });
 });
