@@ -125,6 +125,34 @@ export const VALIDATION_SECTIONS = [
       "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).",
   },
   {
+    id: "tractability-features",
+    title: "Does anything else beat counting papers?",
+    source: VALIDATION_SOURCES.task5Json,
+    body:
+      "The same cohort and split, with five more pre-2021 feature groups added: " +
+      "Open Targets 21.04 tractability, ChEMBL protein class, gnomAD v2.1.1 pLI " +
+      "and LOEUF, DepMap 21Q2 CRISPR essentiality, and GTEx v8 expression " +
+      "selectivity. Every source is dated before May 2021; two features were " +
+      "dropped for joining under 70% of targets.\n" +
+      "Publication count alone: ROC-AUC 0.667. Plus the 8 biology features: 0.721. " +
+      "Plus everything: 0.807 (PR-AUC 0.146, precision@25 0.440), a paired gain of " +
+      "+0.140 over publication count (95% CI +0.100 to +0.181).\n" +
+      "That gain is not biology. Separating features that record work already done " +
+      "on a target from properties of the gene itself, and keeping only the latter — " +
+      "pLI, LOEUF, three DepMap measures, two GTEx measures — gives ROC-AUC 0.719 " +
+      "against 0.721 without them: a paired difference of −0.002 (95% CI −0.026 to " +
+      "+0.022), which includes zero. The five gene-property groups add nothing.\n" +
+      "The whole gain comes from one feature: the number of high-quality compounds " +
+      "that already existed for the target in 2021, which alone scores 0.772 — " +
+      "better than any model in this report. The best gene property is pLI at 0.621; " +
+      "DepMap essentiality and GTEx selectivity sit at chance.\n" +
+      "So nothing here predicts progression beyond attention; attention is just " +
+      "measured better in compounds than in papers. A target with a hundred " +
+      "compounds and no drug is one the field has already picked, so no score was " +
+      "promoted on this result: it would rank highest the targets you could have " +
+      "found without it, and rank an under-studied target last by construction.",
+  },
+  {
     id: "compound-triage",
     title: "Compound triage",
     source: VALIDATION_SOURCES.task2Md,

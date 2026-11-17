@@ -85,15 +85,15 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    // One per section: target scores, attention control, compound triage, docking.
-    expect(container.querySelectorAll(".validation-source").length).toBe(4);
+    // One per section: target scores, attention control, tractability, triage, docking.
+    expect(container.querySelectorAll(".validation-source").length).toBe(5);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
   });
 
   test("reports the attention control, including the part that fails", () => {
     const text = render();
-    expect(text).toMatch(/beat counting papers/i);
+    expect(text).toMatch(/Do the biology scores beat counting papers/i);
     // The nested models and the paired delta.
     for (const n of ["0.721", "0.683", "+0.054", "+0.021", "+0.089", "+0.012"]) {
       expect(text).toContain(n);
@@ -110,5 +110,17 @@ describe("ValidationPage", () => {
     for (const word of ["powerful", "cutting-edge", "state-of-the-art", "revolutionary", "best-in-class"]) {
       expect(text).not.toContain(word);
     }
+  });
+
+  test("reports Task 5 as a negative result, not as a win", () => {
+    const text = render();
+    expect(text).toMatch(/Does anything else beat counting papers/i);
+    for (const n of ["0.807", "0.719", "0.772", "0.621", "+0.140"]) {
+      expect(text).toContain(n);
+    }
+    // The headline must be that gene properties add nothing.
+    expect(text).toMatch(/add nothing/i);
+    expect(text).toContain("−0.002");
+    expect(text).toMatch(/no score was promoted/i);
   });
 });

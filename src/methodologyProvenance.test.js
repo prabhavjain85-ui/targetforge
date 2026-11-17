@@ -28,6 +28,7 @@ const validationPage = read("src/ValidationPage.jsx");
 const discoveryPage = read("src/TargetDiscoveryPage.jsx");
 const task3 = JSON.parse(read("benchmark/docking/results/task3_novelty_validation.json"));
 const task4 = JSON.parse(read("benchmark/docking/results/task4_attention_control.json"));
+const task5 = JSON.parse(read("benchmark/docking/results/task5_tractability.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
 
 /** Every metric-looking number a user can read, across the validation copy. */
@@ -171,7 +172,7 @@ describe("/validation page figures trace to committed artifacts", () => {
   });
 
   test("every three-decimal figure in the copy appears in a benchmark file", () => {
-    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4);
+    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4) + JSON.stringify(task5);
     const unmatched = [];
     for (const n of new Set(COPY_NUMBERS)) {
       const asText = n.toFixed(3);
@@ -379,5 +380,103 @@ describe("Task 6 (Vina vs Tanimoto) is reported as unrun, not as a result", () =
     expect(py).toMatch(/def check_prerequisites/);
     expect(py).toMatch(/No result file was written/);
     expect(py).toMatch(/sys\.exit\(2\)/);
+  });
+});
+
+describe("Task 5 tractability figures trace to the committed run", () => {
+  const h = task5.held_out;
+  const section = VALIDATION_SECTIONS.find((s) => s.id === "tractability-features");
+  const round = (x, d = 3) => Number(Number(x).toFixed(d));
+
+  test("the four models match the artifact", () => {
+    expect(round(h.models.M0.roc_auc)).toBe(0.667);
+    expect(round(h.models.M1.roc_auc)).toBe(0.721);
+    expect(round(h.models.M3.roc_auc)).toBe(0.807);
+    expect(round(h.models.M4.roc_auc)).toBe(0.719);
+    expect(round(h.models.M3.pr_auc)).toBe(0.146);
+    expect(round(h.models.M3.precision_at_25)).toBe(0.44);
+    for (const n of ["0.667", "0.721", "0.807", "0.719", "0.146", "0.440"]) {
+      expect(section.body).toContain(n);
+    }
+  });
+
+  test("M3 beats M0 and the page says so", () => {
+    const d = task5.paired_deltas.M3_vs_M0.roc_auc;
+    expect(round(d.delta)).toBe(0.14);
+    expect(d.includes_zero).toBe(false);
+    expect(section.body).toContain("+0.140");
+    expect(section.body).toContain("+0.100");
+    expect(section.body).toContain("+0.181");
+  });
+
+  test("the gene-property features add nothing, and that is the headline", () => {
+    // The result that governs how this run should be read: M4 keeps only gene
+    // properties and does not improve on M1.
+    const d = task5.paired_deltas.M4_vs_M1.roc_auc;
+    expect(d.includes_zero).toBe(true);
+    expect(round(d.delta)).toBe(-0.002);
+    expect(task5.promotion.gene_property_features_add_nothing).toBe(true);
+    expect(task5.finding).toMatch(/No gene-property feature tested here predicts/i);
+    expect(section.body).toContain("−0.002");
+    expect(section.body).toMatch(/includes zero/i);
+    expect(section.body).toMatch(/add nothing/i);
+  });
+
+  test("the gain is attributed to the compound-count feature", () => {
+    expect(round(task5.solo_held_out_roc_auc.tract_sm_high_quality_compounds)).toBe(0.772);
+    expect(round(task5.solo_held_out_roc_auc.pli)).toBe(0.621);
+    expect(task5.feature_kinds.effort).toContain("tract_sm_high_quality_compounds");
+    expect(task5.feature_kinds.biology).toContain("pli");
+    expect(task5.feature_kinds.biology).not.toContain("tract_sm_high_quality_compounds");
+    expect(section.body).toContain("0.772");
+    expect(section.body).toContain("0.621");
+  });
+
+  test("the criterion is met yet nothing was promoted, with the reason recorded", () => {
+    expect(task5.promotion.criterion_met).toBe(true);
+    expect(task5.promotion.promoted_to_production).toBe(false);
+    expect(task5.promotion.note).toMatch(/Goodhart/i);
+    expect(section.body).toMatch(/no score was\s+promoted/i);
+  });
+
+  test("every feature carries a vintage predating the cutoff", () => {
+    const vintages = Object.values(task5.feature_source_vintage);
+    expect(vintages.length).toBeGreaterThanOrEqual(4);
+    for (const v of vintages) {
+      expect(v.predates_cutoff).toBe(true);
+      expect(v.release_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      // Nothing may postdate May 2021.
+      expect(v.release_date <= "2021-05-31").toBe(true);
+      expect(v.evidence.length).toBeGreaterThan(20);
+    }
+  });
+
+  test("features under the 70% join gate are excluded and named", () => {
+    const excluded = task5.join_rates.filter((j) => !j.included_in_model);
+    expect(excluded.length).toBeGreaterThan(0);
+    for (const j of excluded) {
+      expect(j.excluded_reason).toBeTruthy();
+      expect(j.join_rate < task5.min_join_rate || j.constant_on_cohort).toBe(true);
+    }
+    // And every included feature really does clear the gate.
+    for (const j of task5.join_rates.filter((x) => x.included_in_model)) {
+      expect(j.join_rate).toBeGreaterThanOrEqual(task5.min_join_rate);
+    }
+  });
+
+  test("the DepMap common-essential flag is not counted for unscreened genes", () => {
+    // It read 100% while it was defaulting absent genes to 0; a gene DepMap
+    // never screened is unknown, not non-essential.
+    const ce = task5.join_rates.find((j) => j.feature === "depmap_common_essential");
+    const eff = task5.join_rates.find((j) => j.feature === "depmap_mean_gene_effect");
+    expect(ce.join_rate).toBeLessThan(1);
+    expect(ce.join_rate).toBe(eff.join_rate);
+  });
+
+  test("fitting never touches the held-out diseases", () => {
+    expect(task5.n_train_diseases).toBe(11);
+    expect(task5.n_test_diseases).toBe(11);
+    expect(task5.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
+    expect(task5.leakage_controls.join(" ")).toMatch(/training-set medians/i);
   });
 });

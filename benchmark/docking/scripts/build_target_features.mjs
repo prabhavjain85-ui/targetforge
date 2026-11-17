@@ -479,7 +479,10 @@ export async function buildTargetFeatures({ refresh = false } = {}) {
       depmap_mean_gene_effect: dep?.depmap_mean_gene_effect ?? null,
       depmap_frac_dependent_lines: dep?.depmap_frac_dependent_lines ?? null,
       depmap_n_lines: dep?.depmap_n_lines ?? null,
-      depmap_common_essential: r.symbol ? (commonEssentials.has(r.symbol) ? 1 : 0) : null,
+      // Only meaningful for genes DepMap actually screened. A gene absent from
+      // the screen is unknown, not non-essential, so it stays null and counts
+      // as a join failure rather than silently becoming a 0.
+      depmap_common_essential: dep ? (commonEssentials.has(r.symbol) ? 1 : 0) : null,
     };
   }
 
