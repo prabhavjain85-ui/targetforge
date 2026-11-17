@@ -25,3 +25,6 @@ yarn-error.log*
 public/data/evolution/sa-fragment-scores.bin.gz
 .docking-demo-work/
 public/vendor/molstar/
+
+# 20MB derived snapshot cache: the .json.gz is committed instead.
+benchmark/docking/data/task3_ot_21_04_retrospective_snapshot.json

@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import SeoIntroLinks from "./SeoIntroLinks";
 import {
-  VALIDATION_COMMIT,
+  VALIDATION_COMMIT_SHORT,
+  VALIDATION_GENERATED_AT,
+  VALIDATION_GENERATOR,
   VALIDATION_INTRO,
   VALIDATION_SECTIONS,
 } from "./shared/validationCopy";
@@ -25,8 +27,11 @@ export default function ValidationPage() {
       </div>
 
       <div className="validation-meta">
-        Figures on this page correspond to repository commit{" "}
-        <code>{VALIDATION_COMMIT}</code>. Each section names the file it comes from.
+        Figures on this page were produced by <code>{VALIDATION_GENERATOR}</code> at{" "}
+        <code>{VALIDATION_GENERATED_AT}</code>, from commit{" "}
+        <code>{VALIDATION_COMMIT_SHORT}</code>. Each section names the file it comes from.
+        The generator, timestamp and commit are read from the shipped weights asset at build
+        time, so the page cannot quote a run it did not come from.
       </div>
 
       {VALIDATION_SECTIONS.map((section) => (
@@ -38,7 +43,7 @@ export default function ValidationPage() {
             </p>
           ))}
           <div className="validation-source">
-            Source: <code>{section.source}</code> · commit <code>{VALIDATION_COMMIT}</code>
+            Source: <code>{section.source}</code> · commit <code>{VALIDATION_COMMIT_SHORT}</code>
           </div>
         </section>
       ))}

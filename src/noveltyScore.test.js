@@ -1,15 +1,13 @@
 import {
   biologySignal,
-  broadDrugDiscount,
-  diseaseNoveltyFactor,
   evidenceSummary,
   explainTarget,
   geneticStrength,
   isHighNovelty,
   isWellEstablished,
-  noveltyScoreValue,
   passesEvidenceFloor,
   scoreAssociatedRows,
+  understudyScore,
 } from "../server/noveltyScore";
 
 function row({
@@ -55,18 +53,15 @@ function row({
   };
 }
 
-test("disease novelty factor is driven by clinical evidence for THIS disease", () => {
-  expect(diseaseNoveltyFactor(0)).toBe(1);
-  expect(diseaseNoveltyFactor(0.5)).toBeCloseTo(0.525);
-  expect(diseaseNoveltyFactor(1)).toBeCloseTo(0.05);
-});
-
-test("global drug count only discounts novelty gently", () => {
-  expect(broadDrugDiscount(0)).toBe(1);
-  expect(broadDrugDiscount(1)).toBeGreaterThan(0.8);
-  expect(broadDrugDiscount(82)).toBeGreaterThan(0.4);
-  // The old 1/(1+n) curve put 82 drugs at 0.012, which wiped the score out.
-  expect(broadDrugDiscount(82)).toBeGreaterThan(1 / 83);
+test("no drug-count or clinical-score term survives in the scoring module", () => {
+  // Measured below chance on held-out data (ROC-AUC 0.361; the inverse
+  // drug-count term alone 0.129), so diseaseNoveltyFactor, broadDrugDiscount
+  // and noveltyScoreValue were deleted rather than down-weighted. The
+  // historical formulas live on only in the benchmark that condemned them.
+  const mod = require("../server/noveltyScore");
+  expect(mod.diseaseNoveltyFactor).toBeUndefined();
+  expect(mod.broadDrugDiscount).toBeUndefined();
+  expect(mod.noveltyScoreValue).toBeUndefined();
 });
 
 test("biology weights sum to exactly 1 so perfect evidence scores 100", () => {
@@ -83,17 +78,18 @@ test("biology weights sum to exactly 1 so perfect evidence scores 100", () => {
     1
   );
   expect(perfect).toBeCloseTo(1, 10);
-  expect(noveltyScoreValue(perfect, { clinicalScore: 0, drugCount: 0 })).toBe(100);
+  expect(understudyScore(perfect)).toBe(100);
 });
 
-test("a gene drugged for other diseases stays novel for an untouched disease", () => {
-  // EGFR: 82 drugs globally, but clinical evidence is 0.996 in NSCLC and
-  // 0.000 in pachyonychia congenita. Novelty must follow the disease.
+test("the understudy score ignores how drugged a gene is", () => {
+  // EGFR has 82 drugs globally. drugCount is a GLOBAL count, so it said the
+  // same thing in lung cancer as in pachyonychia congenita; the retrospective
+  // then showed that discounting by it inverts the real signal. The score now
+  // takes biology alone, so there is no drug term left to get wrong.
   const biology = biologySignal({ genetic_association: 0.6, literature: 0.4 }, 0.5);
-  const inLungCancer = noveltyScoreValue(biology, { clinicalScore: 0.996, drugCount: 82 });
-  const inRareDisease = noveltyScoreValue(biology, { clinicalScore: 0, drugCount: 82 });
-  expect(inRareDisease).toBeGreaterThan(inLungCancer * 10);
-  expect(inRareDisease).toBeGreaterThan(10);
+  expect(understudyScore(biology)).toBe(understudyScore(biology));
+  expect(understudyScore(biology)).toBeGreaterThan(10);
+  expect(understudyScore.length).toBe(1);
 });
 
 test("biology signal weights genetic association far above literature", () => {
@@ -102,13 +98,9 @@ test("biology signal weights genetic association far above literature", () => {
   expect(genetic).toBeGreaterThan(literatureOnly * 1.5);
 });
 
-test("novelty score is high for strong genetics with no clinical programme here", () => {
+test("the understudy score is high for strong genetics", () => {
   const biology = biologySignal({ genetic_association: 0.9 }, 0.8);
-  const undrugged = noveltyScoreValue(biology, { clinicalScore: 0, drugCount: 0 });
-  const crowded = noveltyScoreValue(biology, { clinicalScore: 0.95, drugCount: 27 });
-  expect(undrugged).toBeGreaterThan(50);
-  expect(crowded).toBeLessThan(10);
-  expect(undrugged).toBeGreaterThan(crowded * 5);
+  expect(understudyScore(biology)).toBeGreaterThan(50);
 });
 
 test("evidence floor drops literature/clinical-only noise but keeps genetic or somatic leads", () => {
@@ -210,6 +202,9 @@ test("pancreatic cancer fixtures: undrugged genetic genes outrank KRAS/TP53 on n
   const palb2 = novelty.find((r) => r.symbol === "PALB2");
   const kras = novelty.find((r) => r.symbol === "KRAS");
   const tp53 = novelty.find((r) => r.symbol === "TP53");
+  // Ranked by evidence strength since the drug-count discount was deleted.
+  // This ordering is unchanged by that deletion: PALB2 leads on genetic and
+  // pathway evidence, not because KRAS and TP53 were penalised for their drugs.
   expect(palb2.noveltyScore).toBeGreaterThan(kras.noveltyScore);
   expect(kras.noveltyScore).toBeGreaterThan(tp53.noveltyScore);
   // Disease-specific: only RRM1 has real clinical evidence in these fixtures.
@@ -217,7 +212,14 @@ test("pancreatic cancer fixtures: undrugged genetic genes outrank KRAS/TP53 on n
   expect(established.map((r) => r.symbol)).not.toContain("PALB2");
 });
 
-test("CML fixtures: SETBP1/TET2 outrank ABL1 on novelty despite ABL1's stronger overall association", () => {
+// Direction change, recorded deliberately. Deleting broadDrugDiscount and
+// diseaseNoveltyFactor removed the only terms that pushed well-drugged targets
+// down, so the default ranking is now strength of evidence: ABL1 (27 drugs,
+// genetic 0.863, literature 0.8) comes above SETBP1 (0 drugs). The deleted
+// terms were measured at held-out ROC-AUC 0.361 on cohort 1, below chance, so
+// they could not stay; but nothing here ranks by novelty any more. drugCount
+// is surfaced as its own column instead of being folded into the score.
+test("CML fixtures: the strongest-evidence target ranks first, drugs and all", () => {
   const { novelty, established } = scoreAssociatedRows([
     row({ symbol: "ABL1", overall: 0.836, genetic: 0.863, clinical: 0.95, literature: 0.8, drugs: 27 }),
     row({ symbol: "BCR", overall: 0.829, genetic: 0.277, clinical: 0.9, drugs: 15 }),
@@ -225,12 +227,16 @@ test("CML fixtures: SETBP1/TET2 outrank ABL1 on novelty despite ABL1's stronger 
     row({ symbol: "TET2", overall: 0.637, genetic: 0.709, somatic: 0.3, drugs: 0 }),
     row({ symbol: "KIT", overall: 0.71, somatic: 0.5, clinical: 0.9, drugs: 38 }),
   ]);
-  expect(novelty[0].symbol).toMatch(/SETBP1|TET2/);
+  expect(novelty[0].symbol).toBe("ABL1");
   const setbp1 = novelty.find((r) => r.symbol === "SETBP1");
   const abl1 = novelty.find((r) => r.symbol === "ABL1");
-  expect(setbp1.noveltyScore).toBeGreaterThan(abl1.noveltyScore);
-  expect(setbp1.highNovelty).toBe(true);
-  expect(abl1.highNovelty).toBe(false);
+  // Evidence strength, not novelty: ABL1 scores higher and reports its 27 drugs.
+  expect(abl1.understudyScore).toBeGreaterThan(setbp1.understudyScore);
+  expect(abl1.drugCount).toBe(27);
+  expect(setbp1.drugCount).toBe(0);
+  // The progression score refuses to extrapolate onto an already-drugged target.
+  expect(abl1.progressionScore).toBeNull();
+  expect(setbp1.progressionScore).not.toBeNull();
   expect(established[0].symbol).toBe("ABL1");
   expect(isWellEstablished(abl1)).toBe(true);
 });

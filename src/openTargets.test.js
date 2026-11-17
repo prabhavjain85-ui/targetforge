@@ -110,12 +110,14 @@ test("runTargetDiscovery scores associated targets and caches by disease ID", as
   const first = await runTargetDiscovery("pancreatic cancer");
   expect(first.fromCache).toBe(false);
   expect(first.disease.id).toBe("MONDO_0005192");
-  expect(first.novelty[0].symbol).toBe("PALB2");
+  // Evidence strength ranking: KRAS leads on somatic/literature evidence. It
+  // ranked below PALB2 only while the deleted drug-count discount applied.
+  expect(first.novelty[0].symbol).toBe("KRAS");
   expect(getCachedTargets("MONDO_0005192")).toBeTruthy();
 
   const second = await runTargetDiscovery("pancreatic cancer");
   expect(second.fromCache).toBe(true);
-  expect(second.novelty[0].symbol).toBe("PALB2");
+  expect(second.novelty[0].symbol).toBe("KRAS");
   // search + associated on the first call; repeat search resolves the disease ID
   // again (cheap) then serves the associated-target payload from the 24h cache.
   expect(global.fetch).toHaveBeenCalledTimes(3);

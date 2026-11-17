@@ -10,7 +10,7 @@
  */
 import fs from "fs";
 import path from "path";
-import { SCORE_CHIPS, VALIDATION_COMMIT } from "./shared/validationCopy";
+import { SCORE_CHIPS, VALIDATION_COMMIT_SHORT } from "./shared/validationCopy";
 
 const repoRoot = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(repoRoot, p), "utf8");
@@ -182,16 +182,20 @@ describe("/validation page figures trace to committed artifacts", () => {
   });
 
   test("the page names its generating commit and source files", () => {
-    expect(validationPage).toMatch(/VALIDATION_COMMIT/);
+    expect(validationPage).toMatch(/VALIDATION_COMMIT_SHORT/);
     expect(validationCopy).toMatch(/benchmark\/docking\/results\/task3_novelty_validation\.json/);
     expect(validationCopy).toMatch(/benchmark\/docking\/TASK2_DECOY_BENCHMARK\.md/);
-    expect(VALIDATION_COMMIT).toMatch(/^[0-9a-f]{7,40}$/);
+    expect(VALIDATION_COMMIT_SHORT).toMatch(/^[0-9a-f]{7}$/);
   });
 });
 
 describe("Target Discovery chips quote the validated figures", () => {
   test("each chip carries its held-out metric", () => {
-    expect(SCORE_CHIPS.understudy).toMatch(/Understudy score — held-out ROC-AUC 0\.637 \(PR-AUC 0\.038\)/);
+    // Scoped to both cohorts, and named for the direction it actually runs in.
+    expect(SCORE_CHIPS.understudy).toMatch(
+      /Evidence strength score — held-out ROC-AUC 0[.]637 on targets with no existing drug, 0[.]555 across all targets [(]PR-AUC 0[.]038 [/] 0[.]030[)]/
+    );
+    expect(SCORE_CHIPS.understudy).toMatch(/not a novelty score/);
     expect(SCORE_CHIPS.progression).toMatch(/Progression score — held-out ROC-AUC 0\.708 \(PR-AUC 0\.052\), precision@25 0\.12/);
     expect(SCORE_CHIPS.publications).toMatch(/Publication count — held-out ROC-AUC 0\.667 \(PR-AUC 0\.057\)/);
   });
