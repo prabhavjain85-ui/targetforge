@@ -8,6 +8,8 @@ import {
   searchDiseases,
 } from "./serverApi";
 import ClinicalActivityPanel from "./ClinicalActivityPanel";
+import { SCORE_CHIPS } from "./shared/validationCopy";
+import "./validation.css";
 import {
   ACTIVE_STATE_KEYS,
   getActiveState,
@@ -49,7 +51,70 @@ function compareDiscoveryField(a, b, key) {
   }
   if (key === "drugCount") return (a.drugCount ?? 0) - (b.drugCount ?? 0);
   if (key === "geneticScore") return (a.geneticScore ?? 0) - (b.geneticScore ?? 0);
+  if (key === "publicationCount") return (a.publicationCount ?? 0) - (b.publicationCount ?? 0);
+  if (key === "progressionScore") {
+    // Out-of-scope targets sort last in either direction rather than as 0,
+    // which would read as a low score instead of no score.
+    const av = a.progressionScore;
+    const bv = b.progressionScore;
+    if (av === null && bv === null) return 0;
+    if (av === null) return -1;
+    if (bv === null) return 1;
+    return av - bv;
+  }
+  if (key === "understudyScore") return (a.understudyScore ?? 0) - (b.understudyScore ?? 0);
   return (a.noveltyScore ?? 0) - (b.noveltyScore ?? 0);
+}
+
+/** Value at the given quantile of a numeric list (nulls excluded). */
+function quantile(values, q) {
+  const xs = values.filter((v) => Number.isFinite(v)).sort((a, b) => a - b);
+  if (!xs.length) return null;
+  const idx = (xs.length - 1) * q;
+  const lo = Math.floor(idx);
+  const hi = Math.ceil(idx);
+  return lo === hi ? xs[lo] : xs[lo] + (xs[hi] - xs[lo]) * (idx - lo);
+}
+
+/**
+ * A target high on one score and low on the other is the case this split
+ * exists to surface, so it is marked within the current result set.
+ */
+function divergenceFor(row, cuts) {
+  if (!cuts || row.progressionScore === null || row.progressionScore === undefined) return null;
+  const u = row.understudyScore;
+  const p = row.progressionScore;
+  if (!Number.isFinite(u) || !Number.isFinite(p)) return null;
+  if (u >= cuts.understudyHigh && p <= cuts.progressionLow) {
+    return {
+      label: "understudied",
+      tooltip:
+        "Top quartile for understudy, bottom quartile for progression in this result set: little is known about it, and the fitted model does not favour it.",
+    };
+  }
+  if (u <= cuts.understudyLow && p >= cuts.progressionHigh) {
+    return {
+      label: "progressing",
+      tooltip:
+        "Bottom quartile for understudy, top quartile for progression in this result set: comparatively well studied, and the fitted model favours it.",
+    };
+  }
+  return null;
+}
+
+/** Links to /validation and carries the held-out figure verbatim. */
+function ValidationChip({ text }) {
+  return (
+    <a
+      className="score-validation-chip"
+      href="/validation"
+      title={text}
+      aria-label={text}
+      onClick={(e) => e.stopPropagation()}
+    >
+      i
+    </a>
+  );
 }
 
 function NoveltyInfoTip() {
@@ -112,11 +177,26 @@ function DiscoveryTable({
 
   const cols = [
     { key: "symbol", label: "Target / gene", sortable: true },
-    { key: "noveltyScore", label: "Novelty score", sortable: true },
+    { key: "understudyScore", label: "Understudy", sortable: true, chip: SCORE_CHIPS.understudy },
+    { key: "progressionScore", label: "Progression", sortable: true, chip: SCORE_CHIPS.progression },
+    { key: "publicationCount", label: "Publications", sortable: true, chip: SCORE_CHIPS.publications },
     { key: "geneticScore", label: "Genetic evidence", sortable: true },
     { key: "drugCount", label: "Drugs (any indication)", sortable: true },
     { key: "evidenceSummary", label: "Key evidence summary", sortable: false },
   ];
+
+  // Quartile cuts over the current result set, for the divergence marker.
+  const divergenceCuts = useMemo(() => {
+    const us = rows.map((r) => r.understudyScore).filter((v) => Number.isFinite(v));
+    const ps = rows.map((r) => r.progressionScore).filter((v) => Number.isFinite(v));
+    if (us.length < 4 || ps.length < 4) return null;
+    return {
+      understudyHigh: quantile(us, 0.75),
+      understudyLow: quantile(us, 0.25),
+      progressionHigh: quantile(ps, 0.75),
+      progressionLow: quantile(ps, 0.25),
+    };
+  }, [rows]);
 
   const toggleExpression = (symbol, ensemblId, safetyOrgans = []) => {
     const opening = !expandedExpression[symbol];
@@ -155,6 +235,7 @@ function DiscoveryTable({
                   {col.sortable ? (
                     <button type="button" className={"score-th" + (active ? " active" : "")} onClick={() => onSort(col.key)}>
                       {col.label}
+                      {col.chip ? <ValidationChip text={col.chip} /> : null}
                       <span className="sort-ind" aria-hidden="true">
                         {active ? (sortDir === "asc" ? "\u25b2" : "\u25bc") : "\u2195"}
                       </span>
@@ -172,6 +253,7 @@ function DiscoveryTable({
             const isExpanded = Boolean(expandedExpression[r.symbol]);
             const expProfile = isExpanded ? expressionProfiles[r.symbol] : null;
             const isPreviewing = selectedPreviewSymbol === r.symbol;
+            const divergence = divergenceFor(r, divergenceCuts);
 
             return (
               <React.Fragment key={r.ensemblId || r.symbol}>
@@ -297,11 +379,26 @@ function DiscoveryTable({
                     </div>
                   </td>
                   <td className="mono score-num">
-                    {(r.profileScore ?? r.noveltyScore ?? 0).toFixed(1)}
-                    {r.repurposingScore != null && r.evidenceProfile === "repurposing" ? (
-                      <div className="score-title">novelty {r.noveltyScore.toFixed(1)}</div>
+                    {(r.understudyScore ?? 0).toFixed(1)}
+                    {divergence ? (
+                      <span className="divergence-flag" title={divergence.tooltip}>
+                        {divergence.label}
+                      </span>
                     ) : null}
                   </td>
+                  <td className="mono score-num">
+                    {r.progressionScore === null || r.progressionScore === undefined ? (
+                      <span
+                        className="score-out-of-scope"
+                        title="Not scored: this target already has an approved or clinical-stage drug, outside the validated cohort."
+                      >
+                        —
+                      </span>
+                    ) : (
+                      r.progressionScore.toFixed(1)
+                    )}
+                  </td>
+                  <td className="mono">{(r.publicationCount ?? 0).toLocaleString()}</td>
                   <td>
                     <div className={"genetic-strength " + r.geneticLevel}>{r.geneticLabel}</div>
                     <div className="score-title">{(r.geneticScore * 100).toFixed(0)} genetic score</div>
@@ -317,7 +414,7 @@ function DiscoveryTable({
                 </tr>
                 {isExpanded && expProfile && (
                   <tr className="expression-expanded-row">
-                    <td colSpan={5}>
+                    <td colSpan={7}>
                       <div className="expression-drawer-card">
                         <div className="expression-header-row">
                           <div className="expression-title-group">

@@ -7,6 +7,7 @@ import ContactPage from "./ContactPage";
 import HistoryPage from "./HistoryPage";
 import Layout from "./Layout";
 import MethodologyPage from "./MethodologyPage";
+import ValidationPage from "./ValidationPage";
 import RepurposingPage from "./RepurposingPage";
 import TargetDiscoveryPage from "./TargetDiscoveryPage";
 import AdmePage from "./AdmePage";
@@ -41,6 +42,7 @@ root.render(
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/methodology" element={<MethodologyPage />} />
+          <Route path="/validation" element={<ValidationPage />} />
         </Route>
         </Routes>
       </BrowserRouter>

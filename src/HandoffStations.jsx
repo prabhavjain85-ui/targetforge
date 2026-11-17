@@ -18,12 +18,12 @@ export default function HandoffStations({ b }) {
   return (
     <>
       <div className="handoff-panel">
-        <Panel eyebrow="Station 3 — AI prioritization" title="Which molecule fits this target?" kind="handoff">
+        <Panel eyebrow="Station 3 — Ranking and filters" title="How do these molecules compare?" kind="handoff">
           <div className="ai-toolbar">
             <div>
-              <div className="ai-kicker">Score the shortlist for this target</div>
+              <div className="ai-kicker">Rank the shortlist for this target</div>
               <div className="hint" style={{ margin: "6px 0 0" }}>
-                Applies a knowledge-based triage score (0–100) to 2–5 molecules for the selected PDB structure using curated target rules, pocket/ligand context, Lipinski/Veber drug-likeness, and PAINS flags — a heuristic for prioritization, not a validated activity or binding predictor. The same compound is scored differently against different targets. If an OpenAI key is configured, a language model writes the comparison; otherwise TargetForge uses its built-in target-aware model.
+                Ranks 2–5 molecules by Tanimoto similarity to the ligand co-crystallised in the selected PDB structure, which is the best-performing ranker measured on the scaffold-split decoy benchmark (ROC-AUC 0.662 against 0.523 for heuristic-v2 and 0.520 for random). The heuristic-v2 score shown alongside is a drug-likeness and liability filter built from Lipinski/Veber properties and PAINS flags; on held-out chemistry its target rules do not fire, and it does not predict binding or activity. If an OpenAI key is configured, a language model writes the comparison.
               </div>
             </div>
             <button className="btn btn-handoff" onClick={analyze} disabled={candidates.length < 2 || aiLoading} type="button">
@@ -79,7 +79,7 @@ export default function HandoffStations({ b }) {
                   ? "Ranked with OpenAI for this specific target"
                   : aiResult.source === "cache"
                     ? "Reused cached scores for this (compound, PDB) pair"
-                    : "Ranked with TargetForge's target-aware model"}
+                    : "Ranked by similarity to the co-crystallised ligand"}
               </div>
               <ReportExportButtons
                 label="Export report"
@@ -111,7 +111,7 @@ export default function HandoffStations({ b }) {
           {(protein || candidates.length > 0) && (
             <div>
               <div className="lipinski-note" style={{ marginTop: 0, marginBottom: 14 }}>
-                Use the handoff below for ADME on your selected compound — the triage score does not replace experimental assays or ADME modeling.
+                Use the handoff below for ADME on your selected compound. Neither the similarity ranking nor the drug-likeness filter replaces experimental assays or ADME modelling.
               </div>
               {candidates.length > 1 && (
                 <div className="handoff-pick">

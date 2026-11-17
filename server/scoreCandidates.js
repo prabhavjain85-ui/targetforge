@@ -923,11 +923,21 @@ function rankCandidatesLocal(candidates, protein = null, options = {}) {
     };
   });
 
+  // Ranking signal: Tanimoto to the co-crystallised ligand leads, because it
+  // is the only ranker that beat random on the scaffold-split decoy benchmark
+  // (ROC-AUC 0.662 against heuristic-v2 0.523 and random 0.520). heuristic-v2
+  // is a drug-likeness and liability filter and breaks ties beneath it.
+  // When no structure is staged there is no similarity to rank by, so the
+  // filter score orders the list instead.
+  const simOf = (row) => (Number.isFinite(row.structuralSimilarity) ? row.structuralSimilarity : null);
+  const haveSimilarity = scored.some((row) => simOf(row) !== null);
   scored.sort((a, b) => {
+    if (haveSimilarity) {
+      const simA = simOf(a) ?? -1;
+      const simB = simOf(b) ?? -1;
+      if (simB !== simA) return simB - simA;
+    }
     if (b.score !== a.score) return b.score - a.score;
-    const simA = Number.isFinite(a.structuralSimilarity) ? a.structuralSimilarity : -1;
-    const simB = Number.isFinite(b.structuralSimilarity) ? b.structuralSimilarity : -1;
-    if (simB !== simA) return simB - simA;
     if (b.passCount !== a.passCount) return b.passCount - a.passCount;
     return String(a.cid).localeCompare(String(b.cid));
   });
