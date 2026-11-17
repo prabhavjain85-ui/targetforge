@@ -14,14 +14,15 @@
  * made a gene look un-novel for a disease nobody has ever drugged it for —
  * exactly backwards for repurposing.
  *
- * So novelty now combines:
- *   diseaseNoveltyFactor  — from the association's `clinical` datatype score,
- *                           which IS disease-specific (EGFR: 0.996 in NSCLC,
- *                           0.000 in pachyonychia congenita). This dominates.
- *   broadDrugDiscount     — a gentle, logarithmic discount on the global drug
- *                           count. A heavily drugged gene is well-trodden
- *                           chemistry, which lowers novelty a little, but it
- *                           no longer collapses the score.
+ * Both drug-count terms have since been deleted. The retrospective validation
+ * (Open Targets 21.04 -> 26.09, benchmark/docking/TASK3_NOVELTY_VALIDATION.md)
+ * measured the combined formula at held-out ROC-AUC 0.361 on disease-specific
+ * clinical acquisition — below chance — and the inverse drug-count term alone
+ * at 0.129, because drugCount_2021 is in fact the strongest POSITIVE predictor
+ * of a target entering the clinic for a new disease (0.872). Discounting by it
+ * inverted the signal. What survives is `understudyScore`, the hand-set
+ * biology signal, which measures how little is known about a target and makes
+ * no claim about progression.
  *
  * Open Targets also exposes an association `novelty` field based on evidence
  * accumulation over time — that is NOT this score, and we do not use it.
@@ -828,41 +829,6 @@ export function inferExpectedMoA(target = {}, datatypeScores = {}) {
   };
 }
 
-/** Never let a maxed-out clinical score drive novelty to exactly zero. */
-const MAX_CLINICAL_PENALTY = 0.95;
-
-/**
- * Disease-specific exploration, from the association's `clinical` datatype
- * score: evidence that drugs already target this gene FOR THIS DISEASE.
- * 0 → untouched here (factor 1), ~1 → heavily drugged here (factor 0.05).
- */
-export function diseaseNoveltyFactor(clinicalScore) {
-  const c = Math.min(1, Math.max(0, Number(clinicalScore) || 0));
-  return 1 - MAX_CLINICAL_PENALTY * c;
-}
-
-/**
- * Gentle discount for a gene that is already drugged in any indication.
- * Logarithmic, so going from 0 to 1 drug costs far less than the old
- * 1/(1+n) hyperbola, and 82 drugs no longer wipes the score out.
- *   0 → 1.00 · 1 → 0.85 · 10 → 0.62 · 82 → 0.48
- */
-export function broadDrugDiscount(drugCount) {
-  const n = Math.max(0, Number(drugCount) || 0);
-  return 1 / (1 + Math.log1p(n) / 4);
-}
-
-/**
- * @param {number} biology  biologySignal, 0–1
- * @param {{clinicalScore?: number, drugCount?: number}} exploration
- */
-export function noveltyScoreValue(biology, exploration = {}) {
-  const { clinicalScore = 0, drugCount = 0 } = exploration;
-  const raw =
-    100 * Math.max(0, Number(biology) || 0) * diseaseNoveltyFactor(clinicalScore) * broadDrugDiscount(drugCount);
-  return Math.round(Math.min(100, raw) * 10) / 10;
-}
-
 /**
  * Fitted simplex weights over the eight biology features, from the
  * retrospective validation (Open Targets 21.04 -> 26.09, cohort 2).
@@ -1050,10 +1016,13 @@ export function scoreAssociatedRows(rows, options = {}) {
     const essentialityInfo = evaluateEssentialityAndExpression(target, safety);
     const paralogs = extractHumanParalogs(target);
     const repurposingScore = repurposingSignal(datatypeScores, overallScore, tractability, drugCount);
-    const defaultNoveltyScore = noveltyScoreValue(biology, { clinicalScore, drugCount });
     // Two separately-named scores: understudy (what the old score measured)
     // and progression (fitted, scoped to the validated undrugged cohort).
     const understudy = understudyScore(biology);
+    // The default profile is the understudy score. It used to be the biology
+    // signal multiplied by diseaseNoveltyFactor and broadDrugDiscount; both
+    // were deleted after the retrospective measured that formula below chance.
+    const defaultNoveltyScore = understudy;
     const progression = progressionScore(datatypeScores, overallScore, drugCount);
     const publicationCount = Number(target.literatureOcurrences?.count) || 0;
     const customScore = normalizedCustom
@@ -1090,7 +1059,6 @@ export function scoreAssociatedRows(rows, options = {}) {
       publicationCount,
       // Deprecated alias, same meaning as understudyScore for one release.
       noveltyScore: penalizedNoveltyScore,
-      discoveryNoveltyScore: defaultNoveltyScore,
       repurposingScore,
       evidenceProfile: normalizedCustom ? "custom" : profileId,
       tdl: tdlInfo.tdl,
@@ -1102,8 +1070,6 @@ export function scoreAssociatedRows(rows, options = {}) {
       // Exposed so the UI and reports can show how the score was reached.
       noveltyComponents: {
         biology,
-        diseaseNoveltyFactor: diseaseNoveltyFactor(clinicalScore),
-        broadDrugDiscount: broadDrugDiscount(drugCount),
         toxicityPenalty: essentialityInfo.toxicityPenalty || 0,
       },
       datatypeScores,

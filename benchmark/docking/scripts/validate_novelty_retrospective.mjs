@@ -26,7 +26,7 @@
  *      Reports ROC-AUC (with 95% bootstrap CI) and PR-AUC / Average Precision (with
  *      95% bootstrap CI), Precision@10, and Recall@25 for:
  *        - `novelty_v1_hyperbolic`:  100 * biologySignal / (1 + drugCount_2021)
- *        - `novelty_v2_current`:     noveltyScoreValue(biologySignal, { clinicalScore: 0, drugCount: drugCount_2021 })
+ *        - `novelty_v2_current`:     historicalNoveltyScoreValue(biologySignal, { clinicalScore: 0, drugCount: drugCount_2021 })
  *        - `biology_signal_handset`: hand-set BIOLOGY_WEIGHTS (0.50 genetic, 0.12 genlit, 0.12 somatic, ...)
  *        - `baseline_genetic_only`:  genetic_association alone (21.04)
  *        - `baseline_drug_count`:    drugCount_2021 alone (and 1/(1+drugCount_2021))
@@ -37,13 +37,13 @@
 
 import fs from "fs";
 import https from "https";
+import zlib from "zlib";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import {
   BIOLOGY_WEIGHTS,
   biologySignal,
-  noveltyScoreValue,
 } from "../../../server/noveltyScore.js";
 import {
   bootstrapAucCi,
@@ -51,6 +51,40 @@ import {
   rocAuc,
   prAuc,
 } from "../../../server/benchmark/metrics.js";
+
+/**
+ * The novelty v1 and v2 formulas as they were shipped, kept here so the
+ * published figures stay reproducible after the formulas were deleted from
+ * production.
+ *
+ * These are historical artifacts being measured, not scoring code. Nothing
+ * outside this script should import them: this run is what established that
+ * `novelty_v2` scores held-out ROC-AUC 0.361 on cohort 1 (below chance) and
+ * that the inverse drug-count term alone scores 0.129, which is why
+ * server/noveltyScore.js no longer carries them.
+ */
+const HISTORICAL_MAX_CLINICAL_PENALTY = 0.95;
+
+function historicalDiseaseNoveltyFactor(clinicalScore) {
+  const c = Math.min(1, Math.max(0, Number(clinicalScore) || 0));
+  return 1 - HISTORICAL_MAX_CLINICAL_PENALTY * c;
+}
+
+function historicalBroadDrugDiscount(drugCount) {
+  const n = Math.max(0, Number(drugCount) || 0);
+  return 1 / (1 + Math.log1p(n) / 4);
+}
+
+/** The deleted `noveltyScoreValue`, bit-for-bit. */
+function historicalNoveltyScoreValue(biology, exploration = {}) {
+  const { clinicalScore = 0, drugCount = 0 } = exploration;
+  const raw =
+    100 *
+    Math.max(0, Number(biology) || 0) *
+    historicalDiseaseNoveltyFactor(clinicalScore) *
+    historicalBroadDrugDiscount(drugCount);
+  return Math.round(Math.min(100, raw) * 10) / 10;
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,6 +95,32 @@ const SNAPSHOT_CACHE_PATH = path.join(
   "data",
   "task3_ot_21_04_retrospective_snapshot.json"
 );
+
+/**
+ * The snapshot is ~20MB of derived cache. It is stored gzipped (~0.6MB) so a
+ * clone does not carry it uncompressed. The uncompressed path is still read
+ * if present, so an existing working tree keeps working.
+ */
+const SNAPSHOT_CACHE_PATH_GZ = SNAPSHOT_CACHE_PATH + ".gz";
+
+function readSnapshotCache() {
+  if (fs.existsSync(SNAPSHOT_CACHE_PATH_GZ)) {
+    return JSON.parse(zlib.gunzipSync(fs.readFileSync(SNAPSHOT_CACHE_PATH_GZ)).toString("utf8"));
+  }
+  return JSON.parse(fs.readFileSync(SNAPSHOT_CACHE_PATH, "utf8"));
+}
+
+function snapshotCacheExists() {
+  return fs.existsSync(SNAPSHOT_CACHE_PATH_GZ) || fs.existsSync(SNAPSHOT_CACHE_PATH);
+}
+
+function writeSnapshotCache(payload) {
+  fs.mkdirSync(path.dirname(SNAPSHOT_CACHE_PATH_GZ), { recursive: true });
+  const json = JSON.stringify(payload, null, 2);
+  fs.writeFileSync(SNAPSHOT_CACHE_PATH_GZ, zlib.gzipSync(Buffer.from(json, "utf8"), { level: 9 }));
+  // Never leave a stale uncompressed copy beside the gzip.
+  if (fs.existsSync(SNAPSHOT_CACHE_PATH)) fs.rmSync(SNAPSHOT_CACHE_PATH);
+}
 const TASK3_RESULTS_JSON_PATH = path.join(
   DOCKING_DIR,
   "results",
@@ -279,8 +339,8 @@ function parse2021AssociationRow(raw, globalDrugCount, globalApprovedCount) {
  * Load or build the paired 2021 (`21.04`) -> 2026 (`26.09`) retrospective dataset.
  */
 export async function buildOrLoadRetrospectiveSnapshot({ refresh = false } = {}) {
-  if (!refresh && fs.existsSync(SNAPSHOT_CACHE_PATH)) {
-    return JSON.parse(fs.readFileSync(SNAPSHOT_CACHE_PATH, "utf8"));
+  if (!refresh && snapshotCacheExists()) {
+    return readSnapshotCache();
   }
 
   process.stderr.write(
@@ -532,8 +592,7 @@ export async function buildOrLoadRetrospectiveSnapshot({ refresh = false } = {})
     diseases: diseasesOut,
   };
 
-  fs.mkdirSync(path.dirname(SNAPSHOT_CACHE_PATH), { recursive: true });
-  fs.writeFileSync(SNAPSHOT_CACHE_PATH, JSON.stringify(payload, null, 2));
+  writeSnapshotCache(payload);
   return payload;
 }
 
@@ -737,7 +796,7 @@ function evaluateCohortPredictors(
     },
     novelty_v2_current: (r) => {
       const bio = biologySignal(r.datatypeScores_2021, r.overallScore_2021);
-      return noveltyScoreValue(bio, {
+      return historicalNoveltyScoreValue(bio, {
         clinicalScore: 0,
         drugCount: Number(r.drugCount_2021) || 0,
       });
@@ -1033,7 +1092,7 @@ export async function runNoveltyRetrospectiveValidation({
       (r, i) => (100 * bio[i]) / (1 + (Number(r.drugCount_2021) || 0))
     );
     const sNov2 = d.targets.map((r, i) =>
-      noveltyScoreValue(bio[i], {
+      historicalNoveltyScoreValue(bio[i], {
         clinicalScore: 0,
         drugCount: Number(r.drugCount_2021) || 0,
       })

@@ -24,13 +24,14 @@
     "start": "CI=true PORT=3000 HOST=0.0.0.0 BROWSER=none react-scripts start",
     "build:sa-assets": "node scripts/build-sa-folded-remap.mjs && node scripts/build-sa-calibration.mjs",
     "postinstall": "node scripts/copy-molstar-viewer.mjs",
-    "build": "node scripts/ensure-sa-assets.mjs && node scripts/copy-molstar-viewer.mjs && BUILD_PATH=dist GENERATE_SOURCEMAP=false react-scripts build && node scripts/inject-seo-html.mjs",
+    "build": "node scripts/ensure-sa-assets.mjs && node scripts/build-validation-provenance.mjs && node scripts/copy-molstar-viewer.mjs && BUILD_PATH=dist GENERATE_SOURCEMAP=false react-scripts build && node scripts/inject-seo-html.mjs",
     "lint": "eslint src --ext .js,.jsx --max-warnings=10",
     "test": "react-scripts test",
     "build:trial-rates": "node scripts/build-trial-success-rates.mjs",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "build:validation-provenance": "node scripts/build-validation-provenance.mjs"
   },
   "eslintConfig": {
     "extends": [

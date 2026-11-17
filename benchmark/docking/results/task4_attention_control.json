@@ -1,0 +1,320 @@
+{
+  "generated_at": "2026-11-17T04:12:54.908Z",
+  "task": "Task 4 — attention control (nested model comparison on cohort 2)",
+  "historical_release": "21.04 (2021-05-05)",
+  "current_release": "26.09 (2026-09)",
+  "snapshot_id": "opentargets_21_04_to_26_09_retrospective",
+  "cohort": "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
+  "label_key": "acquired_global_from_zero",
+  "n_diseases": 22,
+  "n_train_diseases": 11,
+  "n_test_diseases": 11,
+  "bootstrap_n": 2000,
+  "bootstrap_seed": 42,
+  "top_k": 25,
+  "finding": "**The biology features carry ranking signal beyond attention.** Adding the eight biology features to publication count moves held-out ROC-AUC by +0.054 (95% CI +0.021 to +0.089) and PR-AUC by +0.012 (95% CI +0.001 to +0.025), resampling pairs. The ROC-AUC interval excludes zero under both resampling schemes: resampling whole diseases it is +0.003 to +0.112, with the lower bound close to zero. PR-AUC does not survive that stricter test: resampling diseases, its interval is −0.004 to +0.026, which includes zero. So the ranking improvement is established and the improvement in precision among the rare positives is not. Publication count alone reaches ROC-AUC 0.667; with the biology features, 0.721. The biology features ALONE (M2, ROC-AUC 0.683) do not beat publication count under disease resampling, so they are a useful addition to attention, not a replacement for it.",
+  "models": {
+    "M0": {
+      "label": "publication_count alone",
+      "features": [
+        "log1p_pub_count"
+      ]
+    },
+    "M1": {
+      "label": "publication_count + 8 biology features",
+      "features": [
+        "log1p_pub_count",
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression"
+      ]
+    },
+    "M2": {
+      "label": "8 biology features alone",
+      "features": [
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression"
+      ]
+    }
+  },
+  "train": {
+    "n_total": 12869,
+    "n_positives": 399,
+    "models": {
+      "M0": {
+        "label": "publication_count alone",
+        "roc_auc": 0.6837,
+        "pr_auc": 0.0742,
+        "precision_at_25": 0.04,
+        "recall_at_25": 0.0025
+      },
+      "M1": {
+        "label": "publication_count + 8 biology features",
+        "roc_auc": 0.7223,
+        "pr_auc": 0.0744,
+        "precision_at_25": 0.08,
+        "recall_at_25": 0.005
+      },
+      "M2": {
+        "label": "8 biology features alone",
+        "roc_auc": 0.6843,
+        "pr_auc": 0.0559,
+        "precision_at_25": 0.08,
+        "recall_at_25": 0.005
+      }
+    }
+  },
+  "held_out": {
+    "n_total": 11711,
+    "n_positives": 258,
+    "prevalence": 0.022,
+    "models": {
+      "M0": {
+        "label": "publication_count alone",
+        "roc_auc": 0.6672,
+        "pr_auc": 0.0572,
+        "precision_at_25": 0.04,
+        "recall_at_25": 0.0039
+      },
+      "M1": {
+        "label": "publication_count + 8 biology features",
+        "roc_auc": 0.7214,
+        "pr_auc": 0.069,
+        "precision_at_25": 0.24,
+        "recall_at_25": 0.0233
+      },
+      "M2": {
+        "label": "8 biology features alone",
+        "roc_auc": 0.683,
+        "pr_auc": 0.0489,
+        "precision_at_25": 0.08,
+        "recall_at_25": 0.0078
+      }
+    }
+  },
+  "paired_deltas": {
+    "M1_vs_M0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0542,
+        "ci_low": 0.0214,
+        "ci_high": 0.0887,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0005,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0118,
+        "ci_low": 0.0012,
+        "ci_high": 0.0249,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0125,
+        "n_resamples_used": 2000
+      }
+    },
+    "M2_vs_M0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0158,
+        "ci_low": -0.026,
+        "ci_high": 0.061,
+        "includes_zero": true,
+        "frac_resamples_delta_le_zero": 0.249,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": -0.0083,
+        "ci_low": -0.0252,
+        "ci_high": 0.0076,
+        "includes_zero": true,
+        "frac_resamples_delta_le_zero": 0.85,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "clustered_deltas": {
+    "M1_vs_M0": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0517,
+        "ci_low": 0.003,
+        "ci_high": 0.1122,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0116,
+        "ci_low": -0.0042,
+        "ci_high": 0.0264,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      }
+    },
+    "M2_vs_M0": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.015,
+        "ci_low": -0.0517,
+        "ci_high": 0.0758,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": -0.0093,
+        "ci_low": -0.0318,
+        "ci_high": 0.0106,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "residualised": [
+    {
+      "feature": "genetic_association",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.006,
+        "intercept": -0.0012,
+        "r2": 0.0092
+      },
+      "held_out_roc_auc_raw": 0.4998,
+      "held_out_roc_auc_residual": 0.3422,
+      "held_out_pr_auc_residual": 0.0169
+    },
+    {
+      "feature": "genetic_literature",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.001,
+        "intercept": -0.0005,
+        "r2": 0.0019
+      },
+      "held_out_roc_auc_raw": 0.5037,
+      "held_out_roc_auc_residual": 0.3399,
+      "held_out_pr_auc_residual": 0.0195
+    },
+    {
+      "feature": "somatic_mutation",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0284,
+        "intercept": 0.0599,
+        "r2": 0.0233
+      },
+      "held_out_roc_auc_raw": 0.5641,
+      "held_out_roc_auc_residual": 0.7089,
+      "held_out_pr_auc_residual": 0.0602
+    },
+    {
+      "feature": "overall",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0455,
+        "intercept": 0.1182,
+        "r2": 0.0381
+      },
+      "held_out_roc_auc_raw": 0.6335,
+      "held_out_roc_auc_residual": 0.6592,
+      "held_out_pr_auc_residual": 0.0478
+    },
+    {
+      "feature": "literature",
+      "regression_on_log1p_pub_count": {
+        "slope": 0.015,
+        "intercept": 0.0013,
+        "r2": 0.3404
+      },
+      "held_out_roc_auc_raw": 0.6569,
+      "held_out_roc_auc_residual": 0.5934,
+      "held_out_pr_auc_residual": 0.0354
+    },
+    {
+      "feature": "affected_pathway",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0299,
+        "intercept": 0.0525,
+        "r2": 0.0312
+      },
+      "held_out_roc_auc_raw": 0.4846,
+      "held_out_roc_auc_residual": 0.609,
+      "held_out_pr_auc_residual": 0.038
+    },
+    {
+      "feature": "animal_model",
+      "regression_on_log1p_pub_count": {
+        "slope": 0,
+        "intercept": 0,
+        "r2": 0
+      },
+      "held_out_roc_auc_raw": 0.504,
+      "held_out_roc_auc_residual": 0.504,
+      "held_out_pr_auc_residual": 0.0233
+    },
+    {
+      "feature": "rna_expression",
+      "regression_on_log1p_pub_count": {
+        "slope": -0.0037,
+        "intercept": 0.0071,
+        "r2": 0.0701
+      },
+      "held_out_roc_auc_raw": 0.4807,
+      "held_out_roc_auc_residual": 0.6208,
+      "held_out_pr_auc_residual": 0.0382
+    }
+  ],
+  "coefficients": {
+    "M0": {
+      "intercept": -0.2098,
+      "coefficients": {
+        "log1p_pub_count": 1.5751
+      }
+    },
+    "M1": {
+      "intercept": -0.2711,
+      "coefficients": {
+        "log1p_pub_count": 1.601,
+        "genetic_association": 0.0059,
+        "genetic_literature": -0.0099,
+        "somatic_mutation": 0.5358,
+        "overall": 0.3612,
+        "literature": 0.255,
+        "affected_pathway": -0.2925,
+        "animal_model": 0,
+        "rna_expression": -0.0324
+      }
+    },
+    "M2": {
+      "intercept": -0.0519,
+      "coefficients": {
+        "genetic_association": 0.0174,
+        "genetic_literature": -0.0092,
+        "somatic_mutation": 0.49,
+        "overall": 0.3164,
+        "literature": 0.2962,
+        "affected_pathway": -0.3315,
+        "animal_model": 0,
+        "rna_expression": -0.0375
+      }
+    }
+  },
+  "leakage_controls": [
+    "Every predictor is read from the Open Targets 21.04 snapshot (2021-05-05). No quantity from any later release enters any model.",
+    "Outcomes come only from 26.09.",
+    "All three models and every residualisation regression are fitted on the 11 training diseases. The 11 held-out test diseases are used once, for evaluation.",
+    "The split is by disease, not by target, so a target appearing in two diseases cannot straddle train and test.",
+    "Bootstrap resamples pairs, and both models are rescored on the same resampled rows, so the delta CI is paired."
+  ]
+}

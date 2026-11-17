@@ -85,8 +85,24 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    expect(container.querySelectorAll(".validation-source").length).toBe(3);
+    // One per section: target scores, attention control, compound triage, docking.
+    expect(container.querySelectorAll(".validation-source").length).toBe(4);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
+    expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
+  });
+
+  test("reports the attention control, including the part that fails", () => {
+    const text = render();
+    expect(text).toMatch(/beat counting papers/i);
+    // The nested models and the paired delta.
+    for (const n of ["0.721", "0.683", "+0.054", "+0.021", "+0.089", "+0.012"]) {
+      expect(text).toContain(n);
+    }
+    // And the stricter disease-level bootstrap, where PR-AUC does not survive.
+    expect(text).toContain("0.003");
+    expect(text).toContain("0.112");
+    expect(text).toMatch(/includes zero/i);
+    expect(text).toMatch(/not a replacement/i);
   });
 
   test("carries no promotional adjectives", () => {
