@@ -1,0 +1,782 @@
+{
+  "generated_at": "2026-11-17T16:28:21.952Z",
+  "task": "Task 7 — cancer / non-cancer stratification of the Task 4 attention-control result",
+  "historical_release": "21.04 (2021-05-05)",
+  "current_release": "26.09 (2026-09)",
+  "cohort": "cohort 2 — targets with drugCount_2021 == 0 (first-in-class progression)",
+  "label_key": "acquired_global_from_zero",
+  "labels_source": "benchmark/docking/data/disease_cancer_labels.json",
+  "panel_counts": {
+    "cancer": 15,
+    "non_cancer": 7,
+    "total": 22
+  },
+  "min_clusters_for_ci": 4,
+  "models_fitted_on": "the full 11-disease training set, never per stratum",
+  "train": {
+    "n_total": 12869,
+    "n_positives": 399,
+    "n_cancer_diseases": 6,
+    "n_non_cancer_diseases": 5
+  },
+  "verdict_label": "underpowered to tell",
+  "verdict": "**Underpowered to tell.** The held-out non-cancer stratum is 2 diseases, of which only 1 contributes any cohort-2 pairs (chronic obstructive pulmonary disease contributes none): 1403 pairs with 22 positives, against 10308 pairs and 236 positives across 9 cancers. No disease-level confidence interval is reported for the non-cancer stratum, because resampling one cluster would produce an interval that looks like a measurement and is not one.\n\nWhat the point estimates say, for what little that is worth at this sample size: somatic_mutation residualises to 0.708 on the cancers and 0.730 on the non-cancers, against 0.709 pooled. These are single numbers from one non-cancer disease and must not be quoted as a comparison — least of all as evidence that the signal generalises, which is the direction the non-cancer number happens to point.\n\n**What IS established is the scope of the Task 4 result.** The cancer stratum reproduces it almost exactly: M1 vs M0 is +0.057 on the 9 held-out cancers (95% CI +0.019 to +0.096 resampling pairs, +0.002 to +0.122 resampling diseases), against +0.054 pooled. 10308 of the 11711 held-out pairs and 236 of the 258 positives are cancer, so the pooled Task 4 figure essentially IS the cancer figure. On the one held-out non-cancer disease the biology features do not help at all (−0.008, 95% CI −0.047 to +0.033, including zero, and publication count alone scores higher there: 0.730 against M1's 0.722). One disease cannot carry that conclusion either, but it is the only non-cancer evidence there is and it does not support generalisation.\n\nSo: **every figure in Task 4 should be read as an oncology result**, and the validation page has been changed to say so. Deciding whether the biology features help outside cancer needs more non-cancer diseases in the panel, not more analysis of these 22 positives.",
+  "somatic_mutation_residualised": {
+    "all": 0.7089,
+    "cancer": 0.7078,
+    "non_cancer": 0.7295,
+    "task4_pooled_reference": 0.709
+  },
+  "strata": {
+    "all": {
+      "n_diseases_in_split": 11,
+      "n_diseases_with_cohort2_data": 10,
+      "diseases_with_no_data": [
+        {
+          "disease_name": "chronic obstructive pulmonary disease",
+          "reason": "no cohort-2 target-disease pairs"
+        }
+      ],
+      "per_disease": [
+        {
+          "disease_id_2021": "EFO_0000222",
+          "disease_name": "acute myeloid leukemia",
+          "stratum": "cancer",
+          "n_pairs": 1360,
+          "n_positives": 20
+        },
+        {
+          "disease_id_2021": "EFO_0000253",
+          "disease_name": "amyotrophic lateral sclerosis",
+          "stratum": "non_cancer",
+          "n_pairs": 1403,
+          "n_positives": 22
+        },
+        {
+          "disease_id_2021": "EFO_0000294",
+          "disease_name": "urinary bladder neoplasm",
+          "stratum": "cancer",
+          "n_pairs": 820,
+          "n_positives": 30
+        },
+        {
+          "disease_id_2021": "EFO_0000308",
+          "disease_name": "bronchioloalveolar carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 272,
+          "n_positives": 13
+        },
+        {
+          "disease_id_2021": "EFO_0000313",
+          "disease_name": "carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 1503,
+          "n_positives": 19
+        },
+        {
+          "disease_id_2021": "EFO_0000341",
+          "disease_name": "chronic obstructive pulmonary disease",
+          "stratum": "non_cancer",
+          "n_pairs": 0,
+          "n_positives": 0
+        },
+        {
+          "disease_id_2021": "EFO_0000389",
+          "disease_name": "cutaneous melanoma",
+          "stratum": "cancer",
+          "n_pairs": 1322,
+          "n_positives": 34
+        },
+        {
+          "disease_id_2021": "EFO_0000519",
+          "disease_name": "glioblastoma",
+          "stratum": "cancer",
+          "n_pairs": 1335,
+          "n_positives": 17
+        },
+        {
+          "disease_id_2021": "EFO_0000588",
+          "disease_name": "mesothelioma",
+          "stratum": "cancer",
+          "n_pairs": 1039,
+          "n_positives": 48
+        },
+        {
+          "disease_id_2021": "EFO_0000702",
+          "disease_name": "small cell lung carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 1337,
+          "n_positives": 32
+        },
+        {
+          "disease_id_2021": "EFO_0001378",
+          "disease_name": "plasma cell myeloma",
+          "stratum": "cancer",
+          "n_pairs": 1320,
+          "n_positives": 23
+        }
+      ],
+      "n_total": 11711,
+      "n_positives": 258,
+      "prevalence": 0.022,
+      "models": {
+        "M0": {
+          "label": "publication_count alone",
+          "roc_auc": 0.6672,
+          "pr_auc": 0.0572,
+          "precision_at_25": 0.04,
+          "recall_at_25": 0.0039
+        },
+        "M1": {
+          "label": "publication_count + 8 biology features",
+          "roc_auc": 0.7214,
+          "pr_auc": 0.069,
+          "precision_at_25": 0.24,
+          "recall_at_25": 0.0233
+        },
+        "M2": {
+          "label": "8 biology features alone",
+          "roc_auc": 0.683,
+          "pr_auc": 0.0489,
+          "precision_at_25": 0.08,
+          "recall_at_25": 0.0078
+        }
+      },
+      "paired_deltas": {
+        "M1_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0542,
+            "ci_low": 0.0214,
+            "ci_high": 0.0887,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.0005,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.0118,
+            "ci_low": 0.0012,
+            "ci_high": 0.0249,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.0125,
+            "n_resamples_used": 2000
+          }
+        },
+        "M2_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0158,
+            "ci_low": -0.026,
+            "ci_high": 0.061,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.249,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": -0.0083,
+            "ci_low": -0.0252,
+            "ci_high": 0.0076,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.85,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_deltas": {
+        "M1_vs_M0": {
+          "resampling_unit": "disease (cluster)",
+          "n_clusters": 10,
+          "n_boot_requested": 2000,
+          "roc_auc": {
+            "median_delta": 0.0517,
+            "ci_low": 0.003,
+            "ci_high": 0.1122,
+            "includes_zero": false,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "median_delta": 0.0116,
+            "ci_low": -0.0042,
+            "ci_high": 0.0264,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          }
+        },
+        "M2_vs_M0": {
+          "resampling_unit": "disease (cluster)",
+          "n_clusters": 10,
+          "n_boot_requested": 2000,
+          "roc_auc": {
+            "median_delta": 0.015,
+            "ci_low": -0.0517,
+            "ci_high": 0.0758,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "median_delta": -0.0093,
+            "ci_low": -0.0318,
+            "ci_high": 0.0106,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_withheld_reason": null,
+      "residualised": [
+        {
+          "feature": "genetic_association",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.006,
+            "intercept": -0.0012,
+            "r2": 0.0092
+          },
+          "roc_auc_raw": 0.4998,
+          "roc_auc_residual": 0.3422,
+          "pr_auc_residual": 0.0169
+        },
+        {
+          "feature": "genetic_literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.001,
+            "intercept": -0.0005,
+            "r2": 0.0019
+          },
+          "roc_auc_raw": 0.5037,
+          "roc_auc_residual": 0.3399,
+          "pr_auc_residual": 0.0195
+        },
+        {
+          "feature": "somatic_mutation",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0284,
+            "intercept": 0.0599,
+            "r2": 0.0233
+          },
+          "roc_auc_raw": 0.5641,
+          "roc_auc_residual": 0.7089,
+          "pr_auc_residual": 0.0602
+        },
+        {
+          "feature": "overall",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0455,
+            "intercept": 0.1182,
+            "r2": 0.0381
+          },
+          "roc_auc_raw": 0.6335,
+          "roc_auc_residual": 0.6592,
+          "pr_auc_residual": 0.0478
+        },
+        {
+          "feature": "literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.015,
+            "intercept": 0.0013,
+            "r2": 0.3404
+          },
+          "roc_auc_raw": 0.6569,
+          "roc_auc_residual": 0.5934,
+          "pr_auc_residual": 0.0354
+        },
+        {
+          "feature": "affected_pathway",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0299,
+            "intercept": 0.0525,
+            "r2": 0.0312
+          },
+          "roc_auc_raw": 0.4846,
+          "roc_auc_residual": 0.609,
+          "pr_auc_residual": 0.038
+        },
+        {
+          "feature": "animal_model",
+          "regression_on_log1p_pub_count": {
+            "slope": 0,
+            "intercept": 0,
+            "r2": 0
+          },
+          "roc_auc_raw": 0.504,
+          "roc_auc_residual": 0.504,
+          "pr_auc_residual": 0.0233
+        },
+        {
+          "feature": "rna_expression",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0037,
+            "intercept": 0.0071,
+            "r2": 0.0701
+          },
+          "roc_auc_raw": 0.4807,
+          "roc_auc_residual": 0.6208,
+          "pr_auc_residual": 0.0382
+        }
+      ]
+    },
+    "cancer": {
+      "n_diseases_in_split": 9,
+      "n_diseases_with_cohort2_data": 9,
+      "diseases_with_no_data": [],
+      "per_disease": [
+        {
+          "disease_id_2021": "EFO_0000222",
+          "disease_name": "acute myeloid leukemia",
+          "stratum": "cancer",
+          "n_pairs": 1360,
+          "n_positives": 20
+        },
+        {
+          "disease_id_2021": "EFO_0000294",
+          "disease_name": "urinary bladder neoplasm",
+          "stratum": "cancer",
+          "n_pairs": 820,
+          "n_positives": 30
+        },
+        {
+          "disease_id_2021": "EFO_0000308",
+          "disease_name": "bronchioloalveolar carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 272,
+          "n_positives": 13
+        },
+        {
+          "disease_id_2021": "EFO_0000313",
+          "disease_name": "carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 1503,
+          "n_positives": 19
+        },
+        {
+          "disease_id_2021": "EFO_0000389",
+          "disease_name": "cutaneous melanoma",
+          "stratum": "cancer",
+          "n_pairs": 1322,
+          "n_positives": 34
+        },
+        {
+          "disease_id_2021": "EFO_0000519",
+          "disease_name": "glioblastoma",
+          "stratum": "cancer",
+          "n_pairs": 1335,
+          "n_positives": 17
+        },
+        {
+          "disease_id_2021": "EFO_0000588",
+          "disease_name": "mesothelioma",
+          "stratum": "cancer",
+          "n_pairs": 1039,
+          "n_positives": 48
+        },
+        {
+          "disease_id_2021": "EFO_0000702",
+          "disease_name": "small cell lung carcinoma",
+          "stratum": "cancer",
+          "n_pairs": 1337,
+          "n_positives": 32
+        },
+        {
+          "disease_id_2021": "EFO_0001378",
+          "disease_name": "plasma cell myeloma",
+          "stratum": "cancer",
+          "n_pairs": 1320,
+          "n_positives": 23
+        }
+      ],
+      "n_total": 10308,
+      "n_positives": 236,
+      "prevalence": 0.0229,
+      "models": {
+        "M0": {
+          "label": "publication_count alone",
+          "roc_auc": 0.6655,
+          "pr_auc": 0.06,
+          "precision_at_25": 0.08,
+          "recall_at_25": 0.0085
+        },
+        "M1": {
+          "label": "publication_count + 8 biology features",
+          "roc_auc": 0.722,
+          "pr_auc": 0.0733,
+          "precision_at_25": 0.24,
+          "recall_at_25": 0.0254
+        },
+        "M2": {
+          "label": "8 biology features alone",
+          "roc_auc": 0.6839,
+          "pr_auc": 0.0506,
+          "precision_at_25": 0.08,
+          "recall_at_25": 0.0085
+        }
+      },
+      "paired_deltas": {
+        "M1_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0565,
+            "ci_low": 0.0194,
+            "ci_high": 0.0962,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.0005,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.0132,
+            "ci_low": 0.0008,
+            "ci_high": 0.0284,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.022,
+            "n_resamples_used": 2000
+          }
+        },
+        "M2_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0185,
+            "ci_low": -0.0326,
+            "ci_high": 0.0694,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.2395,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": -0.0095,
+            "ci_low": -0.0287,
+            "ci_high": 0.0087,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.8395,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_deltas": {
+        "M1_vs_M0": {
+          "resampling_unit": "disease (cluster)",
+          "n_clusters": 9,
+          "n_boot_requested": 2000,
+          "roc_auc": {
+            "median_delta": 0.0542,
+            "ci_low": 0.0023,
+            "ci_high": 0.1217,
+            "includes_zero": false,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "median_delta": 0.0135,
+            "ci_low": -0.0044,
+            "ci_high": 0.0312,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          }
+        },
+        "M2_vs_M0": {
+          "resampling_unit": "disease (cluster)",
+          "n_clusters": 9,
+          "n_boot_requested": 2000,
+          "roc_auc": {
+            "median_delta": 0.0167,
+            "ci_low": -0.0496,
+            "ci_high": 0.0849,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "median_delta": -0.0112,
+            "ci_low": -0.034,
+            "ci_high": 0.0131,
+            "includes_zero": true,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_withheld_reason": null,
+      "residualised": [
+        {
+          "feature": "genetic_association",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.006,
+            "intercept": -0.0012,
+            "r2": 0.0092
+          },
+          "roc_auc_raw": 0.5009,
+          "roc_auc_residual": 0.3467,
+          "pr_auc_residual": 0.018
+        },
+        {
+          "feature": "genetic_literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.001,
+            "intercept": -0.0005,
+            "r2": 0.0019
+          },
+          "roc_auc_raw": 0.5041,
+          "roc_auc_residual": 0.3424,
+          "pr_auc_residual": 0.0208
+        },
+        {
+          "feature": "somatic_mutation",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0284,
+            "intercept": 0.0599,
+            "r2": 0.0233
+          },
+          "roc_auc_raw": 0.5685,
+          "roc_auc_residual": 0.7078,
+          "pr_auc_residual": 0.0617
+        },
+        {
+          "feature": "overall",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0455,
+            "intercept": 0.1182,
+            "r2": 0.0381
+          },
+          "roc_auc_raw": 0.6292,
+          "roc_auc_residual": 0.6535,
+          "pr_auc_residual": 0.0512
+        },
+        {
+          "feature": "literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.015,
+            "intercept": 0.0013,
+            "r2": 0.3404
+          },
+          "roc_auc_raw": 0.6598,
+          "roc_auc_residual": 0.6023,
+          "pr_auc_residual": 0.0382
+        },
+        {
+          "feature": "affected_pathway",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0299,
+            "intercept": 0.0525,
+            "r2": 0.0312
+          },
+          "roc_auc_raw": 0.4807,
+          "roc_auc_residual": 0.5989,
+          "pr_auc_residual": 0.0384
+        },
+        {
+          "feature": "animal_model",
+          "regression_on_log1p_pub_count": {
+            "slope": 0,
+            "intercept": 0,
+            "r2": 0
+          },
+          "roc_auc_raw": 0.5035,
+          "roc_auc_residual": 0.5035,
+          "pr_auc_residual": 0.0243
+        },
+        {
+          "feature": "rna_expression",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0037,
+            "intercept": 0.0071,
+            "r2": 0.0701
+          },
+          "roc_auc_raw": 0.482,
+          "roc_auc_residual": 0.6189,
+          "pr_auc_residual": 0.0452
+        }
+      ]
+    },
+    "non_cancer": {
+      "n_diseases_in_split": 2,
+      "n_diseases_with_cohort2_data": 1,
+      "diseases_with_no_data": [
+        {
+          "disease_name": "chronic obstructive pulmonary disease",
+          "reason": "no cohort-2 target-disease pairs"
+        }
+      ],
+      "per_disease": [
+        {
+          "disease_id_2021": "EFO_0000253",
+          "disease_name": "amyotrophic lateral sclerosis",
+          "stratum": "non_cancer",
+          "n_pairs": 1403,
+          "n_positives": 22
+        },
+        {
+          "disease_id_2021": "EFO_0000341",
+          "disease_name": "chronic obstructive pulmonary disease",
+          "stratum": "non_cancer",
+          "n_pairs": 0,
+          "n_positives": 0
+        }
+      ],
+      "n_total": 1403,
+      "n_positives": 22,
+      "prevalence": 0.0157,
+      "models": {
+        "M0": {
+          "label": "publication_count alone",
+          "roc_auc": 0.7295,
+          "pr_auc": 0.0549,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        },
+        "M1": {
+          "label": "publication_count + 8 biology features",
+          "roc_auc": 0.722,
+          "pr_auc": 0.0521,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        },
+        "M2": {
+          "label": "8 biology features alone",
+          "roc_auc": 0.675,
+          "pr_auc": 0.0299,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        }
+      },
+      "paired_deltas": {
+        "M1_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": -0.0076,
+            "ci_low": -0.0471,
+            "ci_high": 0.0331,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.666,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": -0.0028,
+            "ci_low": -0.0102,
+            "ci_high": 0.0007,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.912,
+            "n_resamples_used": 2000
+          }
+        },
+        "M2_vs_M0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": -0.0545,
+            "ci_low": -0.1493,
+            "ci_high": 0.0561,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.862,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": -0.025,
+            "ci_low": -0.0586,
+            "ci_high": -0.0038,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.9905,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_deltas": null,
+      "clustered_withheld_reason": "only 1 held-out disease(s) with data in this stratum; a disease-level bootstrap over fewer than 4 clusters would produce an interval that looks like a measurement and is not one",
+      "residualised": [
+        {
+          "feature": "genetic_association",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.006,
+            "intercept": -0.0012,
+            "r2": 0.0092
+          },
+          "roc_auc_raw": 0.4873,
+          "roc_auc_residual": 0.2558,
+          "pr_auc_residual": 0.0097
+        },
+        {
+          "feature": "genetic_literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.001,
+            "intercept": -0.0005,
+            "r2": 0.0019
+          },
+          "roc_auc_raw": 0.4993,
+          "roc_auc_residual": 0.2694,
+          "pr_auc_residual": 0.0099
+        },
+        {
+          "feature": "somatic_mutation",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0284,
+            "intercept": 0.0599,
+            "r2": 0.0233
+          },
+          "roc_auc_raw": 0.5,
+          "roc_auc_residual": 0.7295,
+          "pr_auc_residual": 0.0549
+        },
+        {
+          "feature": "overall",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0455,
+            "intercept": 0.1182,
+            "r2": 0.0381
+          },
+          "roc_auc_raw": 0.6694,
+          "roc_auc_residual": 0.7268,
+          "pr_auc_residual": 0.0415
+        },
+        {
+          "feature": "literature",
+          "regression_on_log1p_pub_count": {
+            "slope": 0.015,
+            "intercept": 0.0013,
+            "r2": 0.3404
+          },
+          "roc_auc_raw": 0.6644,
+          "roc_auc_residual": 0.522,
+          "pr_auc_residual": 0.0215
+        },
+        {
+          "feature": "affected_pathway",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0299,
+            "intercept": 0.0525,
+            "r2": 0.0312
+          },
+          "roc_auc_raw": 0.5,
+          "roc_auc_residual": 0.7295,
+          "pr_auc_residual": 0.0549
+        },
+        {
+          "feature": "animal_model",
+          "regression_on_log1p_pub_count": {
+            "slope": 0,
+            "intercept": 0,
+            "r2": 0
+          },
+          "roc_auc_raw": 0.5136,
+          "roc_auc_residual": 0.5136,
+          "pr_auc_residual": 0.02
+        },
+        {
+          "feature": "rna_expression",
+          "regression_on_log1p_pub_count": {
+            "slope": -0.0037,
+            "intercept": 0.0071,
+            "r2": 0.0701
+          },
+          "roc_auc_raw": 0.4638,
+          "roc_auc_residual": 0.6805,
+          "pr_auc_residual": 0.0335
+        }
+      ]
+    }
+  },
+  "leakage_controls": [
+    "Predictors come only from the Open Targets 21.04 snapshot; outcomes only from 26.09.",
+    "The cancer/non-cancer labelling uses only the disease name, which is fixed in the 21.04 snapshot, so it introduces no post-2021 information.",
+    "All three models and every residualisation regression are fitted on the full 11-disease training set. No stratum is fitted on its own held-out data.",
+    "The split is by disease, so a target appearing in two diseases cannot straddle train and test.",
+    "No disease-level interval is computed for a stratum with fewer than 4 held-out diseases."
+  ]
+}

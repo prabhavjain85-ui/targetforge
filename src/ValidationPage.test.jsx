@@ -85,10 +85,12 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    // One per section: target scores, attention control, tractability, triage, docking.
-    expect(container.querySelectorAll(".validation-source").length).toBe(5);
+    // target scores, attention control, cancer stratification, tractability, triage, docking.
+    expect(container.querySelectorAll(".validation-source").length).toBe(6);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
+    expect(text).toContain("benchmark/docking/results/task5_tractability.json");
+    expect(text).not.toMatch(/Source:s*undefined/);
   });
 
   test("reports the attention control, including the part that fails", () => {
@@ -122,5 +124,18 @@ describe("ValidationPage", () => {
     expect(text).toMatch(/add nothing/i);
     expect(text).toContain("−0.002");
     expect(text).toMatch(/no score was promoted/i);
+  });
+
+  test("reports the oncology scope limit as underpowered, not as generalisation", () => {
+    const text = render();
+    expect(text).toMatch(/Is that an oncology result/i);
+    expect(text).toMatch(/underpowered to tell/i);
+    // The cancer stratum reproducing the pooled result is the established part.
+    expect(text).toContain("+0.057");
+    expect(text).toContain("10,308");
+    // The single non-cancer disease, reported as a count and not a comparison.
+    expect(text).toContain("1,403");
+    expect(text).toContain("−0.008");
+    expect(text).toMatch(/cannot establish/i);
   });
 });

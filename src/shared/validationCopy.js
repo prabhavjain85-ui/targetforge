@@ -27,6 +27,9 @@ export const VALIDATION_SOURCES = {
   task2Md: "benchmark/docking/TASK2_DECOY_BENCHMARK.md",
   task4Json: "benchmark/docking/results/task4_attention_control.json",
   task4Md: "benchmark/docking/TASK4_ATTENTION_CONTROL.md",
+  task5Json: "benchmark/docking/results/task5_tractability.json",
+  task7Json: "benchmark/docking/results/task7_cancer_stratification.json",
+  cancerLabels: "benchmark/docking/data/disease_cancer_labels.json",
   redock: "benchmark/docking/results/redock_multiseed.json",
   pairs: "benchmark/docking/results/pair_sanity_checks.json",
   enrichment: "benchmark/docking/results/enrichment.json",
@@ -122,7 +125,39 @@ export const VALIDATION_SECTIONS = [
       "Only the literature feature is substantially explained by publication count " +
       "(R² 0.340). The next largest is RNA expression at 0.070 and the rest are " +
       "lower, so residualising each feature against attention changes little: " +
-      "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).",
+      "somatic mutation in fact ranks better residualised (0.709) than raw (0.564).\n" +
+      "Scope limit, measured rather than assumed: the panel is 15 cancers and 7 " +
+      "non-cancers, and 9 of the 11 held-out diseases are cancers. Read every figure " +
+      "in this section as an oncology result — see the next section for why.",
+  },
+  {
+    id: "cancer-stratification",
+    title: "Is that an oncology result?",
+    source: VALIDATION_SOURCES.task7Json,
+    body:
+      "The signal above is carried by somatic mutation evidence, which in Open " +
+      "Targets comes largely from cancer genomics. So the same comparison was run " +
+      "separately on the cancer and non-cancer held-out diseases, with the " +
+      "cancer/non-cancer labelling committed as its own file so it can be disputed.\n" +
+      "On the 9 held-out cancers (10,308 pairs, 236 positives) the biology features " +
+      "add +0.057 over publication count (95% CI +0.019 to +0.096 resampling pairs, " +
+      "+0.002 to +0.122 resampling diseases) — almost exactly the +0.054 measured " +
+      "across everything. Since 10,308 of the 11,711 held-out pairs are cancer, the " +
+      "pooled figure essentially is the cancer figure.\n" +
+      "Whether it holds outside cancer is underpowered to tell, and that is the " +
+      "honest answer rather than a hedge. Only 2 held-out diseases are non-cancer and " +
+      "one of them contributes no rows at all, leaving a single disease: 1,403 pairs " +
+      "with 22 positives. No disease-level interval is reported for it, because " +
+      "resampling one disease would produce something that looks like a measurement " +
+      "and is not one.\n" +
+      "On that one disease the biology features do not help: −0.008 (95% CI −0.047 to " +
+      "+0.033, including zero), and publication count alone scores higher there, " +
+      "0.730 against 0.722. Residualised somatic mutation reads 0.708 on the cancers " +
+      "and 0.730 on the single non-cancer disease, which points towards the signal " +
+      "generalising — but one disease and 22 positives cannot establish that in either " +
+      "direction, so it is quoted here as a count, not as a comparison.\n" +
+      "Settling this needs more non-cancer diseases in the panel, not more analysis of " +
+      "these 22 positives.",
   },
   {
     id: "tractability-features",

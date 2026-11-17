@@ -14,6 +14,7 @@ import {
   SCORE_CHIPS,
   VALIDATION_COMMIT_SHORT,
   VALIDATION_SECTIONS,
+  VALIDATION_SOURCES,
 } from "./shared/validationCopy";
 
 const repoRoot = path.join(__dirname, "..");
@@ -29,6 +30,7 @@ const discoveryPage = read("src/TargetDiscoveryPage.jsx");
 const task3 = JSON.parse(read("benchmark/docking/results/task3_novelty_validation.json"));
 const task4 = JSON.parse(read("benchmark/docking/results/task4_attention_control.json"));
 const task5 = JSON.parse(read("benchmark/docking/results/task5_tractability.json"));
+const task7 = JSON.parse(read("benchmark/docking/results/task7_cancer_stratification.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
 
 /** Every metric-looking number a user can read, across the validation copy. */
@@ -172,7 +174,7 @@ describe("/validation page figures trace to committed artifacts", () => {
   });
 
   test("every three-decimal figure in the copy appears in a benchmark file", () => {
-    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4) + JSON.stringify(task5);
+    const artifacts = results + task1 + task2 + JSON.stringify(task3) + JSON.stringify(task4) + JSON.stringify(task5) + JSON.stringify(task7);
     const unmatched = [];
     for (const n of new Set(COPY_NUMBERS)) {
       const asText = n.toFixed(3);
@@ -478,5 +480,136 @@ describe("Task 5 tractability figures trace to the committed run", () => {
     expect(task5.n_test_diseases).toBe(11);
     expect(task5.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
     expect(task5.leakage_controls.join(" ")).toMatch(/training-set medians/i);
+  });
+});
+
+describe("every validation section names a real source file", () => {
+  // This guard is here because it was missed once: the tractability section
+  // referenced VALIDATION_SOURCES.task5Json, which was never defined, so the
+  // page rendered "Source: undefined" and shipped that way in cc7cecc. A
+  // section whose provenance is undefined is exactly what this page exists to
+  // prevent, so the check is structural rather than per-section.
+  test("no section has an undefined source", () => {
+    for (const section of VALIDATION_SECTIONS) {
+      expect(typeof section.source).toBe("string");
+      expect(section.source.length).toBeGreaterThan(0);
+      expect(section.source).not.toMatch(/undefined/);
+    }
+  });
+
+  test("every named source file exists on disk", () => {
+    for (const section of VALIDATION_SECTIONS) {
+      const abs = path.join(repoRoot, section.source);
+      expect(fs.existsSync(abs)).toBe(true);
+    }
+  });
+
+  test("every entry in VALIDATION_SOURCES points at a file that exists", () => {
+    for (const [key, rel] of Object.entries(VALIDATION_SOURCES)) {
+      expect(typeof rel).toBe("string");
+      const abs = path.join(repoRoot, rel);
+      if (!fs.existsSync(abs)) {
+        throw new Error(`VALIDATION_SOURCES.${key} points at a missing file: ${rel}`);
+      }
+    }
+  });
+});
+
+describe("Task 7 cancer stratification figures trace to the committed run", () => {
+  const section = VALIDATION_SECTIONS.find((s) => s.id === "cancer-stratification");
+  const labels = JSON.parse(read("benchmark/docking/data/disease_cancer_labels.json"));
+  const round = (x, d = 3) => Number(Number(x).toFixed(d));
+
+  test("the labelling is committed, complete and self-consistent", () => {
+    expect(labels.diseases.length).toBe(22);
+    expect(labels.counts.cancer).toBe(15);
+    expect(labels.counts.non_cancer).toBe(7);
+    const tally = labels.diseases.reduce(
+      (a, d) => ((a[d.stratum] = (a[d.stratum] || 0) + 1), a),
+      {}
+    );
+    expect(tally.cancer).toBe(labels.counts.cancer);
+    expect(tally.non_cancer).toBe(labels.counts.non_cancer);
+    // Every disease carries a reason, so the labelling can be argued with.
+    for (const d of labels.diseases) {
+      expect(d.rationale.length).toBeGreaterThan(5);
+      expect(["cancer", "non_cancer"]).toContain(d.stratum);
+    }
+  });
+
+  test("stratum counts match the artifact", () => {
+    expect(task7.strata.cancer.n_diseases_with_cohort2_data).toBe(9);
+    expect(task7.strata.cancer.n_total).toBe(10308);
+    expect(task7.strata.cancer.n_positives).toBe(236);
+    expect(task7.strata.non_cancer.n_diseases_in_split).toBe(2);
+    expect(task7.strata.non_cancer.n_diseases_with_cohort2_data).toBe(1);
+    expect(task7.strata.non_cancer.n_total).toBe(1403);
+    expect(task7.strata.non_cancer.n_positives).toBe(22);
+    for (const n of ["10,308", "236", "1,403", "22"]) {
+      expect(section.body).toContain(n);
+    }
+  });
+
+  test("the cancer stratum reproduces the pooled Task 4 result", () => {
+    const c = task7.strata.cancer.paired_deltas.M1_vs_M0.roc_auc;
+    expect(round(c.delta)).toBe(0.057);
+    expect(c.includes_zero).toBe(false);
+    expect(task7.strata.cancer.clustered_deltas.M1_vs_M0.roc_auc.includes_zero).toBe(false);
+    // Within a whisker of the pooled +0.054 from Task 4.
+    const pooled = task4.paired_deltas.M1_vs_M0.roc_auc.delta;
+    expect(Math.abs(c.delta - pooled)).toBeLessThan(0.01);
+    expect(section.body).toContain("+0.057");
+    expect(section.body).toContain("+0.054");
+  });
+
+  test("no disease-level interval is manufactured for the one-disease stratum", () => {
+    // The acceptance explicitly allows "underpowered to tell" and forbids
+    // inventing a CI to avoid it.
+    expect(task7.strata.non_cancer.clustered_deltas).toBeNull();
+    expect(task7.strata.non_cancer.clustered_withheld_reason).toMatch(/would produce an interval/i);
+    expect(task7.min_clusters_for_ci).toBeGreaterThanOrEqual(4);
+    expect(section.body).toMatch(/no disease-level interval is reported/i);
+  });
+
+  test("the verdict is 'underpowered to tell' and says so plainly", () => {
+    expect(task7.verdict_label).toBe("underpowered to tell");
+    expect(task7.verdict).toMatch(/^\*\*Underpowered to tell\.\*\*/);
+    expect(section.body).toMatch(/underpowered to tell/i);
+  });
+
+  test("the non-cancer point estimates are reported without being spun", () => {
+    const sm = task7.somatic_mutation_residualised;
+    expect(round(sm.cancer)).toBe(0.708);
+    expect(round(sm.non_cancer)).toBe(0.73);
+    expect(round(sm.all)).toBe(0.709);
+    // The non-cancer number happens to favour generalisation; the copy must
+    // say it cannot establish that, not lean on it.
+    expect(section.body).toContain("0.708");
+    expect(section.body).toContain("0.730");
+    expect(section.body).toMatch(/cannot establish/i);
+    expect(section.body).toMatch(/not as a comparison/i);
+  });
+
+  test("the one non-cancer disease shows no benefit, and the page says so", () => {
+    const d = task7.strata.non_cancer.paired_deltas.M1_vs_M0.roc_auc;
+    expect(d.includes_zero).toBe(true);
+    expect(round(d.delta)).toBe(-0.008);
+    expect(round(task7.strata.non_cancer.models.M0.roc_auc)).toBe(0.73);
+    expect(round(task7.strata.non_cancer.models.M1.roc_auc)).toBe(0.722);
+    expect(section.body).toContain("−0.008");
+    expect(section.body).toContain("0.722");
+  });
+
+  test("the Task 4 section now carries the oncology scope limit", () => {
+    const t4 = VALIDATION_SECTIONS.find((s) => s.id === "attention-control");
+    expect(t4.body).toMatch(/oncology result/i);
+    expect(t4.body).toContain("15 cancers");
+    expect(t4.body).toContain("9 of the 11 held-out diseases");
+  });
+
+  test("models are fitted on the full training set, not per stratum", () => {
+    expect(task7.models_fitted_on).toMatch(/full 11-disease training set/i);
+    expect(task7.leakage_controls.join(" ")).toMatch(/No stratum is fitted on its own held-out data/i);
+    expect(task7.leakage_controls.join(" ")).toMatch(/only the disease name/i);
   });
 });
