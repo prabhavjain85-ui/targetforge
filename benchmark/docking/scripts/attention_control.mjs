@@ -53,7 +53,7 @@ const OUT_JSON = path.join(DOCKING_DIR, "results", "task4_attention_control.json
 const OUT_MD = path.join(DOCKING_DIR, "TASK4_ATTENTION_CONTROL.md");
 
 /** Same eight features, same order, as Task 3 and the shipped model. */
-const BIOLOGY_FEATURE_KEYS = [
+export const BIOLOGY_FEATURE_KEYS = [
   "genetic_association",
   "genetic_literature",
   "somatic_mutation",
@@ -73,14 +73,14 @@ const TOP_K = 25;
 // Feature access
 // ---------------------------------------------------------------------------
 
-function biologyFeature(row, key) {
+export function biologyFeature(row, key) {
   return key === "overall"
     ? Number(row.overallScore_2021) || 0
     : Number(row.datatypeScores_2021?.[key]) || 0;
 }
 
 /** Attention, on the same log scale the Task 3 logistic used. */
-function logPub(row) {
+export function logPub(row) {
   return Math.log1p(Number(row.publicationCount_2021) || 0);
 }
 
@@ -90,7 +90,7 @@ function logPub(row) {
 // comparable across the two reports.
 // ---------------------------------------------------------------------------
 
-function fitLogistic(rows, labelKey, extractX, featureNames, { epochs = 400, lr = 0.25, l2 = 0.02 } = {}) {
+export function fitLogistic(rows, labelKey, extractX, featureNames, { epochs = 400, lr = 0.25, l2 = 0.02 } = {}) {
   const K = featureNames.length;
   const X = rows.map(extractX);
   const y = rows.map((r) => (r[labelKey] ? 1 : 0));
@@ -165,7 +165,7 @@ const MODELS = {
 // Metrics
 // ---------------------------------------------------------------------------
 
-function precisionRecallAtK(labels, scores, k) {
+export function precisionRecallAtK(labels, scores, k) {
   const n = Math.min(labels.length, scores.length);
   if (n === 0) return { precision: null, recall: null };
   const nPos = labels.reduce((a, b) => a + (b ? 1 : 0), 0);
@@ -184,7 +184,7 @@ function scoreSet(model, rows) {
   return rows.map((r) => model.predict(r));
 }
 
-function evaluate(labels, scores) {
+export function evaluate(labels, scores) {
   const pr25 = precisionRecallAtK(labels, scores, TOP_K);
   return {
     roc_auc: Number(rocAuc(labels, scores).toFixed(4)),
@@ -203,7 +203,7 @@ function evaluate(labels, scores) {
  * two independently-bootstrapped CIs, and it is the interval that answers
  * "does B beat A", which overlapping marginal CIs do not.
  */
-function pairedDeltaCi(labels, scoresA, scoresB, { nBoot = N_BOOT, seed = BOOT_SEED } = {}) {
+export function pairedDeltaCi(labels, scoresA, scoresB, { nBoot = N_BOOT, seed = BOOT_SEED } = {}) {
   const n = labels.length;
   const rand = mulberry32(seed);
   const rocDeltas = [];
@@ -275,7 +275,7 @@ function pairedDeltaCi(labels, scoresA, scoresB, { nBoot = N_BOOT, seed = BOOT_S
  * is the honest resolution of this benchmark. Where the two bootstraps
  * disagree, this one is the conservative answer.
  */
-function clusteredDeltaCi(clusters, scoreKeyA, scoreKeyB, { nBoot = N_BOOT, seed = BOOT_SEED } = {}) {
+export function clusteredDeltaCi(clusters, scoreKeyA, scoreKeyB, { nBoot = N_BOOT, seed = BOOT_SEED } = {}) {
   const rand = mulberry32(seed ^ 0x5eed);
   const nClusters = clusters.length;
   const rocDeltas = [];
@@ -392,8 +392,8 @@ function residualAnalysis(trainRows, testRows, testLabels) {
 // Report
 // ---------------------------------------------------------------------------
 
-const fmt = (v, d = 3) => (v === null || v === undefined || Number.isNaN(v) ? "—" : Number(v).toFixed(d));
-const signed = (v, d = 3) =>
+export const fmt = (v, d = 3) => (v === null || v === undefined || Number.isNaN(v) ? "—" : Number(v).toFixed(d));
+export const signed = (v, d = 3) =>
   v === null || v === undefined || Number.isNaN(v) ? "—" : `${v >= 0 ? "+" : "−"}${Math.abs(v).toFixed(d)}`;
 
 function renderMarkdown(report) {

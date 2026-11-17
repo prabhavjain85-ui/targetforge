@@ -28,3 +28,8 @@ public/vendor/molstar/
 
 # 20MB derived snapshot cache: the .json.gz is committed instead.
 benchmark/docking/data/task3_ot_21_04_retrospective_snapshot.json
+
+# Task 5 raw feature sources: ~350MB of third-party downloads, refetchable by
+# benchmark/docking/scripts/build_target_features.mjs. Only the derived
+# task5_target_features.json.gz is committed.
+benchmark/docking/data/sources/

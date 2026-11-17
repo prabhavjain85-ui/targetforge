@@ -147,6 +147,12 @@ export const VALIDATION_SECTIONS = [
       "15/25. Enrichment on 3 targets: ROC-AUC 0.636, 0.744, 0.800. Correlation " +
       "with measured potency: Spearman −0.291 (95% CI −0.681 to 0.478), i.e. none. " +
       "Poses are shown only for pairs that pass sanity checks. The in-browser " +
-      "docking engine failed redocking on all targets tested and remains disabled.",
+      "docking engine failed redocking on all targets tested and remains disabled.\n" +
+      "Whether docking ranks compounds better than a fingerprint comparison has not " +
+      "been measured. The three enrichment targets above re-fetch their own compounds " +
+      "rather than using the scaffold-split benchmark, so they are not comparable with " +
+      "the compound triage figures and include nothing to compare against. Until that " +
+      "run exists, compounds are ranked by Tanimoto to the co-crystallised ligand, " +
+      "which is the best ranker actually measured on that benchmark.",
   },
 ];

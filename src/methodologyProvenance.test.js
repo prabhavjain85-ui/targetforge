@@ -339,3 +339,45 @@ describe("Task 4 attention control figures trace to the committed run", () => {
     expect(task4.leakage_controls.join(" ")).toMatch(/fitted on the 11 training diseases/i);
   });
 });
+
+describe("Task 6 (Vina vs Tanimoto) is reported as unrun, not as a result", () => {
+  const md = read("benchmark/docking/TASK6_VINA_VS_TANIMOTO.md");
+  const resultPath = path.join(repoRoot, "benchmark/docking/results/task6_vina_vs_tanimoto.json");
+
+  test("the status document says plainly that it has not run", () => {
+    expect(md).toMatch(/Status: NOT RUN/);
+    expect(md).toMatch(/contains no measurements/i);
+  });
+
+  test("it quotes no ROC-AUC of its own", () => {
+    // The only figures allowed here are the Task 2 ones it cites for context.
+    const figures = new Set(md.match(/\b0\.\d{3}\b/g) || []);
+    const task2Figures = new Set(["0.662", "0.523", "0.520", "0.636", "0.744", "0.800"]);
+    for (const f of figures) {
+      expect(task2Figures.has(f)).toBe(true);
+    }
+  });
+
+  test("if a result file ever appears, the status document must stop saying NOT RUN", () => {
+    // This is the guard: whoever runs the harness has to update the prose, and
+    // the harness overwrites this file, so the two cannot disagree silently.
+    if (fs.existsSync(resultPath)) {
+      expect(md).not.toMatch(/Status: NOT RUN/);
+    } else {
+      expect(md).toMatch(/Status: NOT RUN/);
+    }
+  });
+
+  test("Tanimoto remains the default ranker while the comparison is unmeasured", () => {
+    expect(md).toMatch(/Tanimoto remains the default/i);
+    const scorer = read("server/scoreCandidates.js");
+    expect(scorer).toMatch(/haveSimilarity/);
+  });
+
+  test("the harness refuses to write a result without its prerequisites", () => {
+    const py = read("benchmark/docking/scripts/run_vina_vs_tanimoto.py");
+    expect(py).toMatch(/def check_prerequisites/);
+    expect(py).toMatch(/No result file was written/);
+    expect(py).toMatch(/sys\.exit\(2\)/);
+  });
+});
