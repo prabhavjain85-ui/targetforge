@@ -3,19 +3,13 @@ const SITE_NAME = "TargetForge";
 
 const DEFAULT_TITLE = "TargetForge — AI-Powered Drug Discovery & Target Identification";
 const DEFAULT_DESCRIPTION =
-  "Computational drug discovery workbench: knowledge-based triage scoring, target identification, repurposing screens, ADME analysis, and hypothesis testing. In-browser docking is under validation.";
+  "Computational drug discovery workbench: knowledge-based triage scoring, target identification, repurposing screens, and ADME analysis. In-browser docking is under validation.";
 
 export const ROUTE_SEO = {
   "/": {
     title: DEFAULT_TITLE,
     description: DEFAULT_DESCRIPTION,
     canonical: `${SITE_URL}/`,
-  },
-  "/hypothesis": {
-    title: "Scientific Hypothesis Testing — TargetForge",
-    description:
-      "Evaluate drug discovery and biology hypotheses with evidence mapping, falsification checks, and structured scientific critique. Supports computational prioritization, not clinical proof.",
-    canonical: `${SITE_URL}/hypothesis`,
   },
   "/target-discovery": {
     title: "Target Identification & Discovery — TargetForge",
@@ -74,7 +68,6 @@ export function getSeoForPath(pathname) {
 export const INDEXABLE_ROUTES = [
   "/",
   "/target-discovery",
-  "/hypothesis",
   "/repurposing",
   "/adme",
   "/docking",
@@ -87,7 +80,6 @@ const WORKFLOW_LINKS = [
   { path: "/repurposing", label: "Drug repurposing" },
   { path: "/docking", label: "Molecular docking" },
   { path: "/adme", label: "ADME analysis" },
-  { path: "/hypothesis", label: "Hypothesis testing" },
   { path: "/methodology", label: "Methodology" },
   { path: "/contact", label: "Contact" },
 ];
@@ -113,7 +105,7 @@ export const STATIC_ROUTE_CONTENT = {
       {
         h2: "More workflows",
         text:
-          "Target discovery, drug repurposing, molecular docking, ADME profiling, and hypothesis testing are available from the Tools menu. Scoring rules and limitations are on Methodology",
+          "Target discovery, drug repurposing, molecular docking, and ADME profiling are available from the Tools menu. Scoring rules and limitations are on Methodology",
         path: "/methodology",
         linkLabel: "read methodology and disclaimers",
       },
@@ -130,13 +122,6 @@ export const STATIC_ROUTE_CONTENT = {
     intro:
       "Find genetically validated but underexplored protein targets for a disease — opportunities with strong biological evidence and little to no existing drug coverage. TargetForge supports target identification by ranking Open Targets associations; it does not replace experimental target validation.",
     breadcrumbLabel: "Target identification",
-  },
-  "/hypothesis": {
-    eyebrow: "TargetForge · hypothesis testing",
-    h1: "Scientific Hypothesis Evaluator",
-    intro:
-      "Critically interrogate scientific and drug discovery hypotheses against empirical evidence. Supports computational hypothesis testing by evaluating biological plausibility, genetics, model systems, and counter-evidence — not a substitute for experimental or clinical validation.",
-    breadcrumbLabel: "Hypothesis testing",
   },
   "/repurposing": {
     eyebrow: "TargetForge · drug repurposing screen",

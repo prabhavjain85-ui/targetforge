@@ -69,6 +69,23 @@ const SOURCE = {
       "No machine-readable open extract: the IHME GBD Results Tool is an interactive query UI, and the ICMR/PHFI India State-Level report is a 22MB PDF of typeset tables. Transcribing DALYs from a PDF by eye would put unverifiable numbers in the repository.",
     consequence:
       "These are WHO national estimates, not ICMR/PHFI/IHME state-level estimates, and they will not match published GBD India figures.",
+    /**
+     * Second attempt, recorded so the next person does not repeat it. A
+     * state-level extract of the Initiative does exist in CSV, but behind an
+     * account this project cannot satisfy on the user's behalf.
+     */
+    second_attempt_2026_11_18: {
+      candidate:
+        "India State-Level Disease Burden Initiative, hosted on Redivis by the Stanford Center for Population Health Sciences (DOI 10.57761/hwzj-cv34)",
+      api_probe:
+        "https://redivis.com/api/v1/datasets/stanfordphs.india_state_level_disease_burden_initiative returns accessLevel \"data\" with tableCount 0, and its /tables listing is empty, unauthenticated",
+      blocked_by:
+        "registration: the tables are gated behind a Stanford Redivis account and data-use approval, which is the user's institutional access to grant, not something this build can obtain",
+      vintage_note:
+        "the extract covers GBD 2016 (1990-2016), older than the WHO GHE 2023 estimates already in use, so it would not be a straightforward upgrade even with access",
+      outcome:
+        "skipped. Adding it remains worthwhile for anyone with that access: it would give state-level granularity alongside, not instead of, WHO GHE.",
+    },
   },
 };
 

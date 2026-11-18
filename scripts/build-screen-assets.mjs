@@ -34,9 +34,22 @@ const repoRoot = path.resolve(__dirname, "..");
 const TASK4 = path.join(repoRoot, "benchmark", "docking", "results", "task4_attention_control.json");
 const TASK7 = path.join(repoRoot, "benchmark", "docking", "results", "task7_cancer_stratification.json");
 const BURDEN = path.join(repoRoot, "benchmark", "burden", "india_disease_burden.json");
+const CANCER_LABELS = path.join(repoRoot, "benchmark", "docking", "data", "disease_cancer_labels.json");
 const MAPPING = path.join(repoRoot, "benchmark", "burden", "ghe_to_efo_mapping.json");
 
 const FEATURES = path.join(repoRoot, "benchmark", "docking", "data", "task8_target_features.json.gz");
+
+/**
+ * The limitations list, generated once and read by both sides.
+ *
+ * It has to live under src/ because that is the only tree the CRA bundler will
+ * reach — importing from server/ is what keeps server code off the client. And
+ * it has to be JSON rather than a module because Node resolves src/*.js as
+ * CommonJS (no "type" field in the root package.json) while the server is ESM,
+ * so a shared .js would load in one runtime and not the other. JSON loads in
+ * both, so the strings exist in exactly one place.
+ */
+const OUT_LIMITATIONS = path.join(repoRoot, "src", "shared", "screenLimitations.generated.json");
 
 const OUT_M1 = path.join(repoRoot, "server", "data", "novelty", "fitted-m1-weights.json");
 const OUT_BURDEN = path.join(repoRoot, "server", "data", "burden", "india-burden.json");
@@ -222,6 +235,202 @@ export function buildEffort(featureTable) {
   };
 }
 
+/**
+ * The "what this screen cannot know" list.
+ *
+ * Every figure is read from a committed artifact rather than typed, and the
+ * order is load-bearing: the first entry is the axis mismatch between an
+ * oncology-validated evidence model and a disease burden that is mostly not
+ * cancer, because that is the limitation most likely to bite the screen's
+ * intended use.
+ */
+export function buildLimitations({ m1, task7, task4, burden, mapping, cancerLabels }) {
+  // Three decimals everywhere, matching how every other figure in the app is
+  // shown; the raw asset values carry four.
+  const r3 = (x) => Number(x).toFixed(3);
+  const cancer = task7.strata.cancer;
+  const nonCancer = task7.strata.non_cancer;
+  const contributing = cancer.n_diseases_with_cohort2_data + nonCancer.n_diseases_with_cohort2_data;
+
+  // Largest non-cancer causes of Indian DALY burden, from the committed table.
+  // Aggregates and the cancer block are excluded so these are real conditions.
+  const CANCER_CODES = new Set(
+    (burden?.causes || [])
+      .filter((c) => /cancer|neoplasm|leukaem|lymphoma|melanoma|myeloma|mesotheli/i.test(c.label))
+      .map((c) => c.ghe_code)
+  );
+  // Exemplar non-cancer conditions, named by GHE code rather than picked by
+  // size. Sorting by DALYs cannot be used here: the GHE hierarchy interleaves
+  // group rows with conditions at the same depth ("Unintentional injuries" and
+  // "Diabetes mellitus" are both depth 2), so a top-N by burden silently mixes
+  // sums with the things they are sums of. These five are real conditions and
+  // their figures are read from the committed table.
+  const EXEMPLAR_CODES = ["1130", "1140", "1180", "800", "30"];
+  const byCode = new Map((burden?.causes || []).map((c) => [c.ghe_code, c]));
+  const exemplars = EXEMPLAR_CODES.map((code) => byCode.get(code)).filter(Boolean);
+  if (burden && exemplars.length !== EXEMPLAR_CODES.length) {
+    const missing = EXEMPLAR_CODES.filter((c) => !byCode.has(c));
+    throw new Error(
+      `exemplar GHE codes missing from the burden table: ${missing.join(", ")}. ` +
+        "Update EXEMPLAR_CODES in scripts/build-screen-assets.mjs rather than letting the copy go stale."
+    );
+  }
+  for (const c of exemplars) {
+    if (c.is_aggregate || CANCER_CODES.has(c.ghe_code)) {
+      throw new Error(`exemplar ${c.ghe_code} (${c.label}) is an aggregate or a cancer`);
+    }
+  }
+  const topNonCancer = exemplars.map(
+    (c) => `${c.label.toLowerCase()} (${Math.round(c.daly_thousands).toLocaleString("en-US")}k DALYs)`
+  );
+
+  const malignant = (burden?.causes || []).find((c) => c.ghe_code === "610");
+  const total = burden?.total_daly_thousands || null;
+  // Kept as a string so one decimal place survives; Number("6.0") prints "6".
+  const cancerShare =
+    malignant && total ? ((100 * malignant.daly_thousands) / total).toFixed(1) : null;
+
+  const list = [
+    {
+      id: "axis-mismatch",
+      title:
+        "The evidence model is validated on cancers; India's disease burden is mostly not cancer",
+      detail:
+        `The evidence ranking was validated on a panel where ${cancer.n_diseases_with_cohort2_data} of the ` +
+        `${contributing} contributing held-out diseases were cancers, and on the one non-cancer disease it ` +
+        `did not beat counting publications (${r3(nonCancer.models.M0.roc_auc)} against ` +
+        `${r3(nonCancer.models.M1.roc_auc)}). India's recorded burden runs the other way: malignant neoplasms are ` +
+        (cancerShare === null ? "a minority of" : `${cancerShare}% of`) +
+        " total DALYs, while large non-cancer causes include " +
+        `${topNonCancer.slice(0, 4).join(", ")} and ${topNonCancer[4] || "others"}. ` +
+        "So screening a high-burden Indian disease puts the ranking outside the range where it was " +
+        "validated — which is the screen's intended use. Treat the order of rows for any non-cancer " +
+        "disease as unvalidated.",
+      source: "benchmark/docking/results/task7_cancer_stratification.json",
+    },
+    {
+      id: "oncology-scope",
+      title: "The evidence score is an oncology result",
+      detail:
+        `Held-out ROC-AUC ${r3(m1.heldOutPerformance.rocAuc)} on a panel where ` +
+        `${cancer.n_diseases_with_cohort2_data} of the ${contributing} contributing held-out diseases were ` +
+        `cancers. The cancer stratum reproduces the pooled result; the single non-cancer disease showed no ` +
+        "benefit. Outside oncology this score is untested rather than known to be wrong.",
+      source: "benchmark/docking/results/task7_cancer_stratification.json",
+    },
+    {
+      id: "cannot-establish-unpursued",
+      title: "It cannot establish that a target is unpursued",
+      detail:
+        "Open Targets records approved and clinical-stage drugs. It does not record failed, abandoned or " +
+        "unpublished programmes, so a target with no recorded effort may be one that was tried quietly and " +
+        "dropped. The manual checks on this page are what decide it.",
+      source: null,
+    },
+    {
+      id: "absence-is-not-zero",
+      title: "Missing effort data is not zero effort",
+      detail:
+        "Open Targets 21.04 tractability joined 72.8% of targets in the Task 8 benchmark. A target with no " +
+        "record has unknown prior chemistry, not none, and is excluded from these results rather than being " +
+        "shown as neglected.",
+      source: "benchmark/docking/results/task8_tractability.json",
+    },
+    {
+      id: "why-passed-over",
+      title: "It cannot tell you why a target was passed over",
+      detail:
+        "Most of the zero-effort tail is there for reasons no public dataset records: no tractable pocket, no " +
+        "assay, no tool compound, a mechanism that failed in someone's unpublished work, or a target nobody " +
+        "can make a selective molecule against. Absence of effort is not evidence of a missed opportunity.",
+      source: null,
+    },
+    {
+      id: "evidence-is-attention-shaped",
+      title: "The evidence score is partly a measure of attention",
+      detail:
+        `Publication count alone reaches ROC-AUC ${r3(m1.comparators.publicationCountAlone)}, against ` +
+        `${r3(m1.heldOutPerformance.rocAuc)} for the full model, and that gain does not survive disease-level ` +
+        "resampling for PR-AUC. So a high evidence score partly means a well-studied target, which is in " +
+        "tension with looking for neglected ones.",
+      source: "benchmark/docking/results/task4_attention_control.json",
+    },
+    {
+      id: "prior-art",
+      title: "The understudied-target idea is not original to TargetForge",
+      detail:
+        "The NIH Common Fund's Illuminating the Druggable Genome programme and its Pharos portal already " +
+        "classify targets by development level, and this repository reimplements that classification. What is " +
+        "added here is India disease-burden weighting and an evidence model with measured held-out performance.",
+      source: "https://pharos.nih.gov/",
+    },
+    {
+      id: "burden-not-gbd-india",
+      title: "Burden is WHO national data, not the ICMR/PHFI/IHME state-level series",
+      detail:
+        "The India State-Level Disease Burden Initiative output is published as a PDF of typeset tables and the " +
+        "IHME GBD Results Tool has no open bulk endpoint, so WHO Global Health Estimates national DALYs are " +
+        "used instead. These will not match published GBD India figures and carry no state-level detail.",
+      source: "benchmark/burden/india_disease_burden.json",
+    },
+    {
+      id: "burden-mapping-partial",
+      title: "Most disease burden is unmapped",
+      detail:
+        "WHO GHE cause labels are not ontology terms, and a mapping is accepted only on an exact label match " +
+        `to an EFO or MONDO disease. ${mapping ? mapping.coverage.n_mapped : "Some"} of ` +
+        `${mapping ? mapping.coverage.n_attempted : "many"} non-aggregate causes are mapped; unmapped diseases ` +
+        "show burden as unavailable.",
+      source: "benchmark/burden/ghe_to_efo_mapping.json",
+    },
+    {
+      id: "temporal-extrapolation",
+      title: "The model was fitted on 2021 data and is being applied to today's",
+      detail:
+        `The evidence model was fitted on Open Targets ${task4.historical_release} and validated against ` +
+        `outcomes to ${task4.current_release}. Scoring current data assumes the relationship has not moved ` +
+        "since, which has not been tested.",
+      source: "benchmark/docking/results/task4_attention_control.json",
+    },
+    {
+      id: "no-commercial-axis",
+      title: "There is no market or commercial term, deliberately",
+      detail:
+        "Burden is DALYs. No per-capita income, market size, willingness-to-pay or other commercial proxy " +
+        "enters the ranking at any point.",
+      source: null,
+    },
+  ];
+
+  return {
+    schemaVersion: 1,
+    description:
+      "Generated by scripts/build-screen-assets.mjs from committed benchmark artifacts. Do not edit: every " +
+      "figure here is read from a benchmark file, and the first entry is first on purpose.",
+    firstEntryIsAxisMismatch: true,
+    /**
+     * Diseases the committed labelling marks non-cancer, so the page can warn
+     * inline when a run falls outside the range the evidence model was
+     * validated on. Carried here rather than imported separately because
+     * benchmark/ is outside the tree the bundler can reach.
+     */
+    nonCancerDiseaseIds: (cancerLabels?.diseases || [])
+      .filter((d) => d.stratum === "non_cancer" && d.disease_id_2021)
+      .map((d) => d.disease_id_2021),
+    cancerLabelsSource: "benchmark/docking/data/disease_cancer_labels.json",
+    /** Structured counts, so the UI never has to parse the prose above. */
+    validationPanel: {
+      cancerDiseases: cancer.n_diseases_with_cohort2_data,
+      nonCancerDiseases: nonCancer.n_diseases_with_cohort2_data,
+      contributingDiseases: contributing,
+      nonCancerRocAucPubCountOnly: r3(nonCancer.models.M0.roc_auc),
+      nonCancerRocAucEvidenceModel: r3(nonCancer.models.M1.roc_auc),
+      source: "benchmark/docking/results/task7_cancer_stratification.json",
+    },
+    limitations: list,
+  };
+}
+
 function writeIfChanged(file, textOrObj, { check }) {
   const text =
     typeof textOrObj === "string" ? textOrObj : `${JSON.stringify(textOrObj, null, 2)}\n`;
@@ -286,8 +495,25 @@ function writeIfChanged(file, textOrObj, { check }) {
 function main() {
   const check = process.argv.includes("--check");
 
-  const m1 = buildM1(readJson(TASK4), readJson(TASK7));
+  const task4 = readJson(TASK4);
+  const task7 = readJson(TASK7);
+  const m1 = buildM1(task4, task7);
   let ok = writeIfChanged(OUT_M1, m1, { check });
+
+  const burdenPresent = fs.existsSync(BURDEN) && fs.existsSync(MAPPING);
+  ok =
+    writeIfChanged(
+      OUT_LIMITATIONS,
+      buildLimitations({
+        m1,
+        task7,
+        task4,
+        burden: burdenPresent ? readJson(BURDEN) : null,
+        mapping: burdenPresent ? readJson(MAPPING) : null,
+        cancerLabels: fs.existsSync(CANCER_LABELS) ? readJson(CANCER_LABELS) : null,
+      }),
+      { check }
+    ) && ok;
 
   // The burden files are optional at this stage: the screen degrades to
   // "burden unavailable" without them rather than failing to build.

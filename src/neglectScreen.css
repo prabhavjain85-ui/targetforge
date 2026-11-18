@@ -199,3 +199,135 @@
     font-size: 0.8rem;
   }
 }
+
+/* ---- Part 5: inline out-of-range warning ------------------------------- */
+.neglect-inline-warning {
+  border: 1px solid var(--warn, #b4690e);
+  border-left-width: 3px;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 12px 0 16px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+/* ---- Part 4: prior-art disclosure -------------------------------------- */
+.neglect-priorart {
+  border-top: 1px solid var(--border, #e6e9ee);
+  padding-top: 18px;
+}
+
+/* ---- Part 3: per-target prior-art checklist ---------------------------- */
+.neglect-checks {
+  margin-top: 26px;
+  border-top: 1px solid var(--border, #e6e9ee);
+  padding-top: 16px;
+}
+
+.neglect-checks h3 {
+  font-size: 0.95rem;
+  margin: 0 0 8px;
+}
+
+.nc-statement {
+  border-left: 3px solid var(--warn, #b4690e);
+  padding-left: 12px;
+}
+
+.neglect-check-targets {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.neglect-check-targets > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border, #f0f2f5);
+  flex-wrap: wrap;
+}
+
+.nc-symbol {
+  font-weight: 600;
+  min-width: 90px;
+  font-size: 0.88rem;
+}
+
+.nc-wrap {
+  flex: 1 1 320px;
+}
+
+.nc-toggle {
+  background: none;
+  border: 1px solid var(--border, #d7dce3);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: inherit;
+}
+
+.nc-count {
+  margin-left: 8px;
+  opacity: 0.65;
+  font-variant-numeric: tabular-nums;
+}
+
+.nc-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.nc-item {
+  padding: 5px 0;
+  font-size: 0.84rem;
+}
+
+.nc-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+}
+
+.nc-link {
+  margin-left: 10px;
+  font-size: 0.8rem;
+}
+
+.nc-skip {
+  margin-left: 10px;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.nc-paste {
+  margin: 4px 0 2px 24px;
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.nc-paste code {
+  display: inline-block;
+  margin-top: 3px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface-muted, #f2f4f7);
+  user-select: all;
+}
+
+.nc-note {
+  display: block;
+  opacity: 0.75;
+}
+
+@media (prefers-color-scheme: dark) {
+  .nc-paste code {
+    background: rgba(255, 255, 255, 0.07);
+  }
+}

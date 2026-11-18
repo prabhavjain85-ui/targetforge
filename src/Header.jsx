@@ -3,7 +3,6 @@ import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ACTIVE_STATE_KEYS, clearActiveState, getHistory, subscribeToHistory } from "./historyService";
 
 const TOOL_LINKS = [
-  { to: "/hypothesis", label: "Hypothesis Testing" },
   { to: "/target-discovery", label: "Target Discovery" },
   { to: "/neglect-screen", label: "Neglect Screen" },
   { to: "/repurposing", label: "Repurposing" },

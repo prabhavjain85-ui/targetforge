@@ -184,6 +184,3 @@ export const analyzeExperimentalCocrystal = remote("analyzeExperimentalCocrystal
 export const resolveCocrystalSearchQuery = remote("resolveCocrystalSearchQuery");
 export const searchPdbEntriesForChemComp = remote("searchPdbEntriesForChemComp");
 
-// Hypothesis testing
-export const parseHypothesisApi = remote("parseHypothesisApi");
-export const evaluateHypothesisApi = remote("evaluateHypothesisApi");

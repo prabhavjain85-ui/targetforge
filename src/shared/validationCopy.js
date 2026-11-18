@@ -109,6 +109,42 @@ export const NEGLECT_SCREEN_COPY = {
     "adding nothing over evidence plus attention: keeping only those gene properties " +
     "gave ROC-AUC 0.719 against 0.721 without them, a paired difference of −0.002 " +
     "(95% CI −0.026 to +0.022). They do not enter the ranking.",
+  /**
+   * Verbatim, above the per-target checklist. It is the single most important
+   * sentence on the page: the screen's output looks like a list of unpursued
+   * targets and is not one.
+   */
+  cannotEstablishUnpursued:
+    "This screen cannot establish that a target is unpursued. Open Targets records " +
+    "approved and clinical-stage drugs, not failed, abandoned or unpublished " +
+    "programmes. The checks below are what decide it, and they are yours to make.",
+  checklistNote:
+    "Outbound links only — nothing here queries a patent office or a trial registry. " +
+    "Ticks are remembered in your browser alone: they are never sent anywhere and are " +
+    "not treated as a finding. CTRI does not support linking a query, so its row opens " +
+    "the search page and shows the term to paste.",
+  /**
+   * Part 4, prior-art disclosure. TDL names were checked against the IDG/Pharos
+   * literature before shipping: Tclin, Tchem, Tbio and Tdark are current, and
+   * Tbio — well-characterised biology without a potent small molecule — is the
+   * class this screen selects for.
+   */
+  priorArtTitle: "This idea is not original to TargetForge",
+  priorArt:
+    "Looking for targets with good biology and no chemistry is an established " +
+    "programme, not a new one. The NIH Common Fund's Illuminating the Druggable " +
+    "Genome initiative and its Pharos portal already classify every human protein by " +
+    "target development level: Tclin (an approved drug acts through a known " +
+    "mechanism), Tchem (binds a small molecule potently, without an approved drug), " +
+    "Tbio (biology is well characterised but no potent small molecule is known) and " +
+    "Tdark (little is known at all). \"Strong evidence, no chemistry\" is approximately " +
+    "Tbio, and this repository reimplements that classification itself — see the TDL " +
+    "column and filter on the target discovery page.\n" +
+    "What is added here is narrower than the idea: weighting by India's recorded " +
+    "disease burden, and an evidence model whose held-out performance has been " +
+    "measured rather than asserted. The classification is theirs.",
+  priorArtLinkLabel: "Pharos (NIH IDG)",
+  priorArtHref: "https://pharos.nih.gov/",
   burdenSourceCaveat:
     "Burden is WHO Global Health Estimates national DALYs for India, not the ICMR / " +
     "PHFI / IHME India State-Level Disease Burden Initiative series: that output is " +
@@ -116,17 +152,6 @@ export const NEGLECT_SCREEN_COPY = {
     "endpoint, so these figures will not match published GBD India numbers and carry " +
     "no state-level detail. No market size, per-capita income or other commercial " +
     "proxy enters the ranking.",
-  /** Used only if the server payload carries no limitations list. */
-  limitationsFallback: [
-    {
-      id: "fallback",
-      title: "Limitations unavailable",
-      detail:
-        "The server did not return the limitations list for this run. Do not read the table " +
-        "without it; see the validation page for what each score can and cannot do.",
-      source: null,
-    },
-  ],
 };
 
 export const VALIDATION_INTRO =
@@ -255,6 +280,33 @@ export const VALIDATION_SECTIONS = [
       "On the 9 held-out cancers the tractability features do add over the biology " +
       "model (+0.083, 95% CI +0.048 to +0.117). On the single held-out non-cancer " +
       "disease no interval is reported, for the reason given in the previous section.",
+  },
+  {
+    id: "neglect-screen",
+    title: "The neglect screen, and what it is not",
+    source: VALIDATION_SOURCES.task7Json,
+    body:
+      "The /neglect-screen page ranks targets by the evidence model above and filters " +
+      "them by how much medicinal chemistry already exists. Three things about it " +
+      "belong here rather than only on that page.\n" +
+      "It cannot establish that a target is unpursued. Open Targets records approved " +
+      "and clinical-stage drugs, not failed, abandoned or unpublished programmes, so a " +
+      "target with no recorded chemistry may be one that was tried quietly and dropped. " +
+      "The page carries a per-target checklist of patent, trial-registry and literature " +
+      "searches, because those are the checks that decide it and they are manual.\n" +
+      "The idea is not original to TargetForge. The NIH Common Fund's Illuminating the " +
+      "Druggable Genome programme and its Pharos portal already classify every human " +
+      "protein by target development level — Tclin, Tchem, Tbio, Tdark — and this " +
+      "repository reimplements that classification, with a TDL column and filter on the " +
+      "target discovery page. \"Strong evidence, no chemistry\" is approximately Tbio. " +
+      "What is added here is India disease-burden weighting and an evidence model with " +
+      "measured held-out performance.\n" +
+      "Its two axes disagree about scope. The evidence model is validated on cancers " +
+      "(9 of the 10 contributing held-out diseases), while India's recorded burden is " +
+      "mostly not cancer: malignant neoplasms are 6.0% of total DALYs. So the screen's " +
+      "intended use — a high-burden Indian disease — is largely outside the range where " +
+      "its ranking was validated. The page says so inline whenever the disease is one " +
+      "the committed labelling marks non-cancer.",
   },
   {
     id: "compound-triage",

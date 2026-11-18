@@ -12,7 +12,6 @@ import RepurposingPage from "./RepurposingPage";
 import TargetDiscoveryPage from "./TargetDiscoveryPage";
 import NeglectScreenPage from "./NeglectScreenPage";
 import AdmePage from "./AdmePage";
-import HypothesisPage from "./HypothesisPage";
 import EvolutionPage from "./EvolutionPage";
 import "./app.css";
 import "./discoverySearch.css";
@@ -27,7 +26,6 @@ root.render(
         <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<App />} />
-          <Route path="/hypothesis" element={<HypothesisPage />} />
           <Route path="/target-discovery" element={<TargetDiscoveryPage />} />
           <Route path="/neglect-screen" element={<NeglectScreenPage />} />
           <Route path="/repurposing" element={<RepurposingPage />} />
