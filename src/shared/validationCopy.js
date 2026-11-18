@@ -83,6 +83,23 @@ export const NEGLECT_SCREEN_COPY = {
     "the strongest single predictor of a target entering the clinic (held-out " +
     "ROC-AUC 0.772), so this list is deliberately made of targets that signal " +
     "predicts against.",
+  /**
+   * The one paragraph that stays inline above the input. Normal prose, one
+   * bolded phrase, no stacking: the detail it used to carry (the evidence
+   * axis and its oncology scope, effort as a filter, unknown effort not being
+   * zero) now lives once each in the limitations panel, so nothing is said
+   * twice and nothing competes for emphasis.
+   */
+  lead:
+    "This screen lists targets with substantial biological evidence for a disease " +
+    "and little or no recorded medicinal chemistry, ranked by evidence and weighted " +
+    "by India's disease burden. They are not opportunities: a target with good " +
+    "biology and no compounds is usually one the field has already looked at and " +
+    "left, and the reasons are rarely published. What the ranking can and cannot " +
+    "support is set out below the results.",
+  emptyState:
+    "Pick one or more diseases above. Each selection shows its India DALY burden and " +
+    "whether it falls inside the range the evidence ranking was validated on.",
   notOpportunities:
     "These are not opportunities. A target with strong evidence and no compounds is " +
     "usually one the field has looked at and left, and the reasons — no tractable " +

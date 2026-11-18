@@ -40,4 +40,73 @@ export const VALIDATION_PANEL = generated.validationPanel || {};
 
 export const CANCER_LABELS_SOURCE = generated.cancerLabelsSource || null;
 
+export const CANCER_DISEASE_IDS = new Set(generated.cancerDiseaseIds || []);
+
+/**
+ * India DALY burden for a disease, for display beside a selection.
+ *
+ * Returns `available: false` for anything outside the mapping. There is no
+ * default and no placeholder number: a disease with unknown burden must render
+ * as unavailable, never as a zero or a dash that reads as zero.
+ */
+export function burdenForDisease(diseaseId) {
+  const hit = (generated.burdenByDisease || {})[String(diseaseId || "")];
+  if (!hit) {
+    return { available: false, reason: "not in the WHO GHE cause mapping" };
+  }
+  return {
+    available: true,
+    dalyThousands: hit.dalyThousands,
+    gheLabel: hit.gheLabel,
+    referenceYear: generated.burdenReferenceYear ?? null,
+    country: generated.burdenCountry ?? null,
+  };
+}
+
+export const SCOPE_IN = "oncology-validated";
+export const SCOPE_OUT = "outside validated scope";
+
+/**
+ * Whether a disease falls inside the class the evidence model was validated on.
+ *
+ * Task 7 established that validation was almost entirely on cancers, so the
+ * question is "is this a cancer". Three sources, in order of authority:
+ *   1. the committed cancer labelling, for the 22 panel diseases
+ *   2. the Open Targets therapeutic area "cancer or benign tumor"
+ *      (MONDO_0045024), for anything else
+ *   3. neither, when the API returned no therapeutic areas
+ *
+ * Case 3 resolves to OUT, not IN. Unknown membership of the validated class is
+ * not evidence of membership, and the conservative direction is the honest one:
+ * it tells the reader the ranking is unvalidated rather than implying it holds.
+ */
+export function scopeForDisease({ id, isOncology } = {}) {
+  const key = String(id || "");
+  if (CANCER_DISEASE_IDS.has(key)) {
+    return { badge: SCOPE_IN, inScope: true, basis: "committed cancer labelling" };
+  }
+  if (NON_CANCER_DISEASE_IDS.has(key)) {
+    return { badge: SCOPE_OUT, inScope: false, basis: "committed cancer labelling" };
+  }
+  if (isOncology === true) {
+    return {
+      badge: SCOPE_IN,
+      inScope: true,
+      basis: "Open Targets therapeutic area: cancer or benign tumor",
+    };
+  }
+  if (isOncology === false) {
+    return {
+      badge: SCOPE_OUT,
+      inScope: false,
+      basis: "Open Targets therapeutic area is not oncology",
+    };
+  }
+  return {
+    badge: SCOPE_OUT,
+    inScope: false,
+    basis: "no therapeutic area returned, so membership of the validated class is unknown",
+  };
+}
+
 export default SCREEN_LIMITATIONS;

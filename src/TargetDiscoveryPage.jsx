@@ -5,8 +5,8 @@ import {
   fetchTargetClinicalActivity,
   getTargetExpressionProfile,
   runTargetDiscovery,
-  searchDiseases,
 } from "./serverApi";
+import DiseaseTypeahead from "./shared/DiseaseTypeahead";
 import ClinicalActivityPanel from "./ClinicalActivityPanel";
 import { SCORE_CHIPS } from "./shared/validationCopy";
 import "./validation.css";
@@ -520,16 +520,12 @@ export default function TargetDiscoveryPage() {
   const [useCustomWeights, setUseCustomWeights] = useState(() => Boolean(savedActive?.useCustomWeights));
   const [tdlFilter, setTdlFilter] = useState(() => savedActive?.tdlFilter || "ALL");
   const [previewTarget, setPreviewTarget] = useState(null);
-  const [suggestions, setSuggestions] = useState([]);
-  const [suggestOpen, setSuggestOpen] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [result, setResult] = useState(() => savedActive?.result || null);
   const [view, setView] = useState(() => savedActive?.view || "novelty");
   const [sort, setSort] = useState(() => savedActive?.sort || { key: "noveltyScore", dir: "desc" });
   const reqId = useRef(0);
-  const suggestReq = useRef(0);
 
   useEffect(() => {
     setActiveState(ACTIVE_STATE_KEYS.TARGET_DISCOVERY, {
@@ -544,31 +540,6 @@ export default function TargetDiscoveryPage() {
       sort,
     });
   }, [query, profile, customSlidersOpen, customWeights, useCustomWeights, tdlFilter, result, view, sort]);
-
-  useEffect(() => {
-    const q = query.trim();
-    if (q.length < 2) {
-      setSuggestions([]);
-      setSuggestOpen(false);
-      return undefined;
-    }
-    const handle = setTimeout(async () => {
-      const myReq = ++suggestReq.current;
-      try {
-        const hits = await searchDiseases(q);
-        if (suggestReq.current !== myReq) return;
-        setSuggestions(hits);
-        setSuggestOpen(hits.length > 0);
-        setActiveIndex(-1);
-      } catch {
-        if (suggestReq.current === myReq) {
-          setSuggestions([]);
-          setSuggestOpen(false);
-        }
-      }
-    }, 280);
-    return () => clearTimeout(handle);
-  }, [query]);
 
   const runSearch = async (
     raw,
@@ -590,7 +561,6 @@ export default function TargetDiscoveryPage() {
     setError("");
     setResult(null);
     setPreviewTarget(null);
-    setSuggestOpen(false);
     setView(activeProfile === "repurposing" ? "established" : "novelty");
     setSort({ key: "noveltyScore", dir: "desc" });
     try {
@@ -725,34 +695,6 @@ export default function TargetDiscoveryPage() {
     if (targetRow?.expectedMoA) params.set("moa", targetRow.expectedMoA);
     if (targetRow?.uniprotId) params.set("uniprot", targetRow.uniprotId);
     navigate(`/?${params.toString()}`);
-  };
-
-  const onKeyDown = (e) => {
-    if (e.key === "Escape") {
-      setSuggestOpen(false);
-      return;
-    }
-    if (e.key === "ArrowDown" && suggestions.length) {
-      e.preventDefault();
-      setSuggestOpen(true);
-      setActiveIndex((i) => Math.min(i + 1, suggestions.length - 1));
-      return;
-    }
-    if (e.key === "ArrowUp" && suggestions.length) {
-      e.preventDefault();
-      setActiveIndex((i) => Math.max(i - 1, 0));
-      return;
-    }
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const picked = activeIndex >= 0 ? suggestions[activeIndex] : null;
-      if (picked) {
-        setQuery(picked.name);
-        runSearch(picked.name, picked);
-      } else {
-        runSearch(query);
-      }
-    }
   };
 
   const rows = useMemo(() => {
@@ -895,38 +837,16 @@ export default function TargetDiscoveryPage() {
           </div>
 
           <div className="search-row discovery-search-row">
-            <div className="search-autocomplete" role="combobox" aria-expanded={suggestOpen} aria-controls="disease-suggest" aria-haspopup="listbox">
-              <input
-                placeholder="Disease name (e.g. pancreatic cancer, chronic myeloid leukemia)"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={onKeyDown}
-                onFocus={() => suggestions.length && setSuggestOpen(true)}
-                onBlur={() => setTimeout(() => setSuggestOpen(false), 180)}
-                aria-autocomplete="list"
-                aria-controls="disease-suggest"
-              />
-              {suggestOpen && suggestions.length > 0 && (
-                <ul id="disease-suggest" className="suggest-list" role="listbox">
-                  {suggestions.map((hit, i) => (
-                    <li key={hit.id} role="option" aria-selected={i === activeIndex}>
-                      <button
-                        type="button"
-                        className={"suggest-item" + (i === activeIndex ? " active" : "")}
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => {
-                          setQuery(hit.name);
-                          runSearch(hit.name, hit);
-                        }}
-                      >
-                        <span className="suggest-name">{hit.name}</span>
-                        <span className="suggest-id">{hit.id}</span>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            <DiseaseTypeahead
+              value={query}
+              onChange={setQuery}
+              onSelect={(hit) => {
+                setQuery(hit.name);
+                runSearch(hit.name, hit);
+              }}
+              onSubmit={(raw) => runSearch(raw)}
+              placeholder="Disease name (e.g. pancreatic cancer, chronic myeloid leukemia)"
+            />
             <button className="btn btn-target" onClick={() => runSearch(query)} disabled={loading || !query.trim()}>
               {loading ? <span className="spinner" /> : null}
               Search

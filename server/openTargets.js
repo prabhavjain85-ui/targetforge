@@ -11,10 +11,25 @@ const DOWNTIME_MSG =
 const SEARCH_QUERY = `
 query DiseaseSearch($q: String!, $size: Int!) {
   search(queryString: $q, entityNames: ["disease"], page: { index: 0, size: $size }) {
-    hits { id name entity description }
+    hits {
+      id
+      name
+      entity
+      description
+      object { ... on Disease { id therapeuticAreas { id name } } }
+    }
   }
 }
 `;
+
+/**
+ * Open Targets' therapeutic area for cancers. Used to tell a caller whether a
+ * disease falls inside the class the evidence model was validated on, which
+ * Task 7 established was almost entirely cancers. Checked rather than guessed
+ * from the disease name: "cancer or benign tumor" is present for lung cancer
+ * and glioblastoma and absent for tuberculosis and COPD.
+ */
+const ONCOLOGY_THERAPEUTIC_AREA = "MONDO_0045024";
 
 export const ASSOCIATED_QUERY = `
 query DiseaseAssociatedTargets($efoId: String!, $size: Int!) {
@@ -196,7 +211,23 @@ export async function searchDiseases(queryString, { size = SEARCH_PAGE_SIZE, sig
   const q = String(queryString || "").trim();
   if (!q) return [];
   const data = await otGraphql(SEARCH_QUERY, { q, size }, { signal });
-  return (data?.search?.hits || []).filter((h) => h && h.id && h.entity === "disease");
+  return (data?.search?.hits || [])
+    .filter((h) => h && h.id && h.entity === "disease")
+    .map((h) => {
+      const areas = h.object?.therapeuticAreas || [];
+      return {
+        id: h.id,
+        name: h.name,
+        entity: h.entity,
+        description: h.description,
+        therapeuticAreas: areas.map((a) => ({ id: a.id, name: a.name })),
+        // null, not false, when the API returned no therapeutic areas at all:
+        // absent data is not evidence that a disease is non-oncology.
+        isOncology: areas.length
+          ? areas.some((a) => a.id === ONCOLOGY_THERAPEUTIC_AREA)
+          : null,
+      };
+    });
 }
 
 export async function fetchAssociatedTargets(efoId, { size = ASSOCIATION_PAGE_SIZE, signal } = {}) {
