@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "generated_at": "2026-11-17T18:02:10.799Z",
+  "generated_at": "2026-11-18T16:37:45.936Z",
   "description": "GHE cause -> EFO/MONDO mapping. A mapping is accepted only on an exact normalised label match to an EFO or MONDO disease id. Unmapped causes keep their candidates so the decision can be reviewed; an unmapped disease must render burden as unavailable, never as zero or a default.",
   "resolver": {
     "service": "Open Targets Platform GraphQL disease search",
     "url": "https://api.platform.opentargets.org/api/v4/graphql",
     "rule": "exact normalised label match; EFO_ or MONDO_ ids only",
     "rejected_alternative": "top-hit-wins, which maps 'Cervix uteri cancer' to 'uterine cervix neoplasm' and 'Iron-deficiency anaemia' to an HP phenotype term",
-    "resolved_at": "2026-11-17T18:02:10.799Z"
+    "resolved_at": "2026-11-18T16:37:45.936Z"
   },
   "coverage": {
     "n_causes_total": 218,

@@ -170,12 +170,67 @@ describe("burden is never defaulted or interpolated", () => {
 describe("the screen reports what it cannot know", () => {
   const limits = screenLimitations();
 
+  const r3 = (x) => Number(x).toFixed(3);
+
   test("the oncology scope limit is present with its measured figures", () => {
     const l = limits.find((x) => x.id === "oncology-scope");
     expect(l).toBeTruthy();
-    expect(l.detail).toContain(String(task4.held_out.models.M1.roc_auc));
-    expect(l.detail).toContain(String(task7.strata.non_cancer.models.M0.roc_auc));
+    // Three decimals, matching the rest of the app; the asset carries four.
+    expect(l.detail).toContain(r3(task4.held_out.models.M1.roc_auc));
+    expect(l.detail).toContain(String(task7.strata.cancer.n_diseases_with_cohort2_data));
     expect(l.source).toMatch(/task7_cancer_stratification\.json/);
+  });
+
+  test("the axis mismatch is the FIRST entry, not buried", () => {
+    // Part 5: an oncology-validated ranking applied to a mostly-non-cancer
+    // burden is the limitation most likely to bite the screen's intended use.
+    expect(limits[0].id).toBe("axis-mismatch");
+    expect(limits[0].source).toMatch(/task7_cancer_stratification\.json/);
+    const d = limits[0].detail;
+    expect(d).toContain(r3(task7.strata.non_cancer.models.M0.roc_auc));
+    expect(d).toContain(r3(task7.strata.non_cancer.models.M1.roc_auc));
+    expect(d).toMatch(/outside the range where it was validated/i);
+    expect(d).toMatch(/unvalidated/i);
+  });
+
+  test("the axis mismatch names real non-cancer conditions with committed DALYs", () => {
+    const burden = JSON.parse(read("benchmark/burden/india_disease_burden.json"));
+    const d = limits[0].detail;
+    // Each exemplar must be a real condition, not a group row, and its figure
+    // must be the committed one.
+    for (const code of ["1130", "1180", "30"]) {
+      const cause = burden.causes.find((c) => c.ghe_code === code);
+      expect(cause).toBeTruthy();
+      expect(cause.is_aggregate).toBe(false);
+      expect(d).toContain(cause.label.toLowerCase());
+      expect(d).toContain(Math.round(cause.daly_thousands).toLocaleString("en-US"));
+    }
+    // And it must not cite a group row as if it were a condition.
+    expect(d).not.toMatch(/unintentional injuries|noncommunicable diseases|sense organ diseases/i);
+  });
+
+  test("prior art credits IDG and Pharos", () => {
+    const l = limits.find((x) => x.id === "prior-art");
+    expect(l).toBeTruthy();
+    expect(l.detail).toMatch(/Illuminating the Druggable Genome/);
+    expect(l.detail).toMatch(/Pharos/);
+    expect(l.detail).toMatch(/reimplements that classification/i);
+    expect(l.source).toBe("https://pharos.nih.gov/");
+  });
+
+  test("it says it cannot establish that a target is unpursued", () => {
+    const l = limits.find((x) => x.id === "cannot-establish-unpursued");
+    expect(l).toBeTruthy();
+    expect(l.detail).toMatch(/does not record failed, abandoned or unpublished/i);
+  });
+
+  test("every figure in the list is rounded to three decimals", () => {
+    // Guards against interpolating a raw four-decimal asset value, which is
+    // how 0.7214 and 0.7295 reached the copy the first time.
+    for (const l of limits) {
+      const longs = l.detail.match(/\b\d+\.\d{4,}\b/g) || [];
+      expect(longs).toEqual([]);
+    }
   });
 
   test("it says absence of effort is not evidence of an opportunity", () => {
@@ -186,7 +241,7 @@ describe("the screen reports what it cannot know", () => {
 
   test("it admits the evidence score is partly a measure of attention", () => {
     const l = limits.find((x) => x.id === "evidence-is-attention-shaped");
-    expect(l.detail).toContain(String(task4.held_out.models.M0.roc_auc));
+    expect(l.detail).toContain(Number(task4.held_out.models.M0.roc_auc).toFixed(3));
     expect(l.detail).toMatch(/in tension with/i);
   });
 

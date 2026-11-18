@@ -292,9 +292,6 @@ const OPS = Object.assign(Object.create(null), {
   resolveCocrystalSearchQuery: lazy(() => import("./rcsbCocrystalSearch.js"), "resolveCocrystalSearchQuery"),
   searchPdbEntriesForChemComp: lazy(() => import("./rcsbCocrystalSearch.js"), "searchPdbEntriesForChemComp"),
 
-  // Hypothesis testing
-  parseHypothesisApi: lazy(() => import("./hypothesis/hypothesisService.js"), "parseHypothesisApi"),
-  evaluateHypothesisApi: lazy(() => import("./hypothesis/hypothesisService.js"), "evaluateHypothesisApi"),
 });
 
 export function hasOp(op) {

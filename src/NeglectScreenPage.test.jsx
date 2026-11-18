@@ -12,6 +12,8 @@ jest.mock("./serverApi", () => ({
 
 // eslint-disable-next-line import/first
 import NeglectScreenPage from "./NeglectScreenPage";
+// eslint-disable-next-line import/first
+import { SCREEN_LIMITATIONS, VALIDATION_PANEL } from "./shared/screenLimitations";
 
 /**
  * Renders the screen against a payload shaped like the server's, so the
@@ -210,10 +212,13 @@ describe("NeglectScreenPage", () => {
     expect(text).toMatch(/43\.4%/);
   });
 
-  test("renders every limitation the server returned", async () => {
+  test("renders the full generated limitations list, not the payload's", async () => {
+    // Part 2: the list is static and client-side, so a response carrying a
+    // shorter list (or none) cannot shrink the panel.
     await runWith(payload);
     const items = container.querySelectorAll(".neglect-limitations li");
-    expect(items.length).toBe(payload.limitations.length);
+    expect(items.length).toBe(SCREEN_LIMITATIONS.length);
+    expect(items.length).toBeGreaterThan(payload.limitations.length);
     expect(container.textContent).toMatch(/not evidence of a missed opportunity/i);
   });
 
@@ -230,5 +235,67 @@ describe("NeglectScreenPage", () => {
     for (const w of ["untapped", "unlock", "breakthrough", "revolutionary", "goldmine"]) {
       expect(text).not.toContain(w);
     }
+  });
+});
+
+describe("the limitations panel is unconditional (Part 2 acceptance)", () => {
+  let container;
+  let root;
+
+  beforeEach(() => {
+    mockRunNeglectScreen.mockReset();
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    root = ReactDOM.createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    container.remove();
+  });
+
+  function paint() {
+    act(() => {
+      root.render(
+        <MemoryRouter>
+          <NeglectScreenPage />
+        </MemoryRouter>
+      );
+    });
+  }
+
+  test("renders on first paint with no screen run and no network call", () => {
+    paint();
+    const items = container.querySelectorAll(".neglect-limitations li");
+    expect(items.length).toBe(SCREEN_LIMITATIONS.length);
+    expect(items.length).toBeGreaterThan(5);
+    // Nothing was fetched to get here.
+    expect(mockRunNeglectScreen).not.toHaveBeenCalled();
+  });
+
+  test("the removed 'server did not return' message is gone for good", () => {
+    paint();
+    expect(container.textContent).not.toMatch(/server did not return/i);
+    expect(container.textContent).not.toMatch(/limitations unavailable/i);
+  });
+
+  test("the axis mismatch is the first thing in the panel", () => {
+    paint();
+    const first = container.querySelector(".neglect-limitations li");
+    expect(first.textContent).toMatch(/validated on cancers/i);
+    expect(first.textContent).toMatch(/India's disease burden is mostly not cancer/i);
+  });
+
+  test("the prior-art disclosure and the Pharos link render before any run", () => {
+    paint();
+    expect(container.textContent).toMatch(/not original to TargetForge/i);
+    expect(container.textContent).toMatch(/Illuminating the Druggable Genome/);
+    expect(container.textContent).toMatch(/Tbio/);
+    const link = [...container.querySelectorAll("a")].find((a) =>
+      a.getAttribute("href") === "https://pharos.nih.gov/"
+    );
+    expect(link).toBeTruthy();
+    expect(link.getAttribute("rel")).toMatch(/noopener/);
+    expect(link.getAttribute("target")).toBe("_blank");
   });
 });

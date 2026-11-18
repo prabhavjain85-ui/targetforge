@@ -737,3 +737,103 @@ describe("the tractability section no longer calls compound count an attention p
     expect(section.body).toContain("9 held-out cancers");
   });
 });
+
+describe("the removed hypothesis module leaves nothing behind", () => {
+  const files = [
+    "src/index.js",
+    "src/Header.jsx",
+    "src/SeoIntroLinks.jsx",
+    "src/seoConfig.js",
+    "src/serverApi.js",
+    "server/compute.js",
+    "src/setupProxy.js",
+    "public/sitemap.xml",
+    "public/index.html",
+  ];
+
+  test("no route, nav entry, link or op references it", () => {
+    for (const f of files) {
+      const text = read(f);
+      expect(text).not.toMatch(/\/hypothesis\b/);
+      expect(text).not.toMatch(/HypothesisPage/);
+      expect(text).not.toMatch(/hypothesis-eval/);
+      expect(text).not.toMatch(/hypothesisService/);
+      expect(text).not.toMatch(/parseHypothesisApi|evaluateHypothesisApi/);
+    }
+  });
+
+  test("the deleted files are gone", () => {
+    for (const p of [
+      "api/hypothesis-eval.js",
+      "server/hypothesis/hypothesisService.js",
+      "src/HypothesisPage.jsx",
+      "src/hypothesis/EvidenceGraph.jsx",
+      "src/hypothesis/hypothesisReport.js",
+    ]) {
+      expect(fs.existsSync(path.join(repoRoot, p))).toBe(false);
+    }
+  });
+
+  test("the platform-level disclaimer on the methodology page is kept", () => {
+    // Deliberately retained: "computational hypothesis generator" there
+    // describes the whole product, not the removed module.
+    expect(page).toMatch(/computational hypothesis generator/i);
+  });
+
+  test("no dead hypothesis CSS remains", () => {
+    expect(read("src/app.css")).not.toMatch(/hypothesis/i);
+  });
+});
+
+describe("neglect screen strings trace to committed artifacts", () => {
+  const section = VALIDATION_SECTIONS.find((s) => s.id === "neglect-screen");
+  const limitations = JSON.parse(read("src/shared/screenLimitations.generated.json"));
+  const round = (x, d = 3) => Number(Number(x).toFixed(d));
+
+  test("the validation section exists and names its source", () => {
+    expect(section).toBeTruthy();
+    expect(section.source).toBe("benchmark/docking/results/task7_cancer_stratification.json");
+  });
+
+  test("the cancer-share figure matches the committed burden table", () => {
+    const burden = JSON.parse(read("benchmark/burden/india_disease_burden.json"));
+    const malignant = burden.causes.find((c) => c.ghe_code === "610");
+    const share = ((100 * malignant.daly_thousands) / burden.total_daly_thousands).toFixed(1);
+    expect(share).toBe("6.0");
+    expect(section.body).toContain(`${share}%`);
+  });
+
+  test("the held-out disease counts match Task 7", () => {
+    expect(section.body).toContain(
+      String(task7.strata.cancer.n_diseases_with_cohort2_data)
+    );
+    expect(limitations.validationPanel.cancerDiseases).toBe(
+      task7.strata.cancer.n_diseases_with_cohort2_data
+    );
+    expect(limitations.validationPanel.contributingDiseases).toBe(10);
+    expect(limitations.validationPanel.nonCancerRocAucPubCountOnly).toBe(
+      round(task7.strata.non_cancer.models.M0.roc_auc).toFixed(3)
+    );
+  });
+
+  test("the generated list carries no four-decimal figure", () => {
+    for (const l of limitations.limitations) {
+      expect(l.detail.match(/\b\d+\.\d{4,}\b/g) || []).toEqual([]);
+    }
+  });
+
+  test("the TDL names are the current IDG/Pharos four", () => {
+    // Checked against the IDG/Pharos literature before shipping; these are
+    // also the names server/noveltyScore.js assigns.
+    for (const t of ["Tclin", "Tchem", "Tbio", "Tdark"]) {
+      expect(section.body).toContain(t);
+      expect(read("server/noveltyScore.js")).toContain(t);
+    }
+    expect(section.body).toMatch(/approximately Tbio/i);
+  });
+
+  test("prior art is credited on the validation page, not only on the screen", () => {
+    expect(section.body).toMatch(/not original to TargetForge/i);
+    expect(section.body).toMatch(/Illuminating the Druggable Genome/);
+  });
+});

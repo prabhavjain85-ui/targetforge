@@ -85,8 +85,9 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    // target scores, attention control, cancer stratification, tractability, triage, docking.
-    expect(container.querySelectorAll(".validation-source").length).toBe(6);
+    // target scores, attention control, cancer stratification, neglect screen,
+    // tractability, triage, docking.
+    expect(container.querySelectorAll(".validation-source").length).toBe(7);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
     expect(text).toContain("benchmark/docking/results/task8_tractability.json");
@@ -137,5 +138,23 @@ describe("ValidationPage", () => {
     expect(text).toContain("1,403");
     expect(text).toContain("−0.008");
     expect(text).toMatch(/cannot establish/i);
+  });
+
+  test("discloses the IDG/Pharos prior art and the screen scope mismatch", () => {
+    const text = render();
+    expect(text).toMatch(/not original to TargetForge/i);
+    expect(text).toMatch(/Illuminating the Druggable Genome/);
+    for (const t of ["Tclin", "Tchem", "Tbio", "Tdark"]) {
+      expect(text).toContain(t);
+    }
+    expect(text).toMatch(/cannot establish that a target is unpursued/i);
+    expect(text).toMatch(/two axes disagree about scope/i);
+    expect(text).toContain("6.0%");
+  });
+
+  test("no longer advertises the removed hypothesis module", () => {
+    const text = render().toLowerCase();
+    expect(text).not.toMatch(/hypothesis testing/);
+    expect(text).not.toMatch(/hypothesis evaluator/);
   });
 });

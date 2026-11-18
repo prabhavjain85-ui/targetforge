@@ -6,7 +6,6 @@ const WORKFLOW_LINKS = [
   { to: "/docking", label: "Molecular docking" },
   { to: "/adme", label: "ADME analysis" },
   { to: "/evolution", label: "Molecule evolution" },
-  { to: "/hypothesis", label: "Hypothesis testing" },
   { to: "/methodology", label: "Methodology" },
 ];
 

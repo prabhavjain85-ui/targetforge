@@ -2,6 +2,13 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { runNeglectScreen } from "./serverApi";
 import { NEGLECT_SCREEN_COPY } from "./shared/validationCopy";
+import {
+  SCREEN_LIMITATIONS,
+  VALIDATION_PANEL,
+  axisMismatchLimitation,
+  isNonCancerDisease,
+} from "./shared/screenLimitations";
+import TargetChecklist from "./NeglectChecklist";
 import "./validation.css";
 import "./neglectScreen.css";
 
@@ -70,10 +77,15 @@ export default function NeglectScreenPage() {
     }
   }, [input]);
 
-  const limitations = useMemo(
-    () => state.data?.limitations || NEGLECT_SCREEN_COPY.limitationsFallback,
-    [state.data]
-  );
+  /**
+   * The limitations list is static — generated from committed benchmark
+   * artifacts — so it renders on first paint with no run and no network call.
+   * It used to be read from the response, which meant the one panel that must
+   * always be visible showed a server-error message until a screen was run.
+   */
+  const limitations = SCREEN_LIMITATIONS;
+
+  const axisMismatch = useMemo(() => axisMismatchLimitation(), []);
 
   return (
     <div className="neglect-page">
@@ -94,6 +106,24 @@ export default function NeglectScreenPage() {
         <div className="validation-source">
           Full measured performance of every score on the{" "}
           <Link to="/validation">validation page</Link>.
+        </div>
+      </section>
+
+      <section className="neglect-section neglect-priorart">
+        <h2>{NEGLECT_SCREEN_COPY.priorArtTitle}</h2>
+        {NEGLECT_SCREEN_COPY.priorArt.split("\n").map((line, i) => (
+          <p className="validation-line" key={i}>
+            {line}
+          </p>
+        ))}
+        <div className="validation-source">
+          <a
+            href={NEGLECT_SCREEN_COPY.priorArtHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {NEGLECT_SCREEN_COPY.priorArtLinkLabel} ↗
+          </a>
         </div>
       </section>
 
@@ -161,6 +191,25 @@ export default function NeglectScreenPage() {
             <p className="validation-line">No result: {d.error}</p>
           ) : (
             <>
+              {/* Part 5: the ranking is unvalidated outside oncology, and the
+                  screen's intended use is high-burden Indian disease, most of
+                  which is not cancer. Shown here, not only in the panel below. */}
+              {isNonCancerDisease(d.disease?.id) && axisMismatch ? (
+                <div className="neglect-inline-warning" role="note">
+                  <strong>Outside the validated range.</strong> The committed labelling marks{" "}
+                  {d.disease?.name || d.query} as non-cancer. The evidence model was validated on
+                  a panel where {VALIDATION_PANEL.cancerDiseases} of the{" "}
+                  {VALIDATION_PANEL.contributingDiseases} contributing held-out diseases were
+                  cancers, and on the one non-cancer disease it did not beat counting publications
+                  ({VALIDATION_PANEL.nonCancerRocAucPubCountOnly} against{" "}
+                  {VALIDATION_PANEL.nonCancerRocAucEvidenceModel}). Treat the order of the rows
+                  below as unvalidated.
+                  <div className="validation-source">
+                    Source: <code>{axisMismatch.source}</code>
+                  </div>
+                </div>
+              ) : null}
+
               <p className="validation-line">
                 India burden: <BurdenCell burden={d.burden} />
                 {d.counts ? (
@@ -242,6 +291,28 @@ export default function NeglectScreenPage() {
                     </tbody>
                   </table>
                   <p className="validation-line context-note">{NEGLECT_SCREEN_COPY.contextOnly}</p>
+
+                  <div className="neglect-checks">
+                    <h3>Prior-art checks, per target</h3>
+                    <p className="validation-line nc-statement">
+                      <strong>{NEGLECT_SCREEN_COPY.cannotEstablishUnpursued}</strong>
+                    </p>
+                    <p className="validation-line context-note">
+                      {NEGLECT_SCREEN_COPY.checklistNote}
+                    </p>
+                    <ul className="neglect-check-targets">
+                      {d.rows.map((r) => (
+                        <li key={`chk-${r.ensemblId || r.symbol}`}>
+                          <span className="nc-symbol">{r.symbol}</span>
+                          <TargetChecklist
+                            symbol={r.symbol}
+                            proteinName={r.name}
+                            ensemblId={r.ensemblId}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               )}
             </>
