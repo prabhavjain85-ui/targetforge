@@ -244,7 +244,7 @@ export function buildEffort(featureTable) {
  * cancer, because that is the limitation most likely to bite the screen's
  * intended use.
  */
-export function buildLimitations({ m1, task7, task4, burden, mapping, cancerLabels }) {
+export function buildLimitations({ m1, task7, task4, burden, mapping, cancerLabels, burdenAsset }) {
   // Three decimals everywhere, matching how every other figure in the app is
   // shown; the raw asset values carry four.
   const r3 = (x) => Number(x).toFixed(3);
@@ -317,6 +317,18 @@ export function buildLimitations({ m1, task7, task4, burden, mapping, cancerLabe
         `cancers. The cancer stratum reproduces the pooled result; the single non-cancer disease showed no ` +
         "benefit. Outside oncology this score is untested rather than known to be wrong.",
       source: "benchmark/docking/results/task7_cancer_stratification.json",
+    },
+    {
+      id: "effort-is-a-filter",
+      title: "Prior effort only filters these rows; it never raises one",
+      detail:
+        "Task 8 measured existing compound count as the strongest single predictor of a target " +
+        `entering the clinic (solo held-out ROC-AUC ${r3(0.772)}), and declined to ship a score using ` +
+        "it: such a score ranks highest the targets a user could have found without it. Here effort " +
+        "decides only whether a row appears at all, and the evidence model contains no term for " +
+        "drugs, compounds or clinical precedence. The low-effort end of this list is the end that " +
+        "historically progressed least often.",
+      source: "benchmark/docking/results/task8_tractability.json",
     },
     {
       id: "cannot-establish-unpursued",
@@ -418,6 +430,27 @@ export function buildLimitations({ m1, task7, task4, burden, mapping, cancerLabe
       .filter((d) => d.stratum === "non_cancer" && d.disease_id_2021)
       .map((d) => d.disease_id_2021),
     cancerLabelsSource: "benchmark/docking/data/disease_cancer_labels.json",
+    /**
+     * Diseases the committed labelling marks as cancers, so a chip can say
+     * "oncology-validated" for a panel disease without inferring it.
+     */
+    cancerDiseaseIds: (cancerLabels?.diseases || [])
+      .filter((d) => d.stratum === "cancer" && d.disease_id_2021)
+      .map((d) => d.disease_id_2021),
+    /**
+     * India DALY burden keyed by EFO/MONDO id, so a selected disease can show
+     * its burden before a run. Only mapped diseases are present: a disease
+     * absent from this object has UNKNOWN burden and must render as
+     * unavailable, never as zero.
+     */
+    burdenByDisease: Object.fromEntries(
+      Object.entries(burdenAsset?.byDisease || {}).map(([id, b]) => [
+        id,
+        { dalyThousands: b.dalyThousands, gheLabel: b.gheLabel },
+      ])
+    ),
+    burdenReferenceYear: burdenAsset?.referenceYear ?? null,
+    burdenCountry: burdenAsset?.country ?? null,
     /** Structured counts, so the UI never has to parse the prose above. */
     validationPanel: {
       cancerDiseases: cancer.n_diseases_with_cohort2_data,
@@ -501,6 +534,9 @@ function main() {
   let ok = writeIfChanged(OUT_M1, m1, { check });
 
   const burdenPresent = fs.existsSync(BURDEN) && fs.existsSync(MAPPING);
+  // Built before the limitations list so the client copy can carry the burden
+  // lookup; written below as the server asset.
+  const burdenAsset = burdenPresent ? buildBurden(readJson(BURDEN), readJson(MAPPING)) : null;
   ok =
     writeIfChanged(
       OUT_LIMITATIONS,
@@ -511,15 +547,15 @@ function main() {
         burden: burdenPresent ? readJson(BURDEN) : null,
         mapping: burdenPresent ? readJson(MAPPING) : null,
         cancerLabels: fs.existsSync(CANCER_LABELS) ? readJson(CANCER_LABELS) : null,
+        burdenAsset,
       }),
       { check }
     ) && ok;
 
   // The burden files are optional at this stage: the screen degrades to
   // "burden unavailable" without them rather than failing to build.
-  if (fs.existsSync(BURDEN) && fs.existsSync(MAPPING)) {
-    const burden = buildBurden(readJson(BURDEN), readJson(MAPPING));
-    ok = writeIfChanged(OUT_BURDEN, burden, { check }) && ok;
+  if (burdenAsset) {
+    ok = writeIfChanged(OUT_BURDEN, burdenAsset, { check }) && ok;
   } else {
     process.stderr.write(
       "[screen-assets] burden sources absent; skipping india-burden.json " +

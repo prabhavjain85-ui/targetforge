@@ -12,6 +12,355 @@
     "EFO_0000764"
   ],
   "cancerLabelsSource": "benchmark/docking/data/disease_cancer_labels.json",
+  "cancerDiseaseIds": [
+    "EFO_0000199",
+    "EFO_0000222",
+    "EFO_0000231",
+    "EFO_0000272",
+    "EFO_0000294",
+    "EFO_0000304",
+    "EFO_0000308",
+    "EFO_0000309",
+    "EFO_0000313",
+    "EFO_0000389",
+    "EFO_0000519",
+    "EFO_0000588",
+    "EFO_0000640",
+    "EFO_0000702",
+    "EFO_0001378"
+  ],
+  "burdenByDisease": {
+    "MONDO_0018076": {
+      "dalyThousands": 14014.9324728712,
+      "gheLabel": "Tuberculosis"
+    },
+    "MONDO_0005976": {
+      "dalyThousands": 1464.69987849832,
+      "gheLabel": "Syphilis"
+    },
+    "MONDO_0004277": {
+      "dalyThousands": 15.4635157385433,
+      "gheLabel": "Gonorrhoea"
+    },
+    "MONDO_0002154": {
+      "dalyThousands": 23.5197726106286,
+      "gheLabel": "Trichomoniasis"
+    },
+    "MONDO_0005770": {
+      "dalyThousands": 19.8806877100418,
+      "gheLabel": "Gential Herpes"
+    },
+    "MONDO_0005109": {
+      "dalyThousands": 1933.19620175367,
+      "gheLabel": "HIV/AIDS"
+    },
+    "MONDO_0005504": {
+      "dalyThousands": 12.8607808176634,
+      "gheLabel": "Diphtheria"
+    },
+    "MONDO_0004619": {
+      "dalyThousands": 1322.22999190138,
+      "gheLabel": "Measles"
+    },
+    "MONDO_0005526": {
+      "dalyThousands": 174.05059950967,
+      "gheLabel": "Tetanus"
+    },
+    "MONDO_0021108": {
+      "dalyThousands": 1599.31423219123,
+      "gheLabel": "Meningitis"
+    },
+    "MONDO_0019956": {
+      "dalyThousands": 1830.90009335909,
+      "gheLabel": "Encephalitis"
+    },
+    "MONDO_0005136": {
+      "dalyThousands": 258.830591130258,
+      "gheLabel": "Malaria"
+    },
+    "MONDO_0000940": {
+      "dalyThousands": 0,
+      "gheLabel": "Trypanosomiasis"
+    },
+    "MONDO_0015254": {
+      "dalyThousands": 0,
+      "gheLabel": "Schistosomiasis"
+    },
+    "MONDO_0011989": {
+      "dalyThousands": 51.019662233261,
+      "gheLabel": "Leishmaniasis"
+    },
+    "MONDO_0005445": {
+      "dalyThousands": 50.9650373399966,
+      "gheLabel": "Visceral leishmaniasis"
+    },
+    "MONDO_0017137": {
+      "dalyThousands": 0,
+      "gheLabel": "Onchocerciasis"
+    },
+    "MONDO_0015484": {
+      "dalyThousands": 249.020232569715,
+      "gheLabel": "Cysticercosis"
+    },
+    "MONDO_0005738": {
+      "dalyThousands": 3.38267341684806,
+      "gheLabel": "Echinococcosis"
+    },
+    "MONDO_0005502": {
+      "dalyThousands": 1933.84827616834,
+      "gheLabel": "Dengue"
+    },
+    "MONDO_0005654": {
+      "dalyThousands": 56.4260794982388,
+      "gheLabel": "Ascariasis"
+    },
+    "MONDO_0005996": {
+      "dalyThousands": 30.5402609283498,
+      "gheLabel": "Trichuriasis"
+    },
+    "MONDO_0005124": {
+      "dalyThousands": 8.23796792022124,
+      "gheLabel": "Leprosy"
+    },
+    "MONDO_0100096": {
+      "dalyThousands": 4033.09040192598,
+      "gheLabel": "COVID-19"
+    },
+    "MONDO_0005441": {
+      "dalyThousands": 579.542601699962,
+      "gheLabel": "Otitis media"
+    },
+    "EFO_0003917": {
+      "dalyThousands": 22416.9947280414,
+      "gheLabel": "Preterm birth complications"
+    },
+    "MONDO_0001371": {
+      "dalyThousands": 2949.57221763343,
+      "gheLabel": "Protein-energy malnutrition"
+    },
+    "MONDO_0007016": {
+      "dalyThousands": 230.442181872543,
+      "gheLabel": "Vitamin A deficiency"
+    },
+    "MONDO_0005515": {
+      "dalyThousands": 3138.09265047217,
+      "gheLabel": "Lip and oral cavity"
+    },
+    "MONDO_0007576": {
+      "dalyThousands": 2280.59665586799,
+      "gheLabel": "Oesophagus cancer"
+    },
+    "MONDO_0005575": {
+      "dalyThousands": 1285.66912262877,
+      "gheLabel": "Colon and rectum cancers"
+    },
+    "MONDO_0002691": {
+      "dalyThousands": 1168.34170585365,
+      "gheLabel": "Liver cancer"
+    },
+    "MONDO_0008903": {
+      "dalyThousands": 2529.12801921881,
+      "gheLabel": "Trachea, bronchus, lung cancers"
+    },
+    "MONDO_0005105": {
+      "dalyThousands": 178.883268502383,
+      "gheLabel": "Melanoma and other skin cancers"
+    },
+    "MONDO_0007254": {
+      "dalyThousands": 3598.6147618971,
+      "gheLabel": "Breast cancer"
+    },
+    "MONDO_0002974": {
+      "dalyThousands": 2084.60501194936,
+      "gheLabel": "Cervix uteri cancer"
+    },
+    "MONDO_0011962": {
+      "dalyThousands": 204.304943472844,
+      "gheLabel": "Corpus uteri cancer"
+    },
+    "MONDO_0008170": {
+      "dalyThousands": 1081.17124631073,
+      "gheLabel": "Ovary cancer"
+    },
+    "MONDO_0008315": {
+      "dalyThousands": 398.306193418318,
+      "gheLabel": "Prostate cancer"
+    },
+    "MONDO_0005447": {
+      "dalyThousands": 52.6769902779372,
+      "gheLabel": "Testicular cancer"
+    },
+    "MONDO_0002367": {
+      "dalyThousands": 266.793035594719,
+      "gheLabel": "Kidney cancer"
+    },
+    "MONDO_0005499": {
+      "dalyThousands": 1164.94474023057,
+      "gheLabel": "Brain and nervous system cancers"
+    },
+    "MONDO_0005411": {
+      "dalyThousands": 656.551480553276,
+      "gheLabel": "Gallbladder and biliary tract cancer"
+    },
+    "MONDO_0002358": {
+      "dalyThousands": 601.265826518142,
+      "gheLabel": "Larynx cancer"
+    },
+    "MONDO_0005065": {
+      "dalyThousands": 33.2646144639563,
+      "gheLabel": "Mesothelioma"
+    },
+    "MONDO_0018908": {
+      "dalyThousands": 854.486870847626,
+      "gheLabel": "Non-Hodgkin lymphoma"
+    },
+    "MONDO_0005059": {
+      "dalyThousands": 1691.23508908952,
+      "gheLabel": "Leukaemia"
+    },
+    "MONDO_0005015": {
+      "dalyThousands": 24230.1916051348,
+      "gheLabel": "Diabetes mellitus"
+    },
+    "MONDO_0019402": {
+      "dalyThousands": 333.697208882054,
+      "gheLabel": "Thalassaemias"
+    },
+    "MONDO_0011382": {
+      "dalyThousands": 1453.39873985768,
+      "gheLabel": "Sickle cell disorders and trait"
+    },
+    "MONDO_0002009": {
+      "dalyThousands": 8472.42596947005,
+      "gheLabel": "Major depressive disorder"
+    },
+    "MONDO_0004985": {
+      "dalyThousands": 1044.54266992223,
+      "gheLabel": "Bipolar disorder"
+    },
+    "MONDO_0005090": {
+      "dalyThousands": 3088.04951083048,
+      "gheLabel": "Schizophrenia"
+    },
+    "MONDO_0002491": {
+      "dalyThousands": 1336.98399654397,
+      "gheLabel": "Drug use disorders"
+    },
+    "MONDO_0005618": {
+      "dalyThousands": 10035.4956482974,
+      "gheLabel": "Anxiety disorders"
+    },
+    "MONDO_0005352": {
+      "dalyThousands": 843.531030438637,
+      "gheLabel": "Conduct disorder"
+    },
+    "MONDO_0004975": {
+      "dalyThousands": 3040.21557029675,
+      "gheLabel": "Alzheimer disease and other dementias"
+    },
+    "MONDO_0005180": {
+      "dalyThousands": 1060.83705611821,
+      "gheLabel": "Parkinson disease"
+    },
+    "MONDO_0005027": {
+      "dalyThousands": 3240.18405632983,
+      "gheLabel": "Epilepsy"
+    },
+    "MONDO_0005277": {
+      "dalyThousands": 7442.8520985648,
+      "gheLabel": "Migraine"
+    },
+    "MONDO_0005041": {
+      "dalyThousands": 146.691937219538,
+      "gheLabel": "Glaucoma"
+    },
+    "MONDO_0005129": {
+      "dalyThousands": 2116.40786805683,
+      "gheLabel": "Cataracts"
+    },
+    "MONDO_0003004": {
+      "dalyThousands": 85.6285318885782,
+      "gheLabel": "Macular degeneration"
+    },
+    "MONDO_0006955": {
+      "dalyThousands": 8164.91093167025,
+      "gheLabel": "Rheumatic heart disease"
+    },
+    "MONDO_0001302": {
+      "dalyThousands": 5617.78944109723,
+      "gheLabel": "Hypertensive heart disease"
+    },
+    "MONDO_0004994": {
+      "dalyThousands": 3005.50416931393,
+      "gheLabel": "Cardiomyopathy, myocarditis, endocarditis"
+    },
+    "MONDO_0005002": {
+      "dalyThousands": 25679.2174207504,
+      "gheLabel": "Chronic obstructive pulmonary disease"
+    },
+    "MONDO_0004979": {
+      "dalyThousands": 6263.88539164932,
+      "gheLabel": "Asthma"
+    },
+    "MONDO_0004247": {
+      "dalyThousands": 1690.42716217119,
+      "gheLabel": "Peptic ulcer disease"
+    },
+    "MONDO_0005649": {
+      "dalyThousands": 618.937397976214,
+      "gheLabel": "Appendicitis"
+    },
+    "MONDO_0005265": {
+      "dalyThousands": 250.192151226771,
+      "gheLabel": "Inflammatory bowel disease"
+    },
+    "MONDO_0004982": {
+      "dalyThousands": 1020.05644338107,
+      "gheLabel": "Pancreatitis"
+    },
+    "MONDO_0010811": {
+      "dalyThousands": 454.154163579657,
+      "gheLabel": "Benign prostatic hyperplasia"
+    },
+    "MONDO_0024647": {
+      "dalyThousands": 336.294933963244,
+      "gheLabel": "Urolithiasis"
+    },
+    "MONDO_0008383": {
+      "dalyThousands": 595.953471044239,
+      "gheLabel": "Rheumatoid arthritis"
+    },
+    "MONDO_0005178": {
+      "dalyThousands": 2910.86517693287,
+      "gheLabel": "Osteoarthritis"
+    },
+    "MONDO_0005393": {
+      "dalyThousands": 174.47938055047,
+      "gheLabel": "Gout"
+    },
+    "MONDO_0018075": {
+      "dalyThousands": 637.920028777079,
+      "gheLabel": "Neural tube defects"
+    },
+    "MONDO_0008608": {
+      "dalyThousands": 255.233056200438,
+      "gheLabel": "Down syndrome"
+    },
+    "MONDO_0005453": {
+      "dalyThousands": 4811.61328444106,
+      "gheLabel": "Congenital heart anomalies"
+    },
+    "MONDO_0005276": {
+      "dalyThousands": 470.893404331915,
+      "gheLabel": "Dental caries"
+    },
+    "EFO_0005303": {
+      "dalyThousands": 236.668140196852,
+      "gheLabel": "Sudden infant death syndrome"
+    }
+  },
+  "burdenReferenceYear": 2023,
+  "burdenCountry": "India",
   "validationPanel": {
     "cancerDiseases": 9,
     "nonCancerDiseases": 1,
@@ -32,6 +381,12 @@
       "title": "The evidence score is an oncology result",
       "detail": "Held-out ROC-AUC 0.721 on a panel where 9 of the 10 contributing held-out diseases were cancers. The cancer stratum reproduces the pooled result; the single non-cancer disease showed no benefit. Outside oncology this score is untested rather than known to be wrong.",
       "source": "benchmark/docking/results/task7_cancer_stratification.json"
+    },
+    {
+      "id": "effort-is-a-filter",
+      "title": "Prior effort only filters these rows; it never raises one",
+      "detail": "Task 8 measured existing compound count as the strongest single predictor of a target entering the clinic (solo held-out ROC-AUC 0.772), and declined to ship a score using it: such a score ranks highest the targets a user could have found without it. Here effort decides only whether a row appears at all, and the evidence model contains no term for drugs, compounds or clinical precedence. The low-effort end of this list is the end that historically progressed least often.",
+      "source": "benchmark/docking/results/task8_tractability.json"
     },
     {
       "id": "cannot-establish-unpursued",

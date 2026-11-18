@@ -331,3 +331,373 @@
     background: rgba(255, 255, 255, 0.07);
   }
 }
+
+/* =======================================================================
+   Visual pass. Tokens, type scale and borders are the app's existing ones.
+
+   One rule governs every colour choice here: nothing in the high-evidence,
+   zero-effort region may read as desirable. Task 8 measured low prior effort
+   as predicting against clinical progression, so there is no green, no
+   highlight fill, no quadrant shading and no badge that reads as a prize.
+   The only saturated colour on the page is the amber used for warnings.
+   ======================================================================= */
+
+.ns-lead {
+  max-width: 68ch;
+  margin: 18px 0 22px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.ns-card {
+  border: 1px solid var(--border, #d7dce3);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 18px 0;
+  background: var(--surface, #fff);
+}
+
+.ns-card-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0 0 12px;
+}
+
+.ns-input-card .search-autocomplete {
+  max-width: 520px;
+}
+
+.ns-empty {
+  border-style: dashed;
+}
+
+.ns-empty .validation-line {
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ---- presets ---------------------------------------------------------- */
+.ns-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ns-presets-label {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.ns-preset {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--border, #d7dce3);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.ns-preset:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---- selected chips --------------------------------------------------- */
+.ns-chips {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.ns-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 8px 6px 11px;
+  border: 1px solid var(--border, #d7dce3);
+  border-radius: 6px;
+  font-size: 0.84rem;
+  background: var(--surface-muted, #fbfbfc);
+  max-width: 100%;
+}
+
+.ns-chip-name {
+  font-weight: 600;
+}
+
+.ns-chip-burden {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+.ns-chip-remove {
+  border: none;
+  background: none;
+  color: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 0 2px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.ns-chip-remove:hover {
+  opacity: 1;
+}
+
+/* ---- scope badges ----------------------------------------------------
+   Neither badge is a reward. "oncology-validated" is deliberately as plain
+   as the page's borders; it means only that the ranking was measured on this
+   class of disease. The out-of-scope badge is amber because it is a warning. */
+.ns-scope {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid var(--border, #d7dce3);
+  white-space: nowrap;
+}
+
+.ns-scope-in {
+  opacity: 0.75;
+}
+
+.ns-scope-out {
+  border-color: var(--warn, #b4690e);
+  color: var(--warn, #b4690e);
+}
+
+.ns-scope-note {
+  margin: 12px 0 0;
+  font-size: 0.84rem;
+  border-left: 3px solid var(--warn, #b4690e);
+  padding-left: 11px;
+  line-height: 1.5;
+}
+
+/* ---- actions ---------------------------------------------------------- */
+.ns-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.ns-primary {
+  min-width: 132px;
+}
+
+.ns-clear {
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: 0.84rem;
+  opacity: 0.7;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ns-counts {
+  font-size: 0.86rem;
+}
+
+/* ---- scatter ---------------------------------------------------------- */
+.ns-figure {
+  margin: 0;
+}
+
+.ns-figcaption {
+  font-size: 0.82rem;
+  opacity: 0.8;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.ns-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.ns-axis {
+  stroke: var(--border, #c9cfd8);
+  stroke-width: 1;
+}
+
+.ns-grid {
+  stroke: var(--border, #eceff3);
+  stroke-width: 1;
+}
+
+.ns-tick {
+  font-size: 10px;
+  fill: currentColor;
+  opacity: 0.6;
+}
+
+.ns-axis-label {
+  font-size: 11px;
+  fill: currentColor;
+  opacity: 0.75;
+}
+
+.ns-caveat {
+  font-size: 10.5px;
+  fill: var(--warn, #b4690e);
+}
+
+/* Hollow points: a filled cluster at the left edge would read as a heat map
+   of good things. The stroke carries the disease colour, the fill stays
+   transparent. */
+.ns-point {
+  fill: transparent;
+  stroke-width: 1.6;
+  cursor: pointer;
+  transition: stroke-width 120ms ease;
+}
+
+.ns-point:hover,
+.ns-point.hovered,
+.ns-point:focus-visible {
+  stroke-width: 3;
+  outline: none;
+}
+
+.ns-tip-bg {
+  fill: var(--surface, #fff);
+  stroke: var(--border, #c9cfd8);
+}
+
+.ns-tip-strong {
+  font-size: 11.5px;
+  font-weight: 600;
+  fill: currentColor;
+}
+
+.ns-tip-text {
+  font-size: 10.5px;
+  fill: currentColor;
+  opacity: 0.8;
+}
+
+.ns-legend {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  font-size: 0.8rem;
+}
+
+.ns-legend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ns-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: inline-block;
+}
+
+.ns-legend-note {
+  opacity: 0.65;
+}
+
+/* A clicked point marks its row with a rule, not a fill: a coloured row would
+   read as a recommendation. */
+.ns-row-focused > td {
+  box-shadow: inset 0 -2px 0 var(--warn, #b4690e);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ns-point {
+    transition: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .ns-card {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .ns-chip {
+    background: rgba(255, 255, 255, 0.04);
+  }
+  .ns-preset {
+    background: transparent;
+  }
+  .ns-tip-bg {
+    fill: #1c1f24;
+  }
+  .ns-grid {
+    stroke: rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* ---- narrow screens, checked at 360px -------------------------------- */
+@media (max-width: 560px) {
+  .ns-card {
+    padding: 14px;
+  }
+  .ns-chip {
+    /* Stack the chip's facts so a long disease name plus burden plus badge
+       does not overflow a 360px viewport. */
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+  }
+  .ns-chip-name {
+    flex: 1 1 100%;
+  }
+  .ns-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ns-primary {
+    width: 100%;
+  }
+  .ns-figcaption,
+  .ns-legend {
+    font-size: 0.78rem;
+  }
+  .neglect-check-targets > li {
+    flex-direction: column;
+    gap: 6px;
+  }
+  .nc-symbol {
+    min-width: 0;
+  }
+}
+
+/* The base-rate caveat sits immediately under the x axis as real text, so it
+   stays legible at 360px where SVG text would scale to about 4px. */
+.ns-baserate {
+  margin: 10px 0 0;
+  padding: 9px 11px;
+  border-left: 3px solid var(--warn, #b4690e);
+  font-size: 0.83rem;
+  line-height: 1.55;
+  max-width: 72ch;
+}
+
+/* A long PubMed query must not push the checklist wider than the viewport. */
+.nc-paste code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
