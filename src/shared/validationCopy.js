@@ -65,6 +65,70 @@ export const SCORE_CHIPS = {
     "the progression score, which is mostly the same signal.",
 };
 
+/**
+ * Copy for the /neglect-screen page.
+ *
+ * The screen inverts the Task 8 finding: prior medicinal-chemistry effort
+ * predicts clinical progression better than anything else measured, so the
+ * zero-effort tail is what the field has passed over. Most of it is passed over
+ * for good reasons, so every string here is written to surface the tail with
+ * its caveats rather than to present it as a list of opportunities.
+ */
+export const NEGLECT_SCREEN_COPY = {
+  title: "Strong evidence, no chemistry",
+  intro:
+    "Targets with substantial biological evidence for a disease and no recorded " +
+    "medicinal-chemistry effort, shown against India's disease burden. This is the " +
+    "inverse of what predicts success: Task 8 measured existing compound count as " +
+    "the strongest single predictor of a target entering the clinic (held-out " +
+    "ROC-AUC 0.772), so this list is deliberately made of targets that signal " +
+    "predicts against.",
+  notOpportunities:
+    "These are not opportunities. A target with strong evidence and no compounds is " +
+    "usually one the field has looked at and left, and the reasons — no tractable " +
+    "pocket, no assay, no tool compound, an unpublished failure — are not in any " +
+    "public dataset. The screen surfaces the tail; judging it is your job.",
+  evidenceAxis:
+    "The evidence axis is the fitted M1 model: log1p publication count plus the " +
+    "eight Open Targets biology scores, held-out ROC-AUC 0.721 against 0.667 for " +
+    "publication count alone. Task 7 established this as an oncology-scoped result: " +
+    "9 of the 10 contributing held-out diseases were cancers, and on the one " +
+    "non-cancer disease publication count alone scored higher (0.730 against 0.722). " +
+    "Outside cancer this ranking is untested.",
+  effortIsAFilter:
+    "Effort is a filter, never a positive term. Task 8 declined to ship a score " +
+    "using compound count because such a score ranks highest the targets a user " +
+    "could have found without it. Nothing about prior effort can raise a target's " +
+    "position here; it only decides whether the row appears at all.",
+  unknownIsNotZero:
+    "Missing effort data is not zero effort. Open Targets 21.04 tractability joined " +
+    "only 72.8% of targets in the benchmark, so a target with no record has unknown " +
+    "prior chemistry and is excluded from these results rather than shown as neglected.",
+  contextOnly:
+    "pLI, LOEUF, DepMap and GTEx are shown as context only. Task 8 measured them as " +
+    "adding nothing over evidence plus attention: keeping only those gene properties " +
+    "gave ROC-AUC 0.719 against 0.721 without them, a paired difference of −0.002 " +
+    "(95% CI −0.026 to +0.022). They do not enter the ranking.",
+  burdenSourceCaveat:
+    "Burden is WHO Global Health Estimates national DALYs for India, not the ICMR / " +
+    "PHFI / IHME India State-Level Disease Burden Initiative series: that output is " +
+    "published as a PDF of typeset tables and the IHME results tool has no open bulk " +
+    "endpoint, so these figures will not match published GBD India numbers and carry " +
+    "no state-level detail. No market size, per-capita income or other commercial " +
+    "proxy enters the ranking.",
+  /** Used only if the server payload carries no limitations list. */
+  limitationsFallback: [
+    {
+      id: "fallback",
+      title: "Limitations unavailable",
+      detail:
+        "The server did not return the limitations list for this run. Do not read the table " +
+        "without it; see the validation page for what each score can and cannot do.",
+      source: null,
+    },
+  ],
+};
+
 export const VALIDATION_INTRO =
   "Every score in TargetForge with its measured performance on held-out data. " +
   "Scores that perform at chance are listed as such. Where a component failed " +

@@ -33,3 +33,7 @@ benchmark/docking/data/task3_ot_21_04_retrospective_snapshot.json
 # benchmark/docking/scripts/build_target_features.mjs. Only the derived
 # task5_target_features.json.gz is committed.
 benchmark/docking/data/sources/
+
+# WHO GHE source workbook (12MB), refetchable by
+# benchmark/burden/scripts/build_india_burden.mjs. Derived JSON is committed.
+benchmark/burden/sources/

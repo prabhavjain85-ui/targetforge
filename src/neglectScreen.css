@@ -1,0 +1,201 @@
+/* Neglect screen. Shares the validation page's restrained palette on purpose:
+   this screen must not look like a list of wins. */
+
+.neglect-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 64px;
+}
+
+.neglect-banner {
+  border: 1px solid var(--border, #d7dce3);
+  border-left: 3px solid var(--warn, #b4690e);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin: 24px 0;
+  background: var(--surface-muted, #fbfbfc);
+}
+
+.neglect-banner h2 {
+  margin: 0 0 10px;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+.neglect-section {
+  margin: 28px 0;
+}
+
+.neglect-section h2 {
+  font-size: 1.05rem;
+  margin: 0 0 10px;
+}
+
+.neglect-eid {
+  margin-left: 10px;
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+.neglect-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.neglect-controls label {
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.neglect-controls textarea {
+  width: 100%;
+  font: inherit;
+  padding: 10px;
+  border: 1px solid var(--border, #d7dce3);
+  border-radius: 6px;
+  resize: vertical;
+  background: var(--surface, #fff);
+  color: inherit;
+}
+
+.neglect-controls button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #d7dce3);
+  background: var(--surface, #fff);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.neglect-controls button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.neglect-error {
+  border: 1px solid var(--danger, #b4232c);
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 16px 0;
+}
+
+.neglect-table-wrap {
+  overflow-x: auto;
+}
+
+.neglect-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+}
+
+.neglect-table th,
+.neglect-table td {
+  text-align: left;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--border, #e6e9ee);
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.neglect-table th {
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  opacity: 0.75;
+}
+
+.neglect-table .mono {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.neglect-name {
+  font-size: 0.76rem;
+  opacity: 0.65;
+  white-space: normal;
+  max-width: 220px;
+}
+
+/* Context columns are visually recessed: Task 8 measured them as adding
+   nothing, so they must not read as part of the ranking. */
+.neglect-table .context-col {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.context-note {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-top: 10px;
+}
+
+.effort-tier {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  border: 1px solid var(--border, #d7dce3);
+}
+
+.effort-none {
+  border-color: #2f7d32;
+}
+
+.effort-minimal {
+  border-color: #8a6d1f;
+}
+
+.effort-unknown,
+.effort-active {
+  opacity: 0.7;
+}
+
+.burden-unavailable {
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.burden-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.neglect-limitations {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.neglect-limitations li {
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.neglect-limitations .validation-source {
+  margin-top: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .neglect-banner {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  .effort-none {
+    border-color: #6fbf73;
+  }
+  .effort-minimal {
+    border-color: #d6b24a;
+  }
+}
+
+@media (max-width: 640px) {
+  .neglect-page {
+    padding: 0 16px 48px;
+  }
+  .neglect-table {
+    font-size: 0.8rem;
+  }
+}
