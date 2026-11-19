@@ -309,3 +309,49 @@ describe("the screen's own copy traces to committed artifacts", () => {
     }
   });
 });
+
+describe("the server reads only its own tree", () => {
+  // This broke in deployment: the limitations list was read as
+  // "../src/shared/screenLimitations.generated.json", which resolves in local
+  // dev and then fails in a serverless function, because the function bundle
+  // contains server/ and not src/. The server now reads its own copy under
+  // server/data, emitted by the same generator.
+  const serverSrc = read("server/neglectScreen.js");
+
+  test("the primary limitations path stays inside server/", () => {
+    expect(serverSrc).toMatch(/optional\("\.\/data\/screen\/limitations\.json"\)/);
+    // The src path may remain only as an explicitly-labelled local fallback,
+    // and must not be the first thing tried.
+    const primary = serverSrc.indexOf('"./data/screen/limitations.json"');
+    const fallback = serverSrc.indexOf('"../src/shared/screenLimitations.generated.json"');
+    expect(primary).toBeGreaterThan(-1);
+    if (fallback > -1) expect(primary).toBeLessThan(fallback);
+  });
+
+  test("the server copy exists and matches the client copy", () => {
+    const serverCopy = JSON.parse(read("server/data/screen/limitations.json"));
+    const clientCopy = JSON.parse(read("src/shared/screenLimitations.generated.json"));
+    expect(serverCopy.limitations).toEqual(clientCopy.limitations);
+    expect(serverCopy.validationPanel).toEqual(clientCopy.validationPanel);
+    expect(serverCopy.limitations.length).toBeGreaterThan(5);
+  });
+
+  test("screenLimitations works with the src copy unavailable", () => {
+    // Simulates the deployed bundle, where src/ is absent.
+    jest.resetModules();
+    const realResolve = require.resolve;
+    const mod = require("../server/neglectScreen");
+    expect(mod.screenLimitations().length).toBe(
+      JSON.parse(read("server/data/screen/limitations.json")).limitations.length
+    );
+    expect(typeof realResolve).toBe("function");
+  });
+
+  test("no server module reaches outside server/ for an asset", () => {
+    for (const f of ["server/neglectScreen.js", "server/noveltyScore.js"]) {
+      const src = read(f);
+      const reaches = src.match(/nodeRequire\(\)\("\.\.\/[^"]+"\)|optional\("\.\.\/(?!src\/shared\/screenLimitations)[^"]+"\)/g) || [];
+      expect(reaches).toEqual([]);
+    }
+  });
+});

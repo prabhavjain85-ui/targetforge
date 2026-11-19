@@ -51,6 +51,20 @@ const FEATURES = path.join(repoRoot, "benchmark", "docking", "data", "task8_targ
  */
 const OUT_LIMITATIONS = path.join(repoRoot, "src", "shared", "screenLimitations.generated.json");
 
+/**
+ * The same payload, emitted a second time inside server/data.
+ *
+ * The server cannot read the src/ copy: Vercel bundles only the serverless
+ * function's own tree, so a path reaching out to src/ resolves in local dev and
+ * then fails in production — which is exactly how this broke. Every other
+ * server asset is read as "./data/...", so this one is too.
+ *
+ * Two emitted files, still one source: both are build outputs of this script
+ * from the same committed benchmark artifacts, and neither is hand-edited.
+ * --check verifies both, so they cannot drift apart.
+ */
+const OUT_LIMITATIONS_SERVER = path.join(repoRoot, "server", "data", "screen", "limitations.json");
+
 const OUT_M1 = path.join(repoRoot, "server", "data", "novelty", "fitted-m1-weights.json");
 const OUT_BURDEN = path.join(repoRoot, "server", "data", "burden", "india-burden.json");
 // Gzipped: the uncompressed table is 2.1MB of mostly-repeated keys and
@@ -540,6 +554,20 @@ function main() {
   ok =
     writeIfChanged(
       OUT_LIMITATIONS,
+      buildLimitations({
+        m1,
+        task7,
+        task4,
+        burden: burdenPresent ? readJson(BURDEN) : null,
+        mapping: burdenPresent ? readJson(MAPPING) : null,
+        cancerLabels: fs.existsSync(CANCER_LABELS) ? readJson(CANCER_LABELS) : null,
+        burdenAsset,
+      }),
+      { check }
+    ) && ok;
+  ok =
+    writeIfChanged(
+      OUT_LIMITATIONS_SERVER,
       buildLimitations({
         m1,
         task7,

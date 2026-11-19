@@ -332,11 +332,16 @@ export function burdenAssetInfo() {
  * imports directly. The server reads the same file so API consumers get the
  * identical list: one source, not two.
  *
- * It lives under src/ because that is the only tree the CRA bundler will reach,
- * and it is JSON rather than a module because Node resolves src/*.js as
- * CommonJS while this file is ESM.
+ * The client copy lives under src/ because that is the only tree the CRA
+ * bundler will reach. The server reads its OWN copy under server/data: a path
+ * reaching out to ../src resolves in local dev and then fails in a deployed
+ * serverless function, which bundles only this tree. Both files are emitted by
+ * the same generator from the same artifacts, and --check verifies both.
  */
-const GENERATED_LIMITATIONS = optional("../src/shared/screenLimitations.generated.json");
+const GENERATED_LIMITATIONS =
+  optional("./data/screen/limitations.json") ||
+  // Local-dev fallback for a tree built before the server copy existed.
+  optional("../src/shared/screenLimitations.generated.json");
 
 export function screenLimitations() {
   const list = GENERATED_LIMITATIONS?.limitations;
@@ -344,7 +349,7 @@ export function screenLimitations() {
     // Never silently return an empty list: a caller rendering nothing here
     // would show the results table with no caveats attached.
     throw new Error(
-      "src/shared/screenLimitations.generated.json is missing or empty. " +
+      "server/data/screen/limitations.json is missing or empty. " +
         "Run: npm run build:screen-assets"
     );
   }
