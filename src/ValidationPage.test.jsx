@@ -85,9 +85,9 @@ describe("ValidationPage", () => {
   test("names the generating commit and a source file per section", () => {
     const text = render();
     expect(text).toMatch(/commit/i);
-    // target scores, attention control, cancer stratification, neglect screen,
+    // target scores, repurposing, attention control, cancer stratification, neglect screen,
     // tractability, triage, docking.
-    expect(container.querySelectorAll(".validation-source").length).toBe(7);
+    expect(container.querySelectorAll(".validation-source").length).toBe(8);
     expect(text).toContain("benchmark/docking/results/task3_novelty_validation.json");
     expect(text).toContain("benchmark/docking/results/task4_attention_control.json");
     expect(text).toContain("benchmark/docking/results/task8_tractability.json");

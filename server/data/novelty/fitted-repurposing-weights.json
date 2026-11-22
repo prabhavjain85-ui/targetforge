@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "id": "repurposing-r2",
+  "model": "R2",
+  "description": "Fitted repurposing coefficients over log1p(drug count) and log1p(publication count). Scores how often targets like this one have historically entered the clinic for a NEW disease, which is a statement about where effort has gone, not about biology.",
+  "feature_order": [
+    "log1p_drug_count",
+    "log1p_pub_count"
+  ],
+  "intercept": -1.0412,
+  "coefficients": {
+    "log1p_drug_count": 4.4913,
+    "log1p_pub_count": 0.4434
+  },
+  "drug_count_scale": 4,
+  "pub_count_scale": 8,
+  "heldOutPerformance": {
+    "rocAuc": 0.9104,
+    "prAuc": 0.1953,
+    "precisionAt25": 0.24,
+    "recallAt25": 0.02,
+    "nPairs": 13601,
+    "nPositives": 300,
+    "baseRate": 0.0221
+  },
+  "comparators": {
+    "shippedHandWeightedScore": 0.7875,
+    "drugCountAlone": 0.8715,
+    "publicationCountAlone": 0.7072,
+    "plusBiologyFeatures": 0.8874
+  },
+  "gains": {
+    "overShippedScore": {
+      "rocAucDelta": 0.1229,
+      "ciPairs": [
+        0.1071,
+        0.138
+      ],
+      "ciDiseases": [
+        0.0481,
+        0.1997
+      ]
+    },
+    "drugCountOverPublicationCount": {
+      "rocAucDelta": 0.1643,
+      "ciDiseases": [
+        0.1182,
+        0.2284
+      ],
+      "note": "the confound check: drug count is not merely a popularity measure"
+    }
+  },
+  "knownNulls": {
+    "biologyFeaturesAddNothing": true,
+    "shippedScorePrecisionAt25EdgeIsNoise": true
+  },
+  "scopeLimit": {
+    "verdict": "oncology-scoped",
+    "detail": "Cohort 1 is the same 15-cancer / 7-non-cancer panel Task 7 stratified, and 9 of the 10 contributing held-out diseases were cancers. Outside oncology this ranking is untested.",
+    "source": "benchmark/docking/results/task7_cancer_stratification.json"
+  },
+  "provenance": {
+    "cohort": "cohort 1 — targets associated with disease D in 21.04 with no clinical drug for D; outcome is acquiring one by 26.09",
+    "releasePair": "21.04 (2021-05-05) -> 26.09 (2026-09)",
+    "diseases": {
+      "training": 11,
+      "heldOut": 11
+    },
+    "generator": "benchmark/docking/scripts/repurposing_validation.mjs",
+    "generatedAt": "2026-11-22T14:38:22.791Z",
+    "sourceFiles": [
+      "benchmark/docking/results/task10_repurposing_validation.json",
+      "benchmark/docking/TASK10_REPURPOSING.md"
+    ]
+  },
+  "caveat": "Fitted on 11 training diseases and tested on 11 held out, all from Open Targets 21.04 with outcomes to 26.09. It ranks by prior effort, so it will favour targets the field has already worked on; that is the measured signal, not a flaw to be corrected away."
+}

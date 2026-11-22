@@ -31,6 +31,7 @@ const task3 = JSON.parse(read("benchmark/docking/results/task3_novelty_validatio
 const task4 = JSON.parse(read("benchmark/docking/results/task4_attention_control.json"));
 const task8 = JSON.parse(read("benchmark/docking/results/task8_tractability.json"));
 const task7 = JSON.parse(read("benchmark/docking/results/task7_cancer_stratification.json"));
+const task10 = JSON.parse(read("benchmark/docking/results/task10_repurposing_validation.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
 
 /** Every committed benchmark artifact, concatenated, for traceability checks. */
@@ -41,7 +42,8 @@ const ARTIFACT_TEXT =
   JSON.stringify(task3) +
   JSON.stringify(task4) +
   JSON.stringify(task7) +
-  JSON.stringify(task8);
+  JSON.stringify(task8) +
+  JSON.stringify(task10);
 
 /** Every metric-looking number a user can read, across the validation copy. */
 const COPY_NUMBERS = (validationCopy.match(/\b0\.\d{3}\b/g) || []).map(Number);
