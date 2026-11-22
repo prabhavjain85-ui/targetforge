@@ -84,15 +84,17 @@ export const BIOLOGY_WEIGHTS = {
   rna_expression: 0.01,
 };
 
-export const REPURPOSING_WEIGHTS = {
-  clinical: 0.35,
-  affected_pathway: 0.18,
-  genetic_association: 0.15,
-  somatic_mutation: 0.1,
-  rna_expression: 0.08,
-  animal_model: 0.06,
-  literature: 0.08,
-};
+/**
+ * Fitted repurposing weights, loaded here rather than beside
+ * repurposingSignal because EVIDENCE_PROFILES below reads them while the
+ * module is still evaluating; a const declared later would be in its
+ * temporal dead zone and throw on import. The measurement behind these
+ * numbers is documented at repurposingSignal.
+ */
+const REPURPOSING_FITTED = nodeRequire()("./data/novelty/fitted-repurposing-weights.json");
+
+export const REPURPOSING_PROVENANCE = REPURPOSING_FITTED.provenance;
+export const REPURPOSING_PERFORMANCE = REPURPOSING_FITTED.heldOutPerformance;
 
 export const EVIDENCE_PROFILES = {
   novel_discovery: {
@@ -106,8 +108,8 @@ export const EVIDENCE_PROFILES = {
     id: "repurposing",
     label: "Repurposing & Clinical Precedence",
     description:
-      "Weights clinical trial precedence, affected pathways, RNA expression, and small-molecule tractability for rapid translational repurposing.",
-    weights: REPURPOSING_WEIGHTS,
+      "Ranks by how often targets with this much prior drug and literature activity have historically entered the clinic for a NEW disease. Held-out ROC-AUC 0.910 on Open Targets 21.04 -> 26.09; see /validation.",
+    weights: REPURPOSING_FITTED.coefficients,
   },
 };
 
@@ -211,22 +213,50 @@ export function biologySignal(datatypeScores, overallScore) {
   );
 }
 
-export function repurposingSignal(datatypeScores, overallScore, tractability = null, drugCount = 0) {
-  const dt = datatypeScores || {};
-  const w = REPURPOSING_WEIGHTS;
-  const clinical = dt.clinical ?? dt.known_drug ?? 0;
-  const base =
-    w.clinical * clinical +
-    w.affected_pathway * (dt.affected_pathway || 0) +
-    w.genetic_association * (dt.genetic_association || 0) +
-    w.somatic_mutation * (dt.somatic_mutation || 0) +
-    w.rna_expression * (dt.rna_expression || 0) +
-    w.animal_model * (dt.animal_model || 0) +
-    w.literature * (dt.literature || 0);
-  const globalDrugBonus = Number(drugCount) > 0 ? Math.min(0.15, Math.log1p(Number(drugCount)) * 0.035) : 0;
-  const tractBoost = tractability?.smallMolecule ? 1.12 : tractability?.clinicalPrecedence ? 1.06 : 1.0;
-  const combined = Math.min(1, (base + globalDrugBonus + 0.05 * (Number(overallScore) || 0)) * tractBoost);
-  return Math.round(combined * 1000) / 10;
+/**
+ * Fitted repurposing model, from the Task 10 retrospective.
+ *
+ * Task 10 asked the repurposing question on the cohort that actually poses it:
+ * targets associated with a disease but with no clinical drug FOR that disease
+ * in 2021, scored on whether they acquired one by 2026. On 13,601 held-out
+ * pairs with 300 positives:
+ *
+ *   drug count + publication count (this model)   ROC-AUC 0.910, PR-AUC 0.195
+ *   drug count alone                              0.872
+ *   the previous hand-weighted formula            0.787
+ *   publication count alone                       0.707
+ *
+ * The formula this replaces put 0.35 of its weight on the `clinical` datatype
+ * score and gave drug count a bonus capped at 0.15 — it nearly ignored the one
+ * feature that works. Replacing it is worth +0.123 held-out ROC-AUC (95% CI
+ * +0.107 to +0.138 resampling pairs, +0.048 to +0.200 resampling diseases).
+ *
+ * Drug count is not merely a popularity measure: it beats publication count by
+ * +0.164 (95% CI +0.118 to +0.228 resampling diseases), which was the
+ * load-bearing check, since Task 4 found publication count was largely what the
+ * novelty model had been measuring.
+ *
+ * What it does NOT claim: this ranks by where drug-development effort has
+ * already gone, not by biology. The eight Open Targets biology features add
+ * nothing on top of it (Task 10, interval includes zero), and the panel is
+ * 9-of-10 cancers in the held-out set, so it is oncology-scoped like every
+ * other score here.
+ */
+/**
+ * @param {number} drugCount         drugs and clinical candidates on this target, any indication
+ * @param {number} publicationCount  Open Targets literature occurrences
+ */
+export function repurposingSignal(drugCount = 0, publicationCount = 0) {
+  const c = REPURPOSING_FITTED.coefficients;
+  const z =
+    REPURPOSING_FITTED.intercept +
+    (c.log1p_drug_count || 0) *
+      (Math.log1p(Math.max(0, Number(drugCount) || 0)) / (REPURPOSING_FITTED.drug_count_scale || 4)) +
+    (c.log1p_pub_count || 0) *
+      (Math.log1p(Math.max(0, Number(publicationCount) || 0)) /
+        (REPURPOSING_FITTED.pub_count_scale || 8));
+  const p = 1 / (1 + Math.exp(-Math.max(-20, Math.min(20, z))));
+  return Math.round(p * 1000) / 10;
 }
 
 export function summarizeTractability(tractability = []) {
@@ -1015,7 +1045,8 @@ export function scoreAssociatedRows(rows, options = {}) {
     const tdlInfo = classifyPharosTDL(target, datatypeScores);
     const essentialityInfo = evaluateEssentialityAndExpression(target, safety);
     const paralogs = extractHumanParalogs(target);
-    const repurposingScore = repurposingSignal(datatypeScores, overallScore, tractability, drugCount);
+    const publicationCount = Number(target.literatureOcurrences?.count) || 0;
+    const repurposingScore = repurposingSignal(drugCount, publicationCount);
     // Two separately-named scores: understudy (what the old score measured)
     // and progression (fitted, scoped to the validated undrugged cohort).
     const understudy = understudyScore(biology);
@@ -1024,7 +1055,6 @@ export function scoreAssociatedRows(rows, options = {}) {
     // were deleted after the retrospective measured that formula below chance.
     const defaultNoveltyScore = understudy;
     const progression = progressionScore(datatypeScores, overallScore, drugCount);
-    const publicationCount = Number(target.literatureOcurrences?.count) || 0;
     const customScore = normalizedCustom
       ? customWeightedSignal(datatypeScores, datasourceScores, overallScore, normalizedCustom, drugCount)
       : null;

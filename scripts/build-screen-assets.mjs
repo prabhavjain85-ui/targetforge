@@ -65,7 +65,22 @@ const OUT_LIMITATIONS = path.join(repoRoot, "src", "shared", "screenLimitations.
  */
 const OUT_LIMITATIONS_SERVER = path.join(repoRoot, "server", "data", "screen", "limitations.json");
 
+const TASK10 = path.join(
+  repoRoot,
+  "benchmark",
+  "docking",
+  "results",
+  "task10_repurposing_validation.json"
+);
+
 const OUT_M1 = path.join(repoRoot, "server", "data", "novelty", "fitted-m1-weights.json");
+const OUT_REPURPOSING = path.join(
+  repoRoot,
+  "server",
+  "data",
+  "novelty",
+  "fitted-repurposing-weights.json"
+);
 const OUT_BURDEN = path.join(repoRoot, "server", "data", "burden", "india-burden.json");
 // Gzipped: the uncompressed table is 2.1MB of mostly-repeated keys and
 // compresses 35x, which matters for a serverless bundle.
@@ -147,6 +162,106 @@ export function buildM1(task4, task7) {
     },
     caveat:
       "Fitted and tested on targets with no approved or clinical drug in 2021, on a panel that is predominantly cancers. Applying it to current Open Targets data is an extrapolation in time; applying it outside oncology is an extrapolation in scope.",
+  };
+}
+
+/**
+ * The repurposing score's fitted coefficients, from the Task 10 run.
+ *
+ * The score that shipped before this was hand-weighted and gave drug count a
+ * bonus capped at 0.15, which Task 10 measured at held-out ROC-AUC 0.787
+ * against 0.910 for the fitted model on the cohort that actually asks the
+ * repurposing question. The weights are lifted from the committed run rather
+ * than typed, for the same reason as the M1 asset: one place for the facts.
+ */
+export function buildRepurposing(task10) {
+  const chosen = task10.conclusions?.recommended_model;
+  if (!chosen || chosen === "RS") {
+    throw new Error(
+      `Task 10 recommends "${chosen}", so there is no fitted model to ship. ` +
+        "Do not build this asset from a run that did not beat the shipped score."
+    );
+  }
+  const fit = task10.coefficients?.[chosen];
+  const held = task10.held_out?.models?.[chosen];
+  if (!fit || !held) throw new Error(`Task 10 JSON has no coefficients or metrics for ${chosen}`);
+
+  return {
+    schemaVersion: 1,
+    id: `repurposing-${chosen.toLowerCase()}`,
+    model: chosen,
+    description:
+      "Fitted repurposing coefficients over log1p(drug count) and log1p(publication count). " +
+      "Scores how often targets like this one have historically entered the clinic for a NEW " +
+      "disease, which is a statement about where effort has gone, not about biology.",
+    feature_order: Object.keys(fit.coefficients),
+    intercept: fit.intercept,
+    coefficients: fit.coefficients,
+    drug_count_scale: 4.0,
+    pub_count_scale: 8.0,
+    heldOutPerformance: {
+      rocAuc: held.roc_auc,
+      prAuc: held.pr_auc,
+      precisionAt25: held.precision_at_25,
+      recallAt25: held.recall_at_25,
+      nPairs: task10.held_out.n_total,
+      nPositives: task10.held_out.n_positives,
+      baseRate: task10.held_out.prevalence,
+    },
+    comparators: {
+      shippedHandWeightedScore: task10.held_out.models.RS.roc_auc,
+      drugCountAlone: task10.held_out.models.R1.roc_auc,
+      publicationCountAlone: task10.held_out.models.R0.roc_auc,
+      plusBiologyFeatures: task10.held_out.models.R3.roc_auc,
+    },
+    gains: {
+      overShippedScore: {
+        rocAucDelta: task10.paired_deltas.R2_vs_RS.roc_auc.delta,
+        ciPairs: [
+          task10.paired_deltas.R2_vs_RS.roc_auc.ci_low,
+          task10.paired_deltas.R2_vs_RS.roc_auc.ci_high,
+        ],
+        ciDiseases: [
+          task10.clustered_deltas.R2_vs_RS.roc_auc.ci_low,
+          task10.clustered_deltas.R2_vs_RS.roc_auc.ci_high,
+        ],
+      },
+      drugCountOverPublicationCount: {
+        rocAucDelta: task10.paired_deltas.R1_vs_R0.roc_auc.delta,
+        ciDiseases: [
+          task10.clustered_deltas.R1_vs_R0.roc_auc.ci_low,
+          task10.clustered_deltas.R1_vs_R0.roc_auc.ci_high,
+        ],
+        note: "the confound check: drug count is not merely a popularity measure",
+      },
+    },
+    knownNulls: {
+      biologyFeaturesAddNothing: task10.conclusions.biology_features_add_over_drug_count === false,
+      shippedScorePrecisionAt25EdgeIsNoise:
+        task10.conclusions.shipped_score_precision_at_25_edge_is_noise === true,
+    },
+    scopeLimit: {
+      verdict: "oncology-scoped",
+      detail:
+        "Cohort 1 is the same 15-cancer / 7-non-cancer panel Task 7 stratified, and 9 of the 10 " +
+        "contributing held-out diseases were cancers. Outside oncology this ranking is untested.",
+      source: "benchmark/docking/results/task7_cancer_stratification.json",
+    },
+    provenance: {
+      cohort: task10.cohort,
+      releasePair: `${task10.historical_release} -> ${task10.current_release}`,
+      diseases: { training: task10.n_train_diseases, heldOut: task10.n_test_diseases },
+      generator: "benchmark/docking/scripts/repurposing_validation.mjs",
+      generatedAt: task10.generated_at,
+      sourceFiles: [
+        "benchmark/docking/results/task10_repurposing_validation.json",
+        "benchmark/docking/TASK10_REPURPOSING.md",
+      ],
+    },
+    caveat:
+      "Fitted on 11 training diseases and tested on 11 held out, all from Open Targets 21.04 with " +
+      "outcomes to 26.09. It ranks by prior effort, so it will favour targets the field has " +
+      "already worked on; that is the measured signal, not a flaw to be corrected away.",
   };
 }
 
@@ -546,6 +661,16 @@ function main() {
   const task7 = readJson(TASK7);
   const m1 = buildM1(task4, task7);
   let ok = writeIfChanged(OUT_M1, m1, { check });
+
+  // Only built when Task 10 actually recommended a fitted model.
+  if (fs.existsSync(TASK10)) {
+    ok = writeIfChanged(OUT_REPURPOSING, buildRepurposing(readJson(TASK10)), { check }) && ok;
+  } else {
+    process.stderr.write(
+      "[screen-assets] task10 result absent; skipping fitted-repurposing-weights.json " +
+        "(run benchmark/docking/scripts/repurposing_validation.mjs)\n"
+    );
+  }
 
   const burdenPresent = fs.existsSync(BURDEN) && fs.existsSync(MAPPING);
   // Built before the limitations list so the client copy can carry the burden

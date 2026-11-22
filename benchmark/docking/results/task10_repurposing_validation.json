@@ -1,0 +1,624 @@
+{
+  "generated_at": "2026-11-22T14:38:22.791Z",
+  "task": "Task 10 — repurposing score validation on cohort 1",
+  "historical_release": "21.04 (2021-05-05)",
+  "current_release": "26.09 (2026-09)",
+  "cohort": "cohort 1 — targets associated with disease D in 21.04 with no clinical drug for D; outcome is acquiring one by 26.09",
+  "label_key": "acquired_disease_clinical",
+  "n_train_diseases": 11,
+  "n_test_diseases": 11,
+  "shipped_score": {
+    "function": "repurposingSignal as it shipped before this run; the weights now live only in this script",
+    "weights": {
+      "clinical": 0.35,
+      "affected_pathway": 0.18,
+      "genetic_association": 0.15,
+      "somatic_mutation": 0.1,
+      "rna_expression": 0.08,
+      "animal_model": 0.06,
+      "literature": 0.08
+    },
+    "drug_count_role": "bonus capped at 0.15, via min(0.15, log1p(drugCount) * 0.035)",
+    "tractability_join_rate": 0.7592,
+    "tractability_note": "tractability is absent from the Task 3 snapshot and joined from the Task 8 pre-2021 feature table; where absent the shipped code applies no boost, which is reproduced here"
+  },
+  "models": {
+    "R0": {
+      "label": "publication count alone",
+      "features": [
+        "log1p_pub_count"
+      ]
+    },
+    "R1": {
+      "label": "drug count alone",
+      "features": [
+        "log1p_drug_count"
+      ]
+    },
+    "R2": {
+      "label": "drug count + publication count",
+      "features": [
+        "log1p_drug_count",
+        "log1p_pub_count"
+      ]
+    },
+    "R3": {
+      "label": "drug count + publication count + 8 biology features",
+      "features": [
+        "log1p_drug_count",
+        "log1p_pub_count",
+        "genetic_association",
+        "genetic_literature",
+        "somatic_mutation",
+        "overall",
+        "literature",
+        "affected_pathway",
+        "animal_model",
+        "rna_expression"
+      ]
+    }
+  },
+  "train": {
+    "n_total": 15383,
+    "n_positives": 252,
+    "models": {
+      "R0": {
+        "label": "publication count alone",
+        "roc_auc": 0.6106,
+        "pr_auc": 0.0273,
+        "precision_at_25": 0.04,
+        "recall_at_25": 0.004
+      },
+      "R1": {
+        "label": "drug count alone",
+        "roc_auc": 0.9082,
+        "pr_auc": 0.1662,
+        "precision_at_25": 0.36,
+        "recall_at_25": 0.0357
+      },
+      "R2": {
+        "label": "drug count + publication count",
+        "roc_auc": 0.9165,
+        "pr_auc": 0.1732,
+        "precision_at_25": 0.36,
+        "recall_at_25": 0.0357
+      },
+      "R3": {
+        "label": "drug count + publication count + 8 biology features",
+        "roc_auc": 0.9241,
+        "pr_auc": 0.1993,
+        "precision_at_25": 0.44,
+        "recall_at_25": 0.0437
+      },
+      "RS": {
+        "label": "shipped repurposingSignal (not fitted)",
+        "roc_auc": 0.8804,
+        "pr_auc": 0.1747,
+        "precision_at_25": 0.6,
+        "recall_at_25": 0.0595
+      }
+    }
+  },
+  "held_out": {
+    "n_total": 13601,
+    "n_positives": 300,
+    "prevalence": 0.0221,
+    "models": {
+      "R0": {
+        "label": "publication count alone",
+        "roc_auc": 0.7072,
+        "pr_auc": 0.0704,
+        "precision_at_25": 0.16,
+        "recall_at_25": 0.0133
+      },
+      "R1": {
+        "label": "drug count alone",
+        "roc_auc": 0.8715,
+        "pr_auc": 0.1769,
+        "precision_at_25": 0.24,
+        "recall_at_25": 0.02
+      },
+      "R2": {
+        "label": "drug count + publication count",
+        "roc_auc": 0.9104,
+        "pr_auc": 0.1953,
+        "precision_at_25": 0.24,
+        "recall_at_25": 0.02
+      },
+      "R3": {
+        "label": "drug count + publication count + 8 biology features",
+        "roc_auc": 0.8874,
+        "pr_auc": 0.1694,
+        "precision_at_25": 0.16,
+        "recall_at_25": 0.0133
+      },
+      "RS": {
+        "label": "shipped repurposingSignal (not fitted)",
+        "roc_auc": 0.7875,
+        "pr_auc": 0.0843,
+        "precision_at_25": 0.32,
+        "recall_at_25": 0.0267
+      }
+    }
+  },
+  "paired_deltas": {
+    "R1_vs_R0": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.1643,
+        "ci_low": 0.1252,
+        "ci_high": 0.2027,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.1065,
+        "ci_low": 0.0728,
+        "ci_high": 0.1457,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "R2_vs_R1": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.039,
+        "ci_low": 0.0253,
+        "ci_high": 0.0532,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0185,
+        "ci_low": 0.0114,
+        "ci_high": 0.0244,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "R2_vs_RS": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.1229,
+        "ci_low": 0.1071,
+        "ci_high": 0.138,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.111,
+        "ci_low": 0.078,
+        "ci_high": 0.1458,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "R3_vs_R1": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.016,
+        "ci_low": 0.0044,
+        "ci_high": 0.0281,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0.0025,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": -0.0075,
+        "ci_low": -0.0173,
+        "ci_high": 0.0003,
+        "includes_zero": true,
+        "frac_resamples_delta_le_zero": 0.9705,
+        "n_resamples_used": 2000
+      }
+    },
+    "R1_vs_RS": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0839,
+        "ci_low": 0.0657,
+        "ci_high": 0.102,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.0925,
+        "ci_low": 0.0622,
+        "ci_high": 0.1263,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    },
+    "R3_vs_RS": {
+      "n_boot_requested": 2000,
+      "n_boot_skipped_degenerate": 0,
+      "roc_auc": {
+        "delta": 0.0999,
+        "ci_low": 0.0898,
+        "ci_high": 0.1105,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "delta": 0.085,
+        "ci_low": 0.0598,
+        "ci_high": 0.1118,
+        "includes_zero": false,
+        "frac_resamples_delta_le_zero": 0,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "precision_at_25_deltas": {
+    "R2_vs_RS": {
+      "delta": -0.08,
+      "ci_low": -0.32,
+      "ci_high": 0.16,
+      "includes_zero": true,
+      "k": 25,
+      "n_resamples_used": 2000
+    },
+    "R1_vs_RS": {
+      "delta": -0.08,
+      "ci_low": -0.32,
+      "ci_high": 0.12,
+      "includes_zero": true,
+      "k": 25,
+      "n_resamples_used": 2000
+    },
+    "R2_vs_R1": {
+      "delta": 0,
+      "ci_low": -0.04,
+      "ci_high": 0.12,
+      "includes_zero": true,
+      "k": 25,
+      "n_resamples_used": 2000
+    }
+  },
+  "clustered_deltas": {
+    "R1_vs_R0": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.1679,
+        "ci_low": 0.1182,
+        "ci_high": 0.2284,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.1078,
+        "ci_low": 0.0566,
+        "ci_high": 0.1708,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "R3_vs_R1": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0172,
+        "ci_low": -0.0003,
+        "ci_high": 0.035,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": -0.0059,
+        "ci_low": -0.0238,
+        "ci_high": 0.0252,
+        "includes_zero": true,
+        "n_resamples_used": 2000
+      }
+    },
+    "R1_vs_RS": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0788,
+        "ci_low": 0.0141,
+        "ci_high": 0.151,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0857,
+        "ci_low": 0.0239,
+        "ci_high": 0.1474,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "R3_vs_RS": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0964,
+        "ci_low": 0.043,
+        "ci_high": 0.1539,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0826,
+        "ci_low": 0.0251,
+        "ci_high": 0.1425,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "R2_vs_R1": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.0391,
+        "ci_low": 0.0213,
+        "ci_high": 0.0605,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.0179,
+        "ci_low": 0.0111,
+        "ci_high": 0.0227,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    },
+    "R2_vs_RS": {
+      "resampling_unit": "disease (cluster)",
+      "n_clusters": 10,
+      "n_boot_requested": 2000,
+      "roc_auc": {
+        "median_delta": 0.1182,
+        "ci_low": 0.0481,
+        "ci_high": 0.1997,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      },
+      "pr_auc": {
+        "median_delta": 0.1043,
+        "ci_low": 0.0386,
+        "ci_high": 0.1667,
+        "includes_zero": false,
+        "n_resamples_used": 2000
+      }
+    }
+  },
+  "per_stratum": {
+    "cancer": {
+      "n_diseases": 9,
+      "n_total": 11953,
+      "n_positives": 283,
+      "models": {
+        "R0": {
+          "roc_auc": 0.7224,
+          "pr_auc": 0.0831,
+          "precision_at_25": 0.2,
+          "recall_at_25": 0.0177
+        },
+        "R1": {
+          "roc_auc": 0.8708,
+          "pr_auc": 0.1887,
+          "precision_at_25": 0.24,
+          "recall_at_25": 0.0212
+        },
+        "R2": {
+          "roc_auc": 0.9106,
+          "pr_auc": 0.2097,
+          "precision_at_25": 0.28,
+          "recall_at_25": 0.0247
+        },
+        "R3": {
+          "roc_auc": 0.8838,
+          "pr_auc": 0.1767,
+          "precision_at_25": 0.16,
+          "recall_at_25": 0.0141
+        },
+        "RS": {
+          "roc_auc": 0.7724,
+          "pr_auc": 0.0831,
+          "precision_at_25": 0.28,
+          "recall_at_25": 0.0247
+        }
+      },
+      "paired_deltas": {
+        "R1_vs_R0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.1484,
+            "ci_low": 0.1074,
+            "ci_high": 0.1882,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.1056,
+            "ci_low": 0.0682,
+            "ci_high": 0.1469,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          }
+        },
+        "R1_vs_RS": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.0983,
+            "ci_low": 0.0787,
+            "ci_high": 0.1181,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.1056,
+            "ci_low": 0.0747,
+            "ci_high": 0.1396,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_withheld": null
+    },
+    "non_cancer": {
+      "n_diseases": 1,
+      "n_total": 1648,
+      "n_positives": 17,
+      "models": {
+        "R0": {
+          "roc_auc": 0.5266,
+          "pr_auc": 0.0133,
+          "precision_at_25": 0,
+          "recall_at_25": 0
+        },
+        "R1": {
+          "roc_auc": 0.8954,
+          "pr_auc": 0.1001,
+          "precision_at_25": 0.16,
+          "recall_at_25": 0.2353
+        },
+        "R2": {
+          "roc_auc": 0.937,
+          "pr_auc": 0.1055,
+          "precision_at_25": 0.16,
+          "recall_at_25": 0.2353
+        },
+        "R3": {
+          "roc_auc": 0.9326,
+          "pr_auc": 0.1356,
+          "precision_at_25": 0.16,
+          "recall_at_25": 0.2353
+        },
+        "RS": {
+          "roc_auc": 0.9107,
+          "pr_auc": 0.1286,
+          "precision_at_25": 0.08,
+          "recall_at_25": 0.1176
+        }
+      },
+      "paired_deltas": {
+        "R1_vs_R0": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": 0.3688,
+            "ci_low": 0.1524,
+            "ci_high": 0.5754,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0.001,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": 0.0868,
+            "ci_low": 0.0325,
+            "ci_high": 0.1732,
+            "includes_zero": false,
+            "frac_resamples_delta_le_zero": 0,
+            "n_resamples_used": 2000
+          }
+        },
+        "R1_vs_RS": {
+          "n_boot_requested": 2000,
+          "n_boot_skipped_degenerate": 0,
+          "roc_auc": {
+            "delta": -0.0154,
+            "ci_low": -0.0683,
+            "ci_high": 0.0191,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.73,
+            "n_resamples_used": 2000
+          },
+          "pr_auc": {
+            "delta": -0.0285,
+            "ci_low": -0.1611,
+            "ci_high": 0.0569,
+            "includes_zero": true,
+            "frac_resamples_delta_le_zero": 0.594,
+            "n_resamples_used": 2000
+          }
+        }
+      },
+      "clustered_withheld": "only 1 held-out disease(s) with rows in this stratum"
+    }
+  },
+  "conclusions": {
+    "drug_count_beats_attention": true,
+    "adding_publication_count_beats_drug_count_alone": true,
+    "recommended_beats_shipped_score": true,
+    "shipped_score_precision_at_25_edge_is_noise": true,
+    "drug_count_beats_shipped_score": true,
+    "biology_features_add_over_drug_count": false,
+    "recommended_model": "R2",
+    "recommended_label": "drug count + publication count"
+  },
+  "finding": "**Drug count is the signal, and the shipped score does not use it.** On the held-out diseases of cohort 1 (13601 target-disease pairs, 300 positives), drug count alone reaches held-out ROC-AUC 0.872 (PR-AUC 0.177, precision@25 0.240), while the shipped `repurposingSignal` reaches 0.787 (PR-AUC 0.084, precision@25 0.320).\n\nDrug count against the shipped score: +0.084 ROC-AUC (95% CI +0.066 to +0.102 resampling pairs, +0.014 to +0.151 resampling diseases), excluding zero under both. A single feature the shipped score caps at a 0.15 bonus beats the whole hand-weighted formula.\n\n**It is not merely an attention effect.** Publication count alone reaches 0.707; drug count beats it by +0.164 (95% CI +0.125 to +0.203 pairs, +0.118 to +0.228 diseases), excluding zero under both. This was the load-bearing check: a well-drugged target attracts more trials, so drug count could have been popularity in disguise, as publication count largely was in Task 4. It is not.\n\nAdding the eight biology features to drug count does not help: +0.016 (95% CI +0.004 to +0.028 pairs, −0.000 to +0.035 diseases), an interval that includes zero under at least one scheme. The same null result Task 8 found for the gene-property features holds here.\n\n**The one metric the shipped score wins, and why it does not change the answer.** The shipped score shows precision@25 0.320 against 0.240 for the recommended model, which looks like it finds more at the very top of the list. It is computed from 25 rows, so that gap is two target-disease pairs. A paired bootstrap on precision@25 puts the difference at −0.080 with a 95% CI of −0.320 to +0.160 — an interval several times wider than the gap and comfortably including zero. There is no evidence the shipped score is better at the top of the list, and strong evidence it is worse across the whole list.\n\n**What this does not license.** Drug count ranks targets by how often the field has already drugged them elsewhere, which is a statement about where effort has gone, not about biology. It cannot say a repurposing hypothesis is correct, only that targets like it have historically entered the clinic for new indications more often. Cohort 1 is also the same panel Task 7 stratified — 9 held-out cancers against 1 non-cancer — so the oncology scope limit applies here exactly as it does to the neglect screen.",
+  "coefficients": {
+    "R0": {
+      "intercept": -0.1207,
+      "coefficients": {
+        "log1p_pub_count": 0.9498
+      }
+    },
+    "R1": {
+      "intercept": -0.9921,
+      "coefficients": {
+        "log1p_drug_count": 4.5162
+      }
+    },
+    "R2": {
+      "intercept": -1.0412,
+      "coefficients": {
+        "log1p_drug_count": 4.4913,
+        "log1p_pub_count": 0.4434
+      }
+    },
+    "R3": {
+      "intercept": -1.2812,
+      "coefficients": {
+        "log1p_drug_count": 4.4555,
+        "log1p_pub_count": 0.5703,
+        "genetic_association": 0.3585,
+        "genetic_literature": -0.0069,
+        "somatic_mutation": -0.1482,
+        "overall": 1.0053,
+        "literature": 0.0273,
+        "affected_pathway": 0.9864,
+        "animal_model": 0,
+        "rna_expression": -0.0292
+      }
+    }
+  },
+  "leakage_controls": [
+    "Predictors come only from the Open Targets 21.04 snapshot; outcomes only from 26.09.",
+    "All four fitted models are fitted on the 11 training diseases; the 11 held-out diseases are scored once.",
+    "The shipped score is not fitted at all, so it has no opportunity to learn the held-out data.",
+    "The split is by disease, so a target appearing in two diseases cannot straddle train and test.",
+    "Deltas are reported under both pair-level and disease-level resampling, with the disease-level interval governing the conclusions."
+  ]
+}

@@ -29,6 +29,7 @@ export const VALIDATION_SOURCES = {
   task4Md: "benchmark/docking/TASK4_ATTENTION_CONTROL.md",
   task8Json: "benchmark/docking/results/task8_tractability.json",
   task7Json: "benchmark/docking/results/task7_cancer_stratification.json",
+  task10Json: "benchmark/docking/results/task10_repurposing_validation.json",
   cancerLabels: "benchmark/docking/data/disease_cancer_labels.json",
   redock: "benchmark/docking/results/redock_multiseed.json",
   pairs: "benchmark/docking/results/pair_sanity_checks.json",
@@ -205,6 +206,39 @@ export const VALIDATION_SECTIONS = [
       "score that pointed towards unexplored targets. No score here ranks targets " +
       "by novelty. Drug count is shown as its own column so you can filter on it " +
       "yourself rather than have it folded into a single number.",
+  },
+  {
+    id: "repurposing",
+    title: "Repurposing score",
+    source: VALIDATION_SOURCES.task10Json,
+    body:
+      "Measured on the cohort that actually asks the repurposing question: targets " +
+      "associated with a disease in 2021 that had no clinical drug for that disease, " +
+      "scored on whether they acquired one by 2026. 11 training and 11 held-out " +
+      "diseases; 13,601 held-out pairs, 300 positives, base rate 2.2%.\n" +
+      "Drug count + publication count (shipped): ROC-AUC 0.910 (PR-AUC 0.195, " +
+      "precision@25 0.240).\n" +
+      "Drug count alone: ROC-AUC 0.872 (PR-AUC 0.177).\n" +
+      "Publication count alone: ROC-AUC 0.707 (PR-AUC 0.070).\n" +
+      "The previous hand-weighted formula: ROC-AUC 0.787 (PR-AUC 0.084).\n" +
+      "This is the strongest result on this page, and it replaced a score that put " +
+      "0.35 of its weight on disease-specific clinical evidence and capped drug count " +
+      "at a 0.15 bonus — nearly ignoring the one feature that works. The replacement " +
+      "is worth +0.123 held-out ROC-AUC (95% CI +0.107 to +0.138 resampling pairs, " +
+      "+0.048 to +0.200 resampling diseases).\n" +
+      "Drug count is not just a popularity measure, which was the check that " +
+      "mattered: it beats publication count by +0.164 (95% CI +0.118 to +0.228 " +
+      "resampling diseases). Adding the eight Open Targets biology features on top " +
+      "adds nothing, the same null result found for the gene-property features.\n" +
+      "The old formula showed a higher precision@25 (0.320 against 0.240), which is " +
+      "two target-disease pairs out of 25. A paired bootstrap puts that difference at " +
+      "−0.080 with a 95% CI of −0.320 to +0.160, so there is no evidence it was better " +
+      "at the top of the list and strong evidence it was worse across the whole list.\n" +
+      "What this does not support: the score ranks by how often the field has already " +
+      "drugged a target elsewhere. That is a statement about where effort has gone, " +
+      "not about biology, and it cannot tell you a repurposing hypothesis is correct. " +
+      "9 of the 10 contributing held-out diseases were cancers, so it is " +
+      "oncology-scoped like everything else here.",
   },
   {
     id: "attention-control",
