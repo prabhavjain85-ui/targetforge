@@ -1,4 +1,36 @@
 import { targetDisplayName } from "./shared/targetLabels";
+import { VINA_MEASURED } from "./shared/dockingStatus";
+import { reportProvenanceLine } from "./shared/reportProvenance";
+
+/** Named once so the report cannot drift from what actually produced the pose. */
+export const DOCKING_ENGINE_NAME = "the AutoDock Vina service";
+
+/**
+ * How the pose score is labelled in exports.
+ *
+ * Deliberately carries no units and no energy or affinity word. The service
+ * returns Vina's scoring-function output; the app has historically carried it
+ * as `deltaG` in kcal/mol and derived a Ki from it by the Boltzmann relation,
+ * which the benchmark does not support: against measured potency the score
+ * correlated at Spearman −0.291 with a 95% CI spanning −0.681 to 0.478.
+ */
+export const VINA_SCORE_LABEL = "Vina score (scoring-function value, not an energy)";
+
+/**
+ * Same fact, short enough for a table header. The qualification travels with
+ * the table as a footnote instead of inside the column name.
+ */
+export const VINA_SCORE_COLUMN = "Vina score";
+
+/**
+ * Reads the score from whichever field the payload carries, so the export does
+ * not depend on the upstream field still being named `deltaG`.
+ */
+export function formatVinaScore(pose) {
+  const raw = pose?.vinaScore ?? pose?.scoreKcalMol ?? pose?.deltaG;
+  const n = Number(raw);
+  return Number.isFinite(n) ? n.toFixed(2) : "—";
+}
 
 export const REPORT_DISCLAIMER =
   "For research and educational use only — not medical advice. The 0–100 knowledge-based triage score is a heuristic for prioritization (curated target rules and literature knowledge), not a validated predictor of binding, activity, or clinical success. Computational rankings are triage aids only; experimental validation (ADME, biochemical assays, clinical studies) is required before treating any candidate as a lead.";
@@ -69,6 +101,10 @@ function reportHeader(title, meta = {}) {
     `**Generated:** ${formatReportTimestamp(meta.timestamp)}`,
     meta.module ? `**Module:** ${meta.module}` : null,
     meta.sessionTitle ? `**Session:** ${meta.sessionTitle}` : null,
+    // Every builder goes through this header, so stamping it here stamps each
+    // exported report with the commit that generated it and the benchmark
+    // commit its measured figures came from.
+    reportProvenanceLine(),
     "",
     `> ${REPORT_DISCLAIMER}`,
     "",
@@ -120,31 +156,24 @@ export function buildDockingReportMarkdown({
     ]),
     section("Selected Binding Mode", [
       `- **Pose rank:** ${activePose.rank}`,
-      `- **Predicted ΔG_bind:** ${activePose.deltaG} kcal/mol`,
-      `- **Estimated Ki:** ${activePose.kiFormatted}`,
+      `- **${VINA_SCORE_LABEL}:** ${formatVinaScore(activePose)}`,
       `- **RMSD to best pose:** ${activePose.rmsd} Å`,
       `- **Hydrogen bonds:** ${activePose.hbondCount}`,
       `- **Hydrophobic contacts:** ${activePose.hydrophobicCount}`,
-      activePose.components
-        ? [
-            "",
-            "### Energy decomposition",
-            "",
-            `- Van der Waals: ${activePose.components.vdw} kcal/mol`,
-            `- Hydrogen bonding: ${activePose.components.hbond} kcal/mol`,
-            `- Electrostatic: ${activePose.components.electrostatic} kcal/mol`,
-            `- Desolvation reward: ${activePose.components.desolvation} kcal/mol`,
-            `- Torsional penalty: +${activePose.components.torsional} kcal/mol`,
-          ].join("\n")
-        : null,
+      // The energy decomposition that used to sit here (van der Waals,
+      // hydrogen bonding, electrostatic, desolvation, torsional, all in
+      // kcal/mol) came from the in-browser empirical engine, which is disabled
+      // and failed every co-crystal redock. Vina produces no such breakdown,
+      // so there was nothing left for those lines to report.
       Array.isArray(activePose.residueBreakdown) && activePose.residueBreakdown.length
-        ? "### Top interacting residues\n\n" +
+        ? "### Contacts by residue\n\n" +
             table(
-              ["Residue", "Min distance (Å)", "Energy (kcal/mol)", "H-bonds"],
+              // No per-residue energy column: it was the same empirical
+              // decomposition, reported per residue.
+              ["Residue", "Min distance (Å)", "H-bonds"],
               activePose.residueBreakdown.slice(0, 12).map((r) => [
                 `${r.resName}-${r.resSeq}`,
                 r.minDistance,
-                r.energy,
                 r.hbonds,
               ])
             )
@@ -156,23 +185,33 @@ export function buildDockingReportMarkdown({
     lines.push(
       section("Pose Clusters", [
         table(
-          ["Pose", "ΔG (kcal/mol)", "Est. Ki", "RMSD (Å)", "H-bonds"],
+          ["Pose", VINA_SCORE_COLUMN, "RMSD (Å)", "H-bonds"],
           dockingResults.rankedPoses.map((p) => [
             p.rank,
-            p.deltaG,
-            p.kiFormatted,
+            formatVinaScore(p),
             p.rmsd?.toFixed ? p.rmsd.toFixed(2) : p.rmsd,
             p.hbondCount,
           ])
         ),
+        `_${VINA_SCORE_COLUMN}: a scoring-function value used to order poses. Not an energy, and no affinity is derived from it._`,
       ])
     );
   }
 
   lines.push(
     section("Methodology & Limitations", [
-      "- Empirical force-field scoring and Monte Carlo pose optimization in-browser (Morris et al. 2009; Trott & Olson 2010).",
-      "- Predicted ΔG and Ki are computational estimates — not experimental binding measurements.",
+      // The two citations that used to head this list described the in-browser
+      // empirical engine's force field and Monte Carlo search. That engine is
+      // disabled and failed co-crystal redocking on every target tested, so
+      // citing its method described work the report does not contain.
+      `- Poses and scores come from ${DOCKING_ENGINE_NAME}. The reported number is a scoring-function`,
+      "  value used to rank poses against each other. It is not a binding free energy, and no",
+      "  affinity or dissociation constant is derived from it.",
+      `- Redocking reproduced the co-crystal pose within 2 Å on ${VINA_MEASURED.redockUnder2A} targets.`,
+      `- Drug–structure pair reliability: ${VINA_MEASURED.pairReliability}. Poses are shown only for pairs that pass sanity checks.`,
+      `- Correlation with measured potency: ${VINA_MEASURED.potencyCorrelation} — that is, none. A`,
+      "  better score does not indicate a more potent compound.",
+      `- Those measured figures come from \`${VINA_MEASURED.source}\`, the same source /validation renders.`,
       "- Pose quality depends on receptor preparation, pocket definition, and ligand protonation/tautomer choices not modeled here.",
       `- ${REPORT_DISCLAIMER}`,
     ]),

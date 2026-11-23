@@ -329,31 +329,21 @@ export default function DockingPage() {
 
   const handleCopyReport = () => {
     if (!dockingResults || !activePose) return;
-    const rep = `TargetForge Native Molecular Docking Report
-Target: ${targetTitle} (PDB: ${pdbIdInput})
-Ligand: ${compoundNameInput} (SMILES: ${smilesInput})
-
-Selected Binding Mode (Pose ${activePose.rank}):
-- Predicted Free Energy (ΔG_bind): ${activePose.deltaG} kcal/mol
-- Estimated Dissociation Constant (Ki): ${activePose.kiFormatted}
-- RMSD to Best Pose: ${activePose.rmsd} Å
-- Hydrogen Bonds Formed: ${activePose.hbondCount}
-- Hydrophobic Contacts: ${activePose.hydrophobicCount}
-
-Energy Components Breakdown:
-- Van der Waals (Steric): ${activePose.components.vdw} kcal/mol
-- Hydrogen Bonding: ${activePose.components.hbond} kcal/mol
-- Electrostatic: ${activePose.components.electrostatic} kcal/mol
-- Desolvation Reward: ${activePose.components.desolvation} kcal/mol
-- Torsional Penalty: +${activePose.components.torsional} kcal/mol
-
-Interacting Residues:
-${activePose.residueBreakdown
-  .slice(0, 8)
-  .map((r) => `• ${r.resName}-${r.resSeq} (${r.minDistance} Å): ${r.energy} kcal/mol [HB: ${r.hbonds}]`)
-  .join("\n")}
-
-Method: Empirical Force Field Scoring (Trott & Olson 2010, Morris et al. 2009) via TargetForge In-Browser Engine.`;
+    // This used to be a second, hand-written copy of the docking report. It
+    // claimed a predicted free energy, a dissociation constant, a kcal/mol
+    // energy decomposition, and an empirical force field "via TargetForge
+    // In-Browser Engine" — the engine that is disabled and that failed every
+    // co-crystal redock. One source of truth per fact: the copied text is now
+    // the same report the download produces, stamped with the same provenance.
+    const rep = buildDockingReportMarkdown({
+      targetTitle,
+      pdbId: pdbIdInput,
+      compoundName: compoundNameInput,
+      smiles: smilesInput,
+      cid: cidInput,
+      dockingResults,
+      activePose,
+    });
 
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(rep).then(() => {
