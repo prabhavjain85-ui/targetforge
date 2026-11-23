@@ -2,6 +2,7 @@
 // scripts/inject-seo-html.mjs during the build, and Node does not resolve
 // extensionless specifiers the way webpack does. Deploy failed on exactly this.
 import { dockingStatusFromFlags } from "./shared/dockingStatus.js";
+import { SITE_COPY, TARGET_DISCOVERY_COPY } from "./shared/validationCopy.js";
 
 /** Derived once: the only place docking status is written is dockingStatus.js. */
 const DOCKING_STATUS = dockingStatusFromFlags();
@@ -9,9 +10,14 @@ const DOCKING_STATUS = dockingStatusFromFlags();
 const SITE_URL = "https://www.targetforge.in";
 const SITE_NAME = "TargetForge";
 
-const DEFAULT_TITLE = "TargetForge — AI-Powered Drug Discovery & Target Identification";
+/**
+ * Title and H1 come from SITE_COPY. They said "AI-Powered" while the
+ * methodology page said "Neither is AI" two scrolls down. Nothing in this
+ * repository is AI, so the claim is simply gone rather than softened.
+ */
+const DEFAULT_TITLE = SITE_COPY.title;
 const DEFAULT_DESCRIPTION =
-  `Computational drug discovery workbench: knowledge-based triage scoring, target identification, repurposing screens, and ADME analysis. ${DOCKING_STATUS.short}.`;
+  `Computational drug-discovery workbench: compound triage, target identification, repurposing screens, and ADME analysis, with held-out performance published for every score. ${DOCKING_STATUS.short}.`;
 
 export const ROUTE_SEO = {
   "/": {
@@ -21,14 +27,16 @@ export const ROUTE_SEO = {
   },
   "/target-discovery": {
     title: "Target Identification & Discovery — TargetForge",
-    description:
-      "Find genetically validated, underexplored protein targets for a disease using Open Targets evidence. Helps researchers prioritize candidates for follow-up screening.",
+    // Was "genetically validated, underexplored protein targets". Genetic
+    // association alone scored at chance in both cohorts, and zero prior
+    // chemistry predicts against progression, so both halves were refuted.
+    description: TARGET_DISCOVERY_COPY.seo,
     canonical: `${SITE_URL}/target-discovery`,
   },
   "/repurposing": {
     title: "Drug Repurposing Screen — TargetForge",
     description:
-      "Screen approved drugs against a protein target to surface repurposing candidates. Uses a knowledge-based triage score (curated rules), not a validated activity predictor, across a curated library.",
+      "Screen approved drugs against a protein target. Ranking is a hand-written rule table and drug-likeness filter that scored at chance on a scaffold-split benchmark, so it filters rather than ranks and predicts neither binding nor activity.",
     canonical: `${SITE_URL}/repurposing`,
   },
   "/adme": {
@@ -99,7 +107,7 @@ const WORKFLOW_LINKS = [
 export const STATIC_ROUTE_CONTENT = {
   "/": {
     eyebrow: "TargetForge · computational drug discovery",
-    h1: "AI-Powered Drug Discovery & Target Identification",
+    h1: SITE_COPY.h1,
     intro:
       `Rank compounds against a protein target in minutes: stage a PDB structure, shortlist PubChem molecules, rank by similarity to the co-crystallised ligand, then run ADME. ${DOCKING_STATUS.short}.`,
     sections: [
@@ -127,15 +135,18 @@ export const STATIC_ROUTE_CONTENT = {
   "/target-discovery": {
     eyebrow: "TargetForge · target discovery",
     h1: "Target Discovery",
-    intro:
-      "Find genetically validated but underexplored protein targets for a disease — opportunities with strong biological evidence and little to no existing drug coverage. TargetForge supports target identification by ranking Open Targets associations; it does not replace experimental target validation.",
+    intro: TARGET_DISCOVERY_COPY.lead,
     breadcrumbLabel: "Target identification",
   },
   "/repurposing": {
     eyebrow: "TargetForge · drug repurposing screen",
     h1: "Drug Repurposing Screen",
+    // Was "target-aware heuristics", which implied the rules carry target
+    // information that works. On the scaffold-split benchmark the rule table
+    // alone scored below a seeded random ranker, because its drug-name regexes
+    // fire on no held-out molecule.
     intro:
-      "Search a target and screen approved drugs for repurposing candidates. TargetForge scores each compound against the selected structure using target-aware heuristics across a curated library of marketed small molecules. Results help researchers prioritize follow-up — not confirm clinical activity.",
+      "Search a target and screen approved drugs against the selected structure. Ranking is a hand-written rule table plus Lipinski and Veber drug-likeness, measured at chance against a seeded random ranker on a scaffold-split benchmark. It filters out liabilities; it does not confirm clinical activity and does not predict binding.",
     breadcrumbLabel: "Drug repurposing",
   },
   "/adme": {
@@ -155,8 +166,9 @@ export const STATIC_ROUTE_CONTENT = {
   "/methodology": {
     eyebrow: "Scientific methodology & validation transparency",
     h1: "Evaluation Criteria, Computational Heuristics & Operational Boundaries",
+    // "hypothesis generation" named a module that has since been deleted.
     intro:
-      "TargetForge is an early-stage computational workbench designed to accelerate hit triage, structural evaluation, and hypothesis generation. This page documents scoring criteria, cheminformatics rules, algorithmic design choices, and operational boundaries for computational drug discovery.",
+      "TargetForge is an early-stage computational workbench for hit triage and structural evaluation. This page documents scoring criteria, cheminformatics rules, design choices, and the measured held-out performance of every score — including the ones that failed and were removed.",
     breadcrumbLabel: "Methodology",
   },
   "/contact": {

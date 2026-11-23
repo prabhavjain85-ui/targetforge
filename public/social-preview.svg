@@ -209,14 +209,14 @@
     <!-- Main Platform Headline -->
     <g transform="translate(0, 160)">
       <text x="0" y="32" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="34" font-weight="700" fill="#38bdf8" letter-spacing="-0.4">
-        AI-Powered Drug Discovery Platform
+        Computational Drug Discovery Platform
       </text>
     </g>
 
     <!-- Professional Descriptive Paragraph -->
     <g transform="translate(0, 222)">
       <text x="0" y="0" font-family="'Inter', -apple-system, BlinkMacSystemFont, sans-serif" font-size="18" font-weight="400" fill="#cbd5e1">
-        <tspan x="0" dy="0">AI-powered drug discovery platform for drug repurposing,</tspan>
+        <tspan x="0" dy="0">Computational drug discovery platform for drug repurposing,</tspan>
         <tspan x="0" dy="28">target identification, molecular docking, ADME analysis,</tspan>
         <tspan x="0" dy="28">and automated research.</tspan>
       </text>

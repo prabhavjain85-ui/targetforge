@@ -159,11 +159,24 @@ function compactRow(drug, ranked, pains) {
   };
 }
 
+/**
+ * One line of context per drug.
+ *
+ * It used to read "shows strong/moderate/limited structural fit for X",
+ * banding row.score at 70 and 50. That score is heuristic-v2, which measured
+ * held-out ROC-AUC 0.523 against 0.520 for a seeded random ranker on the
+ * scaffold-split benchmark: it cannot support a claim about structural fit at
+ * any band, and "strong fit" on a chance-level filter is the strongest
+ * unsupported claim the screen was making. The line now reports the approved
+ * indication, which is a fact, and names what the number is.
+ */
 function fitBlurb(row, targetName) {
-  const first = (row.reasoning || []).find(Boolean) || "target-aware physicochemical scoring";
-  const fit =
-    row.score >= 70 ? "strong" : row.score >= 50 ? "moderate" : "limited";
-  return `Originally approved for ${row.indication}, shows ${fit} structural fit for ${targetName} due to ${first.replace(/\.$/, "")}.`;
+  const first = (row.reasoning || []).find(Boolean) || "drug-likeness and liability rules";
+  return (
+    `Originally approved for ${row.indication}. Triage filter score ${row.score ?? 0}/100 for ` +
+    `${targetName}, from ${first.replace(/\.$/, "")} — a drug-likeness and liability filter, not ` +
+    `an estimate of binding or activity.`
+  );
 }
 
 function assembleResult({

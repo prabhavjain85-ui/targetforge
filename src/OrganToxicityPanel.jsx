@@ -179,8 +179,9 @@ export default function OrganToxicityPanel({ organToxicity, onSelectPreset }) {
             REST API with CORS headers is provided by Charité.
           </p>
           <p style={{ margin: 0 }}>
-            TargetForge has therefore implemented an in-browser, rule-based toxicophore alert engine
-            using <strong>@rdkit/rdkit WebAssembly</strong> grounded in published medicinal chemistry
+            TargetForge has therefore implemented a rule-based toxicophore alert engine using{" "}
+            <strong>@rdkit/rdkit WebAssembly</strong>, which runs on the backend rather than in your
+            browser, grounded in published medicinal chemistry
             literature. This is transparently categorized as a{" "}
             <strong>lower-confidence structural alert heuristic</strong>, avoiding overstated model certainty.
           </p>

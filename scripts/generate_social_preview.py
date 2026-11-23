@@ -55,11 +55,11 @@ def build_social_preview():
     # Brand Title: "Target Forge"
     draw_ops.append("stroke 'none' fill '#ffffff' font Helvetica-Bold font-size 54 text 164,182 'Target Forge'")
 
-    # Headline: "AI-Powered Drug Discovery Platform"
-    draw_ops.append("stroke 'none' fill '#38bdf8' font Helvetica-Bold font-size 30 text 72,252 'AI-Powered Drug Discovery Platform'")
+    # Headline: "Computational Drug Discovery Platform"
+    draw_ops.append("stroke 'none' fill '#38bdf8' font Helvetica-Bold font-size 30 text 72,252 'Computational Drug Discovery Platform'")
 
     # Tagline / Subtitle
-    draw_ops.append("stroke 'none' fill '#cbd5e1' font Helvetica font-size 18 text 72,298 'AI-powered drug discovery platform for drug repurposing, target'")
+    draw_ops.append("stroke 'none' fill '#cbd5e1' font Helvetica font-size 18 text 72,298 'Computational drug discovery platform for drug repurposing, target'")
     draw_ops.append("stroke 'none' fill '#cbd5e1' font Helvetica font-size 18 text 72,326 'identification, molecular docking, ADME analysis, and automated research.'")
 
     # Capability Badges
