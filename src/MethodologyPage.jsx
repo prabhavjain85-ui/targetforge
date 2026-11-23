@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
 import SeoIntroLinks from "./SeoIntroLinks";
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
 
 export default function MethodologyPage() {
   const [activeSection, setActiveSection] = useState("pdb-target-score");
@@ -176,13 +180,16 @@ export default function MethodologyPage() {
                 Lipinski/Veber pre-checks and PAINS/toxicophore flags, and build a 2–5 molecule shortlist for ranking.
               </li>
               <li>
-                <strong>Station 3 — AI prioritization.</strong> Score the shortlist for the <em>selected PDB</em> using pocket context,
-                known pharmacology, drug-likeness, and PAINS deprioritization. Optional OpenAI narration when an API key is configured;
-                otherwise TargetForge uses its built-in target-aware model. Adversarial critique is available for the top pick.
+                <strong>Station 3 — Ranking and filters.</strong> The shortlist is ranked by Tanimoto similarity to the ligand
+                co-crystallised in the <em>selected PDB</em>, which is the only ranker measured to beat random on the scaffold-split
+                decoy benchmark (held-out ROC-AUC 0.662, BEDROC20 0.617). The heuristic-v2 score shown alongside is a drug-likeness
+                and liability filter built from Lipinski/Veber properties and PAINS flags; it scores 0.523 against 0.520 for random,
+                so it filters rather than prioritises and predicts neither binding nor activity. Neither is AI, and neither is a
+                validated prediction of potency.
               </li>
               <li>
-                <strong>Station 4 — ADME handoff (docking paused).</strong> Pick a compound and launch RDKit-based ADME profiling with
-                the staged SMILES pre-filled. In-browser molecular docking is under validation and currently unavailable.
+                <strong>Station 4 — ADME handoff.</strong> Pick a compound and launch RDKit-based ADME profiling with
+                the staged SMILES pre-filled. {DOCKING_STATUS.sentence}
               </li>
             </ol>
             <p className="section-text">
@@ -610,11 +617,14 @@ export default function MethodologyPage() {
                 <code>benchmark/docking/results/enrichment.json</code>.
               </li>
               <li>
-                <b>The heuristic triage score does not beat a simple similarity baseline.</b> On the held-out test split,
-                heuristic-v2 scores ROC-AUC 0.583 against 0.777 for Tanimoto similarity to the staged co-crystal ligand
-                (sanity-passing targets), and 0.513 against 0.684 across all 15 targets. Without co-crystal similarity,
-                the rule table alone scores 0.407 across all targets — below chance — because hardcoded drug-name rules
-                never fire on held-out molecules. Source: <code>benchmark/docking/TASK1_BASELINES.md</code>.
+                <b>The heuristic triage score does not beat a simple similarity baseline.</b> On the
+                property-matched, scaffold-split benchmark (14/15 targets passing decoy sanity checks), heuristic-v2
+                scores ROC-AUC 0.523 against 0.662 for Tanimoto similarity to the staged co-crystal ligand — and
+                against 0.520 for a seeded random ranker, so it is a drug-likeness and liability filter rather than a
+                ranker. The rule table alone scores 0.482, because hardcoded drug-name rules never fire on held-out
+                molecules. Source: <code>benchmark/docking/TASK2_DECOY_BENCHMARK.md</code>. The earlier figures from
+                <code>TASK1_BASELINES.md</code> are superseded: that benchmark used ChEMBL weak binders as decoys and
+                only 3 of 15 targets passed its sanity checks.
               </li>
             </ul>
             <p className="section-text">

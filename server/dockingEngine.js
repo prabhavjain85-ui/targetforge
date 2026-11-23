@@ -1,6 +1,6 @@
 import { getRDKit } from "./rdkitLoader.js";
 import { analyzePoseInteractions } from "./dockingInteractions.js";
-import { DOCKING_ENGINE_ENABLED, DOCKING_UNAVAILABLE_NOTICE } from "./featureFlags.js";
+import { DOCKING_ENGINE_ENABLED } from "./featureFlags.js";
 
 /**
  * TargetForge Native Molecular Docking Engine
@@ -649,7 +649,14 @@ export function calculatePoseRmsd(poseA, poseB) {
  */
 export async function runMolecularDocking(targetPdbText, ligandSmiles, options = {}) {
   if (!DOCKING_ENGINE_ENABLED) {
-    throw new Error(DOCKING_UNAVAILABLE_NOTICE);
+    // Permanently disabled, not paused: this engine failed co-crystal
+    // redocking on every target tested (in-place RMSD 5.5-11.5 A, no valid
+    // pose on six of eleven). Its compute op is unregistered too, so this
+    // throw should be unreachable from any request.
+    throw new Error(
+      "The legacy in-browser docking engine is disabled: it failed co-crystal redocking on every " +
+        "target tested. See benchmark/docking/RESULTS.md."
+    );
   }
   const {
     customCenter = null,

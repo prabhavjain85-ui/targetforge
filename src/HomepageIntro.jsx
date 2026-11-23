@@ -1,5 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
 
 const STEPS = [
   { n: "1", title: "Pick a protein target", detail: "RCSB PDB, gene, or disease handoff" },
@@ -14,7 +18,7 @@ export default function HomepageIntro({ onLoadDemo, onStartBlank, demoLoading })
       <h1>Rank compounds against a protein target — in minutes</h1>
       <p className="hero-lead">
         Stage a structure, shortlist molecules, and rank them by similarity to the co-crystallised ligand
-        before ADME follow-up (in-browser docking is under validation).
+        before ADME follow-up ({DOCKING_STATUS.short}).
       </p>
 
       <div className="intro-actions intro-actions-primary">

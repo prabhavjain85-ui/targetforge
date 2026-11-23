@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import PdbTargetSearch from "./PdbTargetSearch";
 import { Panel, PainsBadge } from "./benchUi";
-import AdversarialCritique from "./AdversarialCritique";
 import {
   DEFAULT_EVOLUTION_SETTINGS,
   FAILURE_REDESIGN_MODES,
@@ -686,13 +685,7 @@ export default function EvolutionPage() {
                 ))}
               </tbody>
             </table>
-          </div>
-          {finals[0] && (
-            <AdversarialCritique
-              candidate={{ ...finals[0], displayName: name || "Best evolved", cid: "evo-best", CID: "evo-best" }}
-              target={protein}
-            />
-          )}
+          </div>
           <div className="hint" style={{ marginTop: 12 }}>Lineage (parent → edit → Δscore):</div>
           <ul className="methodology-bullet-list">
             {finals.map((row) => (

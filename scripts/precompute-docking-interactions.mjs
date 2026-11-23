@@ -10,13 +10,13 @@ import { fileURLToPath } from "url";
 import {
   analyzePoseInteractions,
   evaluateBindingSiteSanity,
-} from "../src/dockingInteractions.js";
+} from "../server/dockingInteractions.js";
 import {
   fetchPdbText,
   parseProteinAtomsFromPdb,
   poseCentroidFromAtoms,
   selectCoCrystalLigandInstance,
-} from "../src/pdbStructure.js";
+} from "../server/pdbStructure.js";
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const CASE_DIR = path.join(ROOT, "public", "docking-demo", "cases");

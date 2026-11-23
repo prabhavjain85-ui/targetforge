@@ -11,7 +11,6 @@ import {
 } from "./shared/repurposingConstants";
 import { getDrugSafetyProfiles, screenApprovedLibrary } from "./serverApi";
 import { targetDisplayName } from "./shared/targetLabels";
-import AdversarialCritique from "./AdversarialCritique";
 import ReportExportButtons from "./ReportExportButtons";
 import { buildRepurposingReportMarkdown, defaultReportFilename } from "./reportExport";
 import HistoricalTrialSuccessContext from "./HistoricalTrialSuccessContext";
@@ -22,6 +21,7 @@ import {
   saveHistoryEntry,
   setActiveState,
 } from "./historyService";
+import { LLM_NARRATION_LABEL, isModelNarration } from "./shared/llmNarration";
 function compareRepurposeField(a, b, key) {
   if (key === "name") return String(a.name || "").localeCompare(String(b.name || ""));
   if (key === "indication") return String(a.indication || "").localeCompare(String(b.indication || ""));
@@ -190,14 +190,9 @@ function RepurposingTable({ rows, highlightCount, sortKey, sortDir, onSort, page
                           <li key={i}>{item}</li>
                         ))}
                       </ul>
-                      <div onClick={(e) => e.stopPropagation()} style={{ marginTop: 8 }}>
-                        <AdversarialCritique
-                          candidate={r}
-                          target={target}
-                          compact
-                          label="See the case against this drug"
-                        />
-                      </div>
+                      {isModelNarration(r) && (
+                        <div className="llm-narration-label">{LLM_NARRATION_LABEL}</div>
+                      )}
                     </td>
                     <td>{r.indication}</td>
                   </tr>
@@ -486,11 +481,6 @@ export default function RepurposingPage() {
                 </ul>
                 {result.recommended && (
                   <div style={{ marginTop: 12 }}>
-                    <AdversarialCritique
-                      candidate={result.recommended}
-                      target={result.target || protein}
-                      label={`See the case against lead drug (${result.recommended.name})`}
-                    />
                   </div>
                 )}
               </div>

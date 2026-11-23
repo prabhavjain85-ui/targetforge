@@ -6,7 +6,7 @@ import {
   getCompoundSmiles,
 } from "./benchUi";
 import { drugLikenessChecks } from "./shared/drugLikeness";
-import AdversarialCritique from "./AdversarialCritique";
+import { LLM_NARRATION_LABEL, isModelNarration } from "./shared/llmNarration";
 
 export function compareCandidateField(a, b, key) {
   if (key === "compound") {
@@ -64,9 +64,6 @@ export function CandidateScoreTable({ rows, selectedCid, recommendedCid, sortKey
             const reasons = r.reasoning && r.reasoning.length
               ? r.reasoning
               : [...(r.strengths || []), ...(r.concerns || [])];
-            const fullCandidate = candidates?.find((c) => String(c.CID) === String(r.cid)) || {};
-            const mergedCandidate = { ...fullCandidate, ...r, cid: r.cid };
-
             return (
               <tr
                 key={r.cid}
@@ -91,14 +88,9 @@ export function CandidateScoreTable({ rows, selectedCid, recommendedCid, sortKey
                       <li key={i}>{item}</li>
                     ))}
                   </ul>
-                  <div onClick={(e) => e.stopPropagation()} style={{ marginTop: 8 }}>
-                    <AdversarialCritique
-                      candidate={mergedCandidate}
-                      target={target}
-                      compact
-                      label="See the case against this candidate"
-                    />
-                  </div>
+                  {isModelNarration(r) && (
+                    <div className="llm-narration-label">{LLM_NARRATION_LABEL}</div>
+                  )}
                 </td>
               </tr>
             );

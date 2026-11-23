@@ -2,6 +2,10 @@ import React from "react";
 import CocrystalMolstarViewer from "./CocrystalMolstarViewer";
 import ExperimentalCocrystalContacts from "./ExperimentalCocrystalContacts";
 import { DOCKING_ENABLED, DOCKING_ENGINE_ENABLED } from "./featureFlags";
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
 
 export default function DockingRunCocrystalSection({
   sectionRef,
@@ -62,7 +66,7 @@ export default function DockingRunCocrystalSection({
           }}
         >
           {dockingUnavailable
-            ? "Molecular docking is under validation or disabled on this deployment. "
+            ? `${DOCKING_STATUS.sentence} `
             : dockingError
               ? "Docking did not complete for this run. "
               : "Docking is still running or no docked pose is shown yet. "}

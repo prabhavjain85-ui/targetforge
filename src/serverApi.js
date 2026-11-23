@@ -178,7 +178,6 @@ export const noveltyForSmiles = remote("noveltyForSmiles");
 
 // Docking & co-crystal analysis
 export const fetchPdbFromRcsb = remote("fetchPdbFromRcsb");
-export const runMolecularDocking = remote("runMolecularDocking");
 export const fetchDockingRunCocrystalContext = remote("fetchDockingRunCocrystalContext");
 export const analyzeExperimentalCocrystal = remote("analyzeExperimentalCocrystal");
 export const resolveCocrystalSearchQuery = remote("resolveCocrystalSearchQuery");

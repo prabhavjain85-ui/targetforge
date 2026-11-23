@@ -41,9 +41,6 @@ module.exports = function setupProxy(app) {
   const painsHandler = require("../api/pains-check");
   app.use("/api/pains-check", vercelOnExpress(painsHandler));
 
-  const adversarialHandler = require("../api/adversarial-critique");
-  app.use("/api/adversarial-critique", vercelOnExpress(adversarialHandler));
-
   const dockingHealthHandler = require("../api/docking/health");
   app.get("/api/docking/health", (req, res) => dockingHealthHandler(req, res));
 
