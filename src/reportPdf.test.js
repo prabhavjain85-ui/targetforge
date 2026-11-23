@@ -60,7 +60,12 @@ describe("reportPdfParser", () => {
 
     const bindingSection = report.sections.find((section) => section.title === "Selected Binding Mode");
     expect(bindingSection.metrics.length).toBeGreaterThan(0);
-    expect(bindingSection.metrics.some((metric) => /dG|Ki|bond/i.test(metric.label))).toBe(true);
+    // Asserts the Vina score and contact counts specifically. The old form
+    // allowed /dG|Ki/ and passed on "bond" alone, so it would not have noticed
+    // the score metric disappearing.
+    expect(bindingSection.metrics.some((metric) => /Vina score/.test(metric.label))).toBe(true);
+    expect(bindingSection.metrics.some((metric) => /Hydrogen bonds/.test(metric.label))).toBe(true);
+    expect(bindingSection.metrics.every((metric) => !/dG|\bKi\b/.test(metric.label))).toBe(true);
 
     const residueTable = bindingSection.blocks.find((block) => block.type === "table");
     expect(residueTable?.headers).toContain("Residue");
@@ -69,7 +74,7 @@ describe("reportPdfParser", () => {
     const poseSection = report.sections.find((section) => section.title === "Pose Clusters");
     const poseTable = poseSection?.blocks.find((block) => block.type === "table");
     expect(poseTable?.rows?.length).toBe(2);
-    expect(poseTable?.headers?.join(" ")).toMatch(/dG/i);
+    expect(poseTable?.headers?.join(" ")).toMatch(/Vina score/);
   });
 
   test("parseMarkdownReport handles bench ranking tables", () => {
