@@ -1,132 +1,156 @@
-# PR body — the novelty-score split
+# Content sweep: remove claims the benchmarks refuted
 
-> **Written 2026-11-17, describing the branch at `cc7cecc`.** The counts below
-> (39 files, 6,491 insertions, 387 tests) were accurate then. The branch has
-> since grown to 17 commits and 609 tests, and the later work — Task 7's
-> oncology stratification, Task 8, `/neglect-screen`, the fitted repurposing
-> model, the docking status and content sweeps — is not described here.
-> `PR_BODY_ALL_COMMITS.md` covers the branch as it currently stands.
->
-> Kept as-is because the science in it is unchanged: M4 vs M1 at −0.002, M3 at
-> 0.807, and Part D still unrun.
+Follows #70. That PR fixed what exported reports claimed; #69 fixed what the
+site said about whether docking works. This one covers what the site said its
+scores **mean** — claims the retrospectives have since refuted.
 
-## What this does
+**Hard rule applied throughout:** a claim appears in one place and every surface
+renders from it. If a sentence states what a score predicts, it traces to a
+committed file under `benchmark/` or it does not ship.
 
-Replaces the anti-predictive novelty score with two separately-named, separately-scoped scores; puts every score's measured performance on a public `/validation` page where each figure traces to a committed file under `benchmark/`; and adds three new retrospective studies that test whether anything in the product predicts clinical progression beyond how much attention a target has already had.
+---
 
-The short version of the science: it does not. That is now documented rather than papered over.
+## One source of truth for every figure
 
-39 files changed, 6,491 insertions. 387 tests pass (from 352 at the branch point); production build compiles.
+`src/shared/validationCopy.js` gains `MEASURED`: every numeric performance
+figure any page may show, as **strings**, because the rendered form is part of
+the fact. `/methodology` and `/validation` now interpolate from it.
+`src/shared/dockingStatus.js` gains the enrichment, Spearman and redock-failure
+figures so docking numbers stay in their own one place.
 
-## Commits
+`MEASURED` had to be declared above `SCORE_CHIPS` and `VALIDATION_SECTIONS`:
+reading a module-scope `const` before its declaration is a temporal dead zone
+and throws on import, which has bitten this repo before.
 
-| Commit | What |
-|---|---|
-| `9406739` | Commit the missing Task 3 artifacts; split novelty into understudy + progression |
-| `655f130` | Surface measured performance in the UI; stop describing components as validated |
-| `ecbd7df` | Part A — scope the evidence score, derive provenance, delete the dead formula |
-| `dab8654` | Part B — control for attention (M0/M1/M2, paired bootstrap CIs) |
-| `a836f4b` | Part D — Vina vs Tanimoto harness, written but **not run** |
-| `cc7cecc` | Part C — pre-2021 tractability features; criterion met, by the wrong features |
+This caught real drift: `validationCopy` stated the fitted simplex weights as
+**0.814** and **0.018** while the artifact and `/methodology` said **0.8135** and
+**0.0175**. Two surfaces, one quantity, two values.
 
-## Results
+## The refuted claims
 
-### Target scores, held-out (Open Targets 21.04 → 26.09, 11 training / 11 held-out diseases, 11,711 pairs, 258 positives)
+### "AI-Powered" — nothing here is AI
 
-| Model | ROC-AUC | PR-AUC | p@25 |
-|---|---:|---:|---:|
-| Publication count alone (`M0`) | 0.667 | 0.057 | 0.040 |
-| + 8 Open Targets biology features (`M1`) | 0.721 | 0.069 | 0.240 |
-| + all pre-2021 tractability features (`M3`) | 0.807 | 0.146 | 0.440 |
-| + **gene properties only**, no effort proxies (`M4`) | 0.719 | 0.073 | 0.200 |
+Compound ranking is Tanimoto similarity; target ranking is a logistic model
+fitted over public evidence counts; triage is a hand-written rule table. The
+methodology page already said "Neither is AI" two scrolls below a title that
+said the opposite.
 
-Paired deltas, both models rescored on the same resampled rows:
+It was also in **six places in `public/index.html`** — the shell crawlers and
+no-JS readers get before React hydrates: its `<title>`, `<h1>`, and the `og:`
+and `twitter:` tags. No test had ever read `public/`, so every one of the seven
+generated routes still served an AI-Powered `<h1>` after `seoConfig` was clean.
+Fixed there, in `social-preview.svg`, and in the generator script that would
+otherwise restore it on the next regen.
 
-| Comparison | ROC-AUC delta | 95% CI | Excludes zero? |
-|---|---:|---:|:---:|
-| M1 vs M0 | +0.054 | +0.021 to +0.089 | yes |
-| M3 vs M0 | +0.140 | +0.100 to +0.181 | yes |
-| M3 vs M1 | +0.086 | +0.052 to +0.119 | yes |
-| **M4 vs M1** | **−0.002** | **−0.026 to +0.022** | **no** |
+### "genetically validated"
 
-### The finding
+Genetic association alone scored **ROC-AUC 0.497** on cohort 1 and **0.500** on
+cohort 2 — chance in both — and the fitted model gave it **0.0175** of the
+simplex. Open Targets records the evidence; in this benchmark the evidence did
+not predict clinical progression. Criterion 04 now says so with the figures.
 
-`M3` beats publication count, so the acceptance criterion is formally met. It is met entirely by features that record medicinal chemistry already done on a target, not by biology. Splitting the feature set into *effort* (compounds, clinical precedence, druggable-genome membership) and *biology* (constraint, essentiality, expression) and keeping only the latter gives `M4`, which does **not** improve on `M1`.
+### "underexplored opportunities"
 
-The single strongest predictor in the whole study is the number of high-quality compounds that already existed for a target in 2021 — solo held-out ROC-AUC **0.772**, higher than any fitted model here. Mean 101 compounds for targets that progressed, 11 for those that did not.
+Task 8 measured zero prior medicinal-chemistry effort as predicting **against**
+progression. The neglect screen's register — "They are not opportunities" — is
+reused.
 
-| Feature | Kind | Solo ROC-AUC |
-|---|---|---:|
-| `tract_sm_high_quality_compounds` | effort | 0.772 |
-| `tract_sm_genome_member` | effort | 0.676 |
-| `tract_sm_predicted_tractable` | effort | 0.671 |
-| `pli` | biology | 0.621 |
-| `depmap_frac_dependent_lines` | biology | 0.539 |
-| `gtex_n_tissues_above_1tpm` | biology | 0.519 |
-| `gtex_tau` | biology | 0.513 |
-| `depmap_mean_gene_effect` | biology | 0.497 |
-| `depmap_common_essential` | biology | 0.480 |
-| `loeuf` | biology | 0.409 |
+### "novelty score" leftovers
 
-So nothing here predicts progression beyond attention. Attention is simply measured better in compounds than in papers. **No production score was promoted on this result** — one dominated by existing compound count would rank highest precisely the targets a user could have found without it, and would rank an under-studied target last by construction.
+Not just the name: `NoveltyInfoTip` still **described the removed formula as
+live**, including "Drug penalty: 1 / (1 + existing drug count)" and a toxicity
+penalty. Replaced by `EvidenceInfoTip`, which renders the measured figures and
+states that the drug-count term took the whole score to **0.361**, below chance.
 
-## Three places I departed from the brief
+## Methodology page rewrites
 
-These are deliberate and each is argued in its commit message.
+**Criterion 03** now leads with measured performance — `heuristic-v2` at
+**0.523** against **0.520** for a seeded random ranker, rule table alone at
+**0.482** because its drug-name regexes fire on 0% of held-out molecules. The
+score bands stay, as documentation of the arithmetic rather than a ranking to
+act on.
 
-**1. The understudy chip's wording was inverted.** The brief specified the clause "Ranks how little is known about a target". Measured, that is backwards: the score is 100 × the biology signal, which *rises* with evidence — a well-studied target scores 72.8 against 3.7 for a barely-studied one. Every number the brief gave is unchanged; the clause now reads "Evidence strength score … so well-studied targets score highest. It is not a novelty score."
+**Criterion 04** rewritten around the understudy/progression split, Task 4's
+**+0.054** (95% CI +0.021 to +0.089 pairs; **+0.003 to +0.112** diseases), Task
+7's oncology scope — including that **publication count alone scores higher
+(0.730 vs 0.722)** on the single non-cancer held-out disease, and that
+generalisation is **underpowered to tell** — and Task 8's null gene-property
+result (**−0.002**, CI −0.026 to +0.022) with compound count at **0.772** and
+why no score was shipped on it.
 
-**2. The brief said three functions had no callers. They had three.** `noveltyScoreValue`, `broadDrugDiscount` and `diseaseNoveltyFactor` were live in the production scoring path and in the benchmark generator that measured them. They are deleted from `server/noveltyScore.js`; the historical formulas are reproduced bit-for-bit inside `validate_novelty_retrospective.mjs` as artifacts under evaluation, so the published 0.361 and 0.129 stay reproducible.
+**Criterion 06**'s "~0.35" and "3 of 15 … in progress" bullets quoted the
+superseded Task 1 run as current.
 
-**3. A disease-clustered bootstrap was added alongside the pair-level one.** The held-out rows are not independent — they cluster into 10 diseases that share both a base rate and a literature volume — so resampling pairs understates the variance. It changes conclusions, and every headline is written from the weaker of the two:
+**Criterion 05 is deliberately not rewritten from `TASK10_REPURPOSING.md`**, and
+I think the premise there was mistaken. Two different things are called
+repurposing: this criterion is the **compound screen**, which ranks by
+`heuristic-v2` (0.523), while Task 10 measures which **targets** acquire a
+clinical drug and is the discovery page's repurposing profile (0.910). Rewriting
+Criterion 05 from Task 10 would transfer the strongest result in the repository
+onto the weakest component. Each is now stated with its own engine, and the page
+says explicitly that the target-side model "does not score compounds".
 
-- Part B: ROC-AUC barely survives (+0.003 to +0.112) and **PR-AUC does not** (−0.004 to +0.026). The biology features alone do not beat publication count.
-- Part C: M3 vs M0 survives (+0.089 to +0.187).
+**ADME location contradiction resolved as backend.** `server/rdkitLoader.js`
+says RDKit runs exclusively on the server and no `src/` module imports it. The
+same wrong "in-browser" claim was also in `OrganToxicityPanel`.
 
-## Consequence worth a decision before merge
+## New sections
 
-Deleting the drug-count and clinical-score terms was required by the measurement — they scored 0.361 on held-out data, below chance — but those terms were the only part of the score that pointed towards unexplored targets. The default ranking is now strength of evidence, so on the CML fixtures ABL1 (27 drugs, imatinib's target) ranks above SETBP1 (none).
+The neglect screen (Task 9) with its "not opportunities" framing and the
+oncology-vs-burden scope tension stated first; the IDG/Pharos prior-art
+disclosure linking `pharos.nih.gov`; and a prominent pointer to `/validation` as
+authoritative. Plus table-of-contents entries and scroll-spy ids.
 
-Nothing in the product ranks targets by novelty any more. The `/validation` page says so in plain words, and drug count is surfaced as its own column for filtering rather than folded into a single number. Two ranking tests were rewritten to assert the new behaviour and record why.
+## Enforcement
 
-## Part D is blocked, not done
+In `src/methodologyProvenance.test.js`:
 
-`benchmark/docking/scripts/run_vina_vs_tanimoto.py` extends the enrichment run to all 14 sanity-passing Task 2 targets (928 compounds), scoring both rankers on identical compound sets and reporting ROC-AUC, EF@1%, EF@5%, BEDROC(20) and the paired delta-AUC with pooled and per-target-clustered CIs.
+- the four refuted phrases in no user-facing string, across `src/`, `seoConfig`
+  and `public/index.html`, with comments stripped first so the note explaining a
+  removal doesn't trip the guard that removed it
+- "opportunity" only where it is denied
+- no three-decimal literal in a page file, and every `MEASURED` figure traced
+  back to a committed artifact
+- the same quantity never stated two ways across the two pages
 
-**It has never been run, or even syntax-checked.** The machine this was written on has no Python interpreter (`py -0` reports "No installed Python found"), no Vina binary and no Open Babel; the hosted docking service reports `serviceConfigured: false`. `TASK6_VINA_VS_TANIMOTO.md` is headed "Status: NOT RUN. This file contains no measurements," and five tests enforce that it cannot drift into looking like results. The harness exits non-zero and writes nothing when its prerequisites are absent.
+The phrase guard uses a **two-entry allowlist** of withdrawal sentences rather
+than a regex for "was" or "previously": a heuristic would admit any new copy
+phrased in the past tense, which is exactly how the original comes back. A test
+asserts each entry reads as withdrawn and that the six original strings are not
+covered by it.
 
-Tanimoto therefore remains the default ranker, which is what `server/scoreCandidates.js` already does on the strength of Task 2 (0.662 against heuristic-v2's 0.523 and random's 0.520).
+**Figure assertions now read the rendered DOM**, not page source — grepping
+source passes vacuously on an interpolation that resolves to `undefined`.
 
-To run it: Python 3 + RDKit, the Vina binary, and Open Babel or ADFR. `--check` reports prerequisites; `--target <id>` runs one target at a time. Expect hours at exhaustiveness 16.
+Six guards were verified by reintroducing the original copy one at a time. All
+six fail.
 
-## Guardrails added
+## Also fixed, found on the way
 
-- **Provenance is derived, not typed.** `src/shared/validationProvenance.js` is generated from the shipped weights asset by `scripts/build-validation-provenance.mjs` (wired into `npm run build`). The old hand-typed commit constant disagreed with the asset it shipped alongside. The generator has a `--check` mode that a test runs, so the page and the asset cannot diverge again.
-- **Every three-decimal figure** in user-visible copy is checked against a committed benchmark artifact by a generic test — it fails if any number on the page is not traceable.
-- **Negative results are asserted as negative.** Tests require the page to report the clustered interval that *fails*, the removed formula's below-chance figures, and Task 5's null result rather than its headline number.
-- **No promotional adjectives**, enforced by a test over the rendered page.
-- `depmap_common_essential` read a 100% join rate because unscreened genes defaulted to 0. A gene DepMap never screened is unknown, not non-essential; it is now null, the rate reads 97.3%, and a test pins it to the gene-effect join rate.
+- `.novelty-badge.undrugged` was **green** and `tr.high-novelty` had a green
+  left-edge marker, styling evidence-with-no-drug as a good find on the one
+  state Task 8 points away from. Both neutral. The `.recommend` "winner" callout
+  heading that group is now a plain grouping note.
+- `server/repurposingScreen.js` generated **"shows strong/moderate/limited
+  structural fit"** per drug, banding `heuristic-v2` at 70 and 50. A chance-level
+  filter cannot support that at any band.
+- The **"Novel Discovery"** evidence-profile label asserted the one thing no
+  surface may assert. Renamed; the `id` is untouched as it is API contract.
+- The empty state sold "little existing drug coverage".
+- `TargetDiscoveryPage` JSX text contained literal `🆕` and `·`
+  escapes, so users were shown the escape sequences.
+- **`TargetDiscoveryPage` had no render test**, which is why an illegally placed
+  JSX comment passed the entire Jest suite and failed `npm run build`. Added,
+  scoped honestly: the results table and tooltip need a live search, so their
+  wiring to the shared constants is checked rather than their rendered form.
 
-## Data hygiene
+## Verification
 
-- The 20MB Task 3 snapshot is gzipped to 0.64MB (31×) and the loader reads `.json.gz`. **Git history still carries the uncompressed 20MB blob**; a `git-filter-repo` pass could drop it later. No history was rewritten here.
-- ~336MB of raw third-party downloads (DepMap, gnomAD, GTEx, the 21.04 target ETL) are gitignored and refetchable by `build_target_features.mjs`. Only the 1.4MB derived feature table is committed.
+609 tests pass (from 601 at the branch point). Full build pipeline green
+including the post-build `inject-seo-html.mjs` step, and the generated HTML for
+all seven routes carries none of the refuted claims.
 
-## Leakage controls
+## Not covered
 
-Every predictor comes from a source whose release date is recorded with the evidence for it: Open Targets 21.04 (2021-05-05), gnomAD v2.1.1 (2019-03), DepMap 21Q2 (2021-05-05, figshare 14541774), GTEx v8 (freeze 2017-06-05). A test asserts no source postdates 2021-05-31. Outcomes come only from 26.09. All fitting — including every residualisation regression and every missing-value fill — happens on the 11 training diseases. The split is by disease, so a target appearing in two diseases cannot straddle train and test. No feature was skipped for an unestablished vintage; two were excluded for joining under 70% of targets and are named with their rates.
-
-## Reproducing
-
-```
-node benchmark/docking/scripts/validate_novelty_retrospective.mjs
-node benchmark/docking/scripts/attention_control.mjs
-node benchmark/docking/scripts/build_target_features.mjs
-node benchmark/docking/scripts/tractability_models.mjs
-```
-
-## Still open
-
-The brief's Task 1 called `understudyScore` the existing formula "unchanged in maths" while its acceptance criterion forbade a drug-count divisor, and the existing formula multiplied by `broadDrugDiscount`. Both cannot hold. I went with no divisor: on cohort 2 the drug term is inert and the result (0.6371) matches `novelty_v2` (0.6366) closely enough that both round to the 0.637 on the chip. If `broadDrugDiscount` should stay, say so — the acceptance test changes with it.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
+`/neglect-screen` has still not been viewed at 360px — the browser pane was
+blocked throughout this work, so its layout is covered by render tests only.
