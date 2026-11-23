@@ -1,5 +1,6 @@
 import { targetDisplayName } from "./shared/targetLabels";
 import { VINA_MEASURED } from "./shared/dockingStatus";
+import { MEASURED } from "./shared/validationCopy";
 import { reportProvenanceLine } from "./shared/reportProvenance";
 
 /** Named once so the report cannot drift from what actually produced the pose. */
@@ -346,28 +347,45 @@ export function buildTargetDiscoveryReportMarkdown({ result, query, view = "nove
       disease.associationCount
         ? `- **Open Targets associations retrieved:** ${disease.associationCount.toLocaleString()} (showing top ${result.fetchedCount || rows.length})`
         : null,
-      `- **View:** ${view === "established" ? "Well-established targets" : "Underexplored (novelty-ranked)"}`,
+      `- **View:** ${
+        view === "established"
+          ? "Well-established targets"
+          : "No drug for this disease, ranked by recorded evidence"
+      }`,
       result.fromCache ? "- **Data source:** Reused cached Open Targets results (24h TTL)" : "- **Data source:** Live Open Targets GraphQL query",
     ]),
-    section(`${view === "established" ? "Established" : "High-novelty"} Targets`, [
-      rows.length
-        ? table(
-            ["Rank", "Gene", "Novelty", "Genetic", "Drugs", "Summary"],
-            rows.slice(0, 40).map((row, idx) => [
-              idx + 1,
-              row.symbol || "—",
-              row.noveltyScore != null ? row.noveltyScore.toFixed(1) : "—",
-              row.geneticScore != null ? `${(row.geneticScore * 100).toFixed(0)}%` : "—",
-              row.drugCount ?? 0,
-              row.explanation || "—",
-            ])
-          )
-        : "_No targets passed the evidence threshold in this view._",
-    ]),
+    section(
+      view === "established" ? "Established Targets" : "Targets With No Drug For This Disease",
+      [
+        rows.length
+          ? table(
+              // Was a "Novelty" column reading row.noveltyScore, the alias of
+              // the formula that scored below chance and was removed. The two
+              // columns the page actually ranks on are shown instead.
+              ["Rank", "Gene", "Evidence", "Progression", "Genetic", "Drugs", "Summary"],
+              rows.slice(0, 40).map((row, idx) => [
+                idx + 1,
+                row.symbol || "—",
+                row.understudyScore != null ? row.understudyScore.toFixed(1) : "—",
+                row.progressionScore != null ? row.progressionScore.toFixed(1) : "—",
+                row.geneticScore != null ? `${(row.geneticScore * 100).toFixed(0)}%` : "—",
+                row.drugCount ?? 0,
+                row.explanation || "—",
+              ])
+            )
+          : "_No targets passed the evidence threshold in this view._",
+      ]
+    ),
     section("Methodology & Limitations", [
       "- Genetic associations and drug counts come from the Open Targets Platform.",
-      "- Novelty score is a PocketLink ranking (biology signal × drug saturation), not Open Targets' own novelty field.",
-      "- High novelty indicates a hypothesis to follow up — not proof that a target is druggable or safe to modulate.",
+      // Every figure interpolated from MEASURED, the same constants /validation
+      // and /methodology render, so an exported report cannot quote a different
+      // number for the same quantity.
+      `- Evidence strength is a hand-set weighting of the Open Targets biology scores: held-out ROC-AUC ${MEASURED.understudy.rocUndrugged} on targets with no existing drug, ${MEASURED.understudy.rocAllTargets} across all targets (${MEASURED.cohort.window}, ${MEASURED.cohort.heldOutDiseases} held-out diseases).`,
+      `- Progression is a logistic model fitted on ${MEASURED.cohort.trainingDiseases} training diseases: held-out ROC-AUC ${MEASURED.progression.roc}, precision@25 ${MEASURED.progression.precisionAt25} — about 3 true positives in a top-25 list.`,
+      `- Genetic association on its own scored ROC-AUC ${MEASURED.geneticAlone.rocCohort2} on this benchmark, which is chance. Evidence recorded in Open Targets is not evidence that a target is validated.`,
+      `- A high evidence score means the literature already supports the target. It is not a novelty score, and the previous formula that ranked by absence of drugs scored ROC-AUC ${MEASURED.removedNoveltyFormula.roc} — below chance — and was removed.`,
+      "- Open Targets is not a complete record of prior effort: it holds approved and clinical-stage drugs, not failed, abandoned or unpublished programmes.",
       `- ${REPORT_DISCLAIMER}`,
     ]),
     reportFooter(),

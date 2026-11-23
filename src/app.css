@@ -2045,10 +2045,60 @@ body {
   border: 1px solid var(--border);
 }
 
+/*
+ * Deliberately neutral, not green. This badge marks a target with recorded
+ * evidence and no drug for the disease, which Task 8 measured as predicting
+ * AGAINST clinical progression (compound count was the strongest single
+ * predictor at ROC-AUC 0.772). Green read as "good find" on the one state the
+ * benchmark says is not one. Nothing on this surface may style the
+ * high-evidence, zero-effort combination as desirable.
+ */
 .novelty-badge.undrugged {
-  color: var(--green);
-  border-color: var(--green-border);
-  background: var(--green-bg);
+  color: var(--text-dim);
+  border-color: var(--border);
+  background: var(--surface-muted);
+}
+
+/*
+ * The neutral replacement for the .recommend callout that used to head the
+ * undrugged group. .recommend is a primary-tinted, shadowed "winner" panel;
+ * this is a plain grouping header with no emphasis, no tint and no badge.
+ */
+/*
+ * The one prominent pointer to /validation at the top of /methodology. Plain
+ * border and muted fill: it is prominent by position, not by colour.
+ */
+.methodology-validation-callout {
+  margin: 14px 0 6px;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--primary);
+  border-radius: 0 6px 6px 0;
+  background: var(--surface-muted);
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.evidence-group-note {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  background: var(--surface-muted);
+}
+
+.evidence-group-note .evidence-group-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.evidence-group-note .evidence-group-caveat {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text-dim);
 }
 
 .novelty-badge.established {
@@ -2077,8 +2127,14 @@ body {
   color: var(--text-muted);
 }
 
+/*
+ * Neutral, not green, for the same reason as .novelty-badge.undrugged: these
+ * are the rows with evidence and no drug for the disease, which the Task 8
+ * measurement points away from rather than towards. The marker says "this row
+ * is in that group", not "this row is a good find".
+ */
 .score-table tbody tr.high-novelty td {
-  box-shadow: inset 3px 0 0 var(--green);
+  box-shadow: inset 3px 0 0 var(--border);
 }
 
 .score-table tbody tr.established-target td {

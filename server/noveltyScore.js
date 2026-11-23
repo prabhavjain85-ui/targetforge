@@ -99,9 +99,12 @@ export const REPURPOSING_PERFORMANCE = REPURPOSING_FITTED.heldOutPerformance;
 export const EVIDENCE_PROFILES = {
   novel_discovery: {
     id: "novel_discovery",
-    label: "Novel Discovery",
+    // Label was "Novel Discovery", which asserts the thing no surface may
+    // assert: that the targets it returns are novel. The id is left alone
+    // because it is part of the API contract and is not shown to anyone.
+    label: "Genetic & Somatic Evidence",
     description:
-      "Weights human genetic associations, somatic drivers, and rare/GWAS variants heavily while discounting targets already drugged for this disease.",
+      "Weights human genetic associations, somatic drivers, and rare/GWAS variants heavily while discounting targets already drugged for this disease. Genetic association alone scored ROC-AUC 0.500 on the held-out benchmark, so this ordering is not evidence that a target is validated; see /validation.",
     weights: BIOLOGY_WEIGHTS,
   },
   repurposing: {

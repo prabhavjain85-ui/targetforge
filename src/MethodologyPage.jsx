@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import SeoIntroLinks from "./SeoIntroLinks";
-import { dockingStatusFromFlags } from "./shared/dockingStatus";
+import { dockingStatusFromFlags, VINA_MEASURED } from "./shared/dockingStatus";
+import {
+  MEASURED,
+  NEGLECT_SCREEN_COPY,
+  SITE_COPY,
+  VALIDATION_SOURCES,
+} from "./shared/validationCopy";
 
 /** Derived once: the only place docking status is written is dockingStatus.js. */
 const DOCKING_STATUS = dockingStatusFromFlags();
@@ -18,6 +24,8 @@ export default function MethodologyPage() {
         "target-discovery",
         "repurposing-screen",
         "validation-benchmark",
+        "neglect-screen",
+        "prior-art",
         "adme-profiling",
         "molecule-local-search",
         "clinical-disclaimer",
@@ -55,10 +63,24 @@ export default function MethodologyPage() {
         <div className="methodology-meta-tag">Scientific Methodology &amp; Validation Transparency</div>
         <h1 className="methodology-title">Evaluation Criteria, Computational Heuristics &amp; Operational Boundaries</h1>
         <p className="methodology-lead">
-          TargetForge is an early-stage computational workbench designed to accelerate hit triage, structural evaluation,
-          and hypothesis generation. This document details scoring criteria, cheminformatics rules, algorithmic design
-          choices, and operational boundaries for computational drug discovery.
+          TargetForge is an early-stage computational workbench for hit triage and structural evaluation. This
+          document details scoring criteria, cheminformatics rules, design choices, and operational boundaries.
+          <br />
+          <strong>{SITE_COPY.notAi}</strong>
         </p>
+        {/*
+          The authoritative source, stated once and prominently. This page is
+          narrative; /validation is generated from the committed artifacts, and
+          when the two disagree the validation page is right.
+        */}
+        <div className="methodology-validation-callout" id="methodology-validation-link">
+          <strong>
+            <a href="/validation">The validation page</a>
+          </strong>{" "}
+          is the authoritative source for every number on this site. It is generated from the committed benchmark
+          artifacts and lists the measured held-out performance of every score, including the ones that failed
+          validation and were removed. Figures quoted on this page are interpolated from the same constants.
+        </div>
         <SeoIntroLinks currentPath="/methodology" />
       </div>
 
@@ -106,7 +128,7 @@ export default function MethodologyPage() {
                 className={`sidebar-link ${activeSection === "target-discovery" ? "active" : ""}`}
                 onClick={() => scrollToSection("target-discovery")}
               >
-                <span className="sidebar-num">04</span> Discovery &amp; Novelty
+                <span className="sidebar-num">04</span> Target Discovery
               </button>
               <button
                 type="button"
@@ -123,6 +145,22 @@ export default function MethodologyPage() {
                 onClick={() => scrollToSection("validation-benchmark")}
               >
                 <span className="sidebar-num">06</span> Validation Benchmark
+              </button>
+              <button
+                type="button"
+                id="toc-link-neglect-screen"
+                className={`sidebar-link ${activeSection === "neglect-screen" ? "active" : ""}`}
+                onClick={() => scrollToSection("neglect-screen")}
+              >
+                <span className="sidebar-num">07</span> Neglect Screen
+              </button>
+              <button
+                type="button"
+                id="toc-link-prior-art"
+                className={`sidebar-link ${activeSection === "prior-art" ? "active" : ""}`}
+                onClick={() => scrollToSection("prior-art")}
+              >
+                <span className="sidebar-num">—</span> Prior art (IDG / Pharos)
               </button>
               <button
                 type="button"
@@ -153,8 +191,9 @@ export default function MethodologyPage() {
             <div className="sidebar-badge-card" id="sidebar-meta-card">
               <div className="sidebar-badge-title">Transparent Science</div>
               <p className="sidebar-badge-text">
-                Every calculation is reproducible and traceable to published public databases (RCSB PDB, Open Targets, PubChem)
-                or native in-browser RDKit WebAssembly cheminformatics routines.
+                Every calculation is reproducible and traceable to published public databases (RCSB PDB, Open
+                Targets, PubChem) or to RDKit, which runs on the backend. See the{" "}
+                <a href="/validation">validation page</a> for the measured performance of every score.
               </p>
             </div>
           </div>
@@ -182,8 +221,10 @@ export default function MethodologyPage() {
               <li>
                 <strong>Station 3 — Ranking and filters.</strong> The shortlist is ranked by Tanimoto similarity to the ligand
                 co-crystallised in the <em>selected PDB</em>, which is the only ranker measured to beat random on the scaffold-split
-                decoy benchmark (held-out ROC-AUC 0.662, BEDROC20 0.617). The heuristic-v2 score shown alongside is a drug-likeness
-                and liability filter built from Lipinski/Veber properties and PAINS flags; it scores 0.523 against 0.520 for random,
+                decoy benchmark (held-out ROC-AUC {MEASURED.compoundTriage.tanimoto}, BEDROC20{" "}
+                {MEASURED.compoundTriage.tanimotoBedroc20}). The heuristic-v2 score shown alongside is a
+                drug-likeness and liability filter built from Lipinski/Veber properties and PAINS flags; it scores{" "}
+                {MEASURED.compoundTriage.heuristicV2} against {MEASURED.compoundTriage.random} for random,
                 so it filters rather than prioritises and predicts neither binding nor activity. Neither is AI, and neither is a
                 validated prediction of potency.
               </li>
@@ -339,13 +380,42 @@ export default function MethodologyPage() {
           {/* Section 3: Target-Aware Compound Ranking (heuristic-v2) */}
           <section className="methodology-section" id="target-aware-scoring">
             <div className="section-eyebrow">Criterion 03</div>
-            <h2 className="section-title">Knowledge-Based Triage Score (heuristic-v2)</h2>
+            <h2 className="section-title">Compound Triage Filter (heuristic-v2)</h2>
+
+            {/*
+              Measured performance first. This section used to open by
+              explaining why the score was better than generic drug-likeness
+              rules and only mentioned validation at the bottom of Criterion
+              06, which left the score bands below reading as meaningful
+              rankings. They are not; they are documentation of what the
+              filter computes.
+            */}
+            <div className="limitation-callout" id="limitation-scoring-headline">
+              <div className="limitation-header">
+                <span className="limitation-badge">Measured performance</span>
+              </div>
+              <p className="limitation-body">
+                On a property-matched, Bemis–Murcko scaffold-split decoy benchmark (
+                {MEASURED.compoundTriage.targetsPassingDecoyChecks} targets passing decoy sanity checks, mean AVE
+                bias {MEASURED.compoundTriage.meanAveBias}, zero leaked scaffolds),{" "}
+                <code>heuristic-v2</code> scores held-out ROC-AUC{" "}
+                <strong>{MEASURED.compoundTriage.heuristicV2}</strong> against{" "}
+                <strong>{MEASURED.compoundTriage.random}</strong> for a seeded random ranker — that is, no better
+                than chance. The gene/PDB rule table on its own scores{" "}
+                <strong>{MEASURED.compoundTriage.ruleTableOnly}</strong>, below random, because its hardcoded
+                drug-name rules fire on 0% of held-out molecules. Tanimoto similarity to the staged co-crystallised
+                ligand scores {MEASURED.compoundTriage.tanimoto} (BEDROC20{" "}
+                {MEASURED.compoundTriage.tanimotoBedroc20}) on the same benchmark and is what the app actually
+                ranks by. Source: <code>{VALIDATION_SOURCES.task2Md}</code>.
+              </p>
+            </div>
+
             <p className="section-text">
-              Conventional virtual screening tools often evaluate compounds solely through generic drug-likeness rules (such as Lipinski&apos;s
-              Rule of Five). However, a molecule can be exceptionally &quot;drug-like&quot; in the abstract while having zero pharmacological
-              relevance to the specific target pocket. TargetForge&apos;s 0–100 output is a <strong>knowledge-based triage score</strong> — a heuristic
-              built from curated target rules and literature knowledge, not a validated activity or binding predictor. It is tagged programmatically
-              as <code>source: &quot;heuristic-v2&quot;</code> and combines two distinct components:
+              So <code>heuristic-v2</code> is a drug-likeness and liability <em>filter</em>, not a ranker: it
+              removes compounds with obvious problems and predicts neither binding nor activity. The 0–100 output
+              is tagged programmatically as <code>source: &quot;heuristic-v2&quot;</code>. The two components and
+              their bands are documented below so you can see what the number is composed of — not because the
+              bands indicate pharmacological relevance.
             </p>
 
             <div className="scoring-tiers-grid">
@@ -375,7 +445,9 @@ export default function MethodologyPage() {
                 Score Bands &amp; Score Composition
               </h4>
               <p className="section-text">
-                Candidate molecules are stratified into distinct score bands reflecting specific pharmacological evidence:
+                What the filter computes, band by band. These describe the arithmetic, not a ranking you should
+                act on: on held-out chemistry the target-rule component contributes nothing, because its rules
+                name specific drugs.
               </p>
               <ul className="methodology-bullet-list">
                 <li>
@@ -416,28 +488,174 @@ export default function MethodologyPage() {
           {/* Section 4: Target Discovery / Novelty Scoring */}
           <section className="methodology-section" id="target-discovery">
             <div className="section-eyebrow">Criterion 04</div>
-            <h2 className="section-title">Target Discovery &amp; Novelty Scoring</h2>
+            <h2 className="section-title">Target Discovery</h2>
             <p className="section-text">
-              The Target Discovery engine queries the Open Targets Platform to identify therapeutic targets, balancing causal genetic
-              association against clinical landscape saturation:
+              This section used to describe a single &quot;novelty score&quot;: biology signal divided by{" "}
+              <code>1 + drugCount</code>, presented as a way of finding targets nobody had pursued yet. A
+              retrospective on Open Targets {MEASURED.cohort.window} measured that formula at
+              held-out ROC-AUC <strong>{MEASURED.removedNoveltyFormula.roc}</strong> — below chance — because
+              dividing by drug count inverts the strongest real-world predictor of a target entering the clinic.
+              The inverse drug-count term on its own scored {MEASURED.removedNoveltyFormula.inverseDrugCountAlone}.
+              It was removed, and what follows is what replaced it. Every figure here is also on the{" "}
+              <a href="/validation">validation page</a>, which is the authoritative source.
             </p>
 
             <div className="discovery-columns">
-              <div className="discovery-col" id="col-established-targets">
-                <h4 className="col-heading">Established Targets (Pipeline Benchmarks)</h4>
+              <div className="discovery-col" id="col-understudy-score">
+                <h4 className="col-heading">Evidence strength score</h4>
                 <p className="col-text">
-                  Defined by <strong>drugCount ≥ 3</strong> and Open Targets association <strong>overallScore ≥ 0.4</strong>. These represent
-                  clinically validated targets already addressed by approved therapies or late-stage trials, making them reliable structural
-                  benchmarks with rich crystallographic models.
+                  The hand-set weighting of the eight Open Targets biology scores, with the drug-count penalty
+                  deleted. Held-out ROC-AUC <strong>{MEASURED.understudy.rocUndrugged}</strong> (PR-AUC{" "}
+                  {MEASURED.understudy.prUndrugged}) on targets with no approved or clinical drug in 2021, and{" "}
+                  <strong>{MEASURED.understudy.rocAllTargets}</strong> (PR-AUC {MEASURED.understudy.prAllTargets})
+                  across all targets. It <em>rises</em> with evidence, so the best-studied targets score highest.
+                  It is not a novelty score.
                 </p>
               </div>
-              <div className="discovery-col" id="col-novelty-metric">
-                <h4 className="col-heading">Novelty Targets (First-in-Class Potential)</h4>
+              <div className="discovery-col" id="col-progression-score">
+                <h4 className="col-heading">Progression score</h4>
                 <p className="col-text">
-                  Targets with robust genetic or somatic evidence but little or no existing drug coverage (<strong>drugCount = 0</strong> or
-                  few pipeline drugs). Highlighted as underexplored opportunities for first-in-class therapeutic development.
+                  A logistic model fitted on {MEASURED.cohort.trainingDiseases} training diseases and evaluated on{" "}
+                  {MEASURED.cohort.heldOutDiseases} held out: ROC-AUC{" "}
+                  <strong>{MEASURED.progression.roc}</strong> (PR-AUC {MEASURED.progression.pr}), precision@25{" "}
+                  {MEASURED.progression.precisionAt25} — about 3 true positives in a top-25 list. The fitted
+                  weights put {MEASURED.literatureSimplexWeight} of the simplex on the literature feature, so this
+                  behaves largely as a publication-count proxy; publication count alone scores{" "}
+                  {MEASURED.publications.roc}.
                 </p>
               </div>
+            </div>
+
+            <div style={{ marginTop: 24, marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
+                Genetic evidence did not predict progression
+              </h3>
+              <p className="section-text">
+                The page previously described these as genetically validated targets. On this benchmark genetic
+                association on its own scored ROC-AUC <strong>{MEASURED.geneticAlone.rocCohort1}</strong> on the
+                disease-undrugged cohort and <strong>{MEASURED.geneticAlone.rocCohort2}</strong> on the
+                globally-undrugged cohort — chance in both — and the fitted model gave it{" "}
+                {MEASURED.geneticAlone.simplexWeight} of the simplex. Open Targets records genetic evidence for a
+                target; in this benchmark that evidence did not predict clinical progression, so nothing here is
+                described as validated by it. Source: <code>{VALIDATION_SOURCES.task3Md}</code>.
+              </p>
+            </div>
+
+            <div style={{ marginTop: 24, marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
+                Does the biology add anything over counting papers?
+              </h3>
+              <p className="section-text">
+                Because the fitted model is mostly a publication-count proxy, the question worth testing is
+                whether the Open Targets evidence adds ranking signal once attention is controlled for. Three
+                nested models on the same cohort and split: publication count alone{" "}
+                {MEASURED.attention.publicationsOnly}, publication count plus the eight biology features{" "}
+                <strong>{MEASURED.attention.publicationsPlusBiology}</strong>, the biology features alone{" "}
+                {MEASURED.attention.biologyOnly}. The paired gain from adding biology is{" "}
+                <strong>{MEASURED.attention.deltaRoc}</strong> ROC-AUC (95% CI{" "}
+                {MEASURED.attention.deltaRocCiPairs} resampling pairs).
+              </p>
+              <p className="section-text">
+                That is weaker than it looks. The held-out rows cluster into {MEASURED.cancerStratification.heldOutCancers}{" "}
+                cancers plus one non-cancer disease rather than being independent, and resampling whole diseases
+                widens the interval to {MEASURED.attention.deltaRocCiDiseases} — still excluding zero, but barely
+                — while the PR-AUC interval becomes {MEASURED.attention.deltaPrCiDiseases}, which includes zero.
+                The gain in ranking holds; the gain in precision among the rare positives does not. Source:{" "}
+                <code>{VALIDATION_SOURCES.task4Md}</code>.
+              </p>
+            </div>
+
+            <div style={{ marginTop: 24, marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
+                Read all of it as an oncology result
+              </h3>
+              <p className="section-text">
+                The signal is carried by somatic mutation evidence, which in Open Targets comes largely from
+                cancer genomics, so the comparison was re-run on the cancer and non-cancer held-out diseases
+                separately, with the cancer labelling committed as its own file so it can be disputed. On the{" "}
+                {MEASURED.cancerStratification.heldOutCancers} held-out cancers (
+                {MEASURED.cancerStratification.cancerPairs} pairs, {MEASURED.cancerStratification.cancerPositives}{" "}
+                positives) biology adds {MEASURED.cancerStratification.cancerDelta} over publication count (95% CI{" "}
+                {MEASURED.cancerStratification.cancerCiDiseases} resampling diseases) — essentially the pooled
+                figure, because most held-out pairs are cancer.
+              </p>
+              <p className="section-text">
+                Whether it holds outside cancer is <strong>underpowered to tell</strong>, which is the answer
+                rather than a hedge. Only {MEASURED.cancerStratification.nonCancerDiseases} held-out disease is
+                non-cancer: {MEASURED.cancerStratification.nonCancerPairs} pairs with{" "}
+                {MEASURED.cancerStratification.nonCancerPositives} positives. On it the biology features do not
+                help — {MEASURED.cancerStratification.nonCancerDelta} (95% CI{" "}
+                {MEASURED.cancerStratification.nonCancerCi}, including zero) — and{" "}
+                <strong>
+                  publication count alone scores higher there (
+                  {MEASURED.cancerStratification.nonCancerPublicationsOnly} against{" "}
+                  {MEASURED.cancerStratification.nonCancerPublicationsPlusBiology})
+                </strong>
+                . No disease-level interval is reported for that stratum, because resampling one disease would
+                produce something that looks like a measurement and is not one. Settling this needs more
+                non-cancer diseases in the panel. Source: <code>{VALIDATION_SOURCES.task7Json}</code>.
+              </p>
+            </div>
+
+            <div style={{ marginTop: 24, marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
+                Gene properties add nothing; prior chemistry is what predicts
+              </h3>
+              <p className="section-text">
+                Five more pre-2021 feature groups were tested on the same cohort and split: Open Targets 21.04
+                tractability, ChEMBL protein class, gnomAD v2.1.1 pLI and LOEUF, DepMap 21Q2 CRISPR essentiality,
+                and GTEx v8 expression selectivity. Everything together reaches ROC-AUC{" "}
+                <strong>{MEASURED.tractability.everything}</strong> (PR-AUC {MEASURED.tractability.everythingPr},
+                precision@25 {MEASURED.tractability.everythingPrecisionAt25}), a gain of{" "}
+                {MEASURED.tractability.gainOverPublications} over publication count (95% CI{" "}
+                {MEASURED.tractability.gainOverPublicationsCi}).
+              </p>
+              <p className="section-text">
+                None of that gain is biology. Keeping only properties of the gene itself — pLI, LOEUF, three
+                DepMap measures, two GTEx measures — gives {MEASURED.tractability.genePropertiesOnly} against{" "}
+                {MEASURED.attention.publicationsPlusBiology} without them: a paired difference of{" "}
+                <strong>{MEASURED.tractability.genePropertyDelta}</strong> (95% CI{" "}
+                {MEASURED.tractability.genePropertyCi}), which includes zero. The best single gene property is pLI
+                at {MEASURED.tractability.bestGeneProperty}; DepMap essentiality and GTEx selectivity sit at
+                chance.
+              </p>
+              <p className="section-text">
+                The whole gain comes from one feature: the number of high-quality compounds that already existed
+                for the target in 2021, which alone scores{" "}
+                <strong>{MEASURED.tractability.compoundCount}</strong> — better than any model in the report. It
+                is not publication count again (R² {MEASURED.tractability.compoundCountAttentionR2} against
+                attention, {MEASURED.tractability.compoundCountResidualised} residualised), but it is not biology
+                either: it records medicinal chemistry already done.{" "}
+                <strong>No score was shipped on this result</strong>, and the reason is the point. A target with a
+                hundred compounds and no drug is one the field has already picked, so such a score would rank
+                highest the targets a user could have found without it, and rank a genuinely unstudied target last
+                by construction. Source: <code>{VALIDATION_SOURCES.task8Json}</code>.
+              </p>
+            </div>
+
+            <div style={{ marginTop: 24, marginBottom: 20 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginBottom: 8 }}>
+                The repurposing evidence profile
+              </h3>
+              <p className="section-text">
+                The &quot;repurposing&quot; weighting profile on the discovery page is a separate fitted model, and
+                the strongest result in this repository. Measured on the cohort that actually poses the
+                repurposing question — targets associated with a disease in 2021 with no clinical drug for that
+                disease, scored on whether they acquired one by 2026 ({MEASURED.repurposing.heldOutPairs} held-out
+                pairs, {MEASURED.repurposing.heldOutPositives} positives) — drug count plus publication count
+                reaches ROC-AUC <strong>{MEASURED.repurposing.shipped}</strong> (PR-AUC{" "}
+                {MEASURED.repurposing.shippedPr}, precision@25 {MEASURED.repurposing.shippedPrecisionAt25}),
+                against {MEASURED.repurposing.drugCountAlone} for drug count alone,{" "}
+                {MEASURED.repurposing.publicationsAlone} for publication count alone, and{" "}
+                {MEASURED.repurposing.handWeighted} for the hand-weighted formula it replaced — a gain of{" "}
+                {MEASURED.repurposing.gain} (95% CI {MEASURED.repurposing.gainCiDiseases} resampling diseases).
+              </p>
+              <p className="section-text">
+                What it does not support: the score ranks by how often the field has already drugged a target
+                elsewhere. That is a statement about where effort has gone, not about biology, and it cannot tell
+                you a repurposing hypothesis is correct. Like everything else here it is oncology-scoped. Source:{" "}
+                <code>{VALIDATION_SOURCES.task10Json}</code>.
+              </p>
             </div>
 
             {/* Zero Associations & Anti-Hype Clarification */}
@@ -454,9 +672,12 @@ export default function MethodologyPage() {
                 <strong style={{ color: "var(--primary)", display: "block", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>
                   Anti-Hype Reporting Policy
                 </strong>
-                TargetForge strictly forbids synthetic promotional language. Targets with low novelty scores (e.g. 0.1/100) are explicitly labeled
-                as low novelty, never &quot;high&quot;. Targets with multiple approved drugs are accurately identified as clinically saturated,
-                never &quot;underexplored&quot;.
+                No surface in this application asserts that a target is novel, unpursued, or an opportunity, and
+                none describes a target as validated by its genetic evidence. Where a score failed validation it
+                is reported as having failed and disabled rather than shipped with a caveat. Where a result is
+                negative it is stated as the finding. This policy used to be contradicted two paragraphs above it,
+                by the section that has since been rewritten;{" "}
+                <code>src/methodologyProvenance.test.js</code> fails the build if that language returns.
               </div>
             </div>
 
@@ -496,11 +717,44 @@ export default function MethodologyPage() {
               Drug repurposing explores new indications for already approved pharmaceutical agents with established human pharmacokinetic profiles,
               clinical safety records, and existing chemical manufacturing.
             </p>
+            {/*
+              This criterion described the screen as reliable given enough
+              protein context, and claimed granular gene-level rules prevented
+              target collapse. The scaffold-split benchmark measured those
+              rules firing on no held-out molecule at all. Two different things
+              are called "repurposing" in this app and they have very different
+              results, so they are now stated separately.
+            */}
+            <div className="limitation-callout" id="limitation-repurposing-headline">
+              <div className="limitation-header">
+                <span className="limitation-badge">Measured performance</span>
+              </div>
+              <p className="limitation-body">
+                This screen ranks approved drugs against a structure with <code>heuristic-v2</code>, the filter
+                documented in Criterion 03 — held-out ROC-AUC{" "}
+                <strong>{MEASURED.compoundTriage.heuristicV2}</strong> against{" "}
+                {MEASURED.compoundTriage.random} for a seeded random ranker, with the gene/PDB rule table alone at{" "}
+                {MEASURED.compoundTriage.ruleTableOnly}. It is a liability filter, not a ranker, and it predicts
+                neither binding nor activity. The claim this section used to make — that granular gene-level rules
+                preserve target selectivity — is what the benchmark refuted: the rules are keyed to specific drug
+                names and fire on 0% of held-out molecules. Source: <code>{VALIDATION_SOURCES.task2Md}</code>.
+              </p>
+              <p className="limitation-body">
+                A separate, much stronger result is often confused with this one. The fitted{" "}
+                <strong>repurposing evidence profile</strong> on the target discovery page predicts which{" "}
+                <em>targets</em> acquire a clinical drug (ROC-AUC {MEASURED.repurposing.shipped}) and is described
+                in Criterion 04. It does not score compounds, and nothing on this page transfers its performance
+                to this screen.
+              </p>
+            </div>
             <p className="section-text">
-              TargetForge evaluates approved small molecules against a selected PDB structure. Reliable scoring requires comprehensive
-              protein context: <strong>target gene symbol</strong>, <strong>protein name</strong>, <strong>PDB ID</strong>, and <strong>co-crystallized ligand name</strong>.
-              Evaluating compounds within a broad, generic &quot;kinase&quot; or &quot;GPCR&quot; family context collapses distinct targets together
-              and destroys target selectivity. The <code>heuristic-v2</code> engine uses granular gene-level rules to prevent this collapse.
+              TargetForge evaluates approved small molecules against a selected PDB structure. The screen resolves{" "}
+              <strong>target gene symbol</strong>, <strong>protein name</strong>, <strong>PDB ID</strong>, and{" "}
+              <strong>co-crystallized ligand name</strong>. Rows are ordered by the <code>heuristic-v2</code>{" "}
+              score. Where the structure has a co-crystallised ligand, Tanimoto similarity to it is computed and
+              shown as its own sortable column — that signal scores {MEASURED.compoundTriage.tanimoto} on the
+              benchmark against {MEASURED.compoundTriage.heuristicV2} for the default ordering, so sorting by
+              similarity is the better-measured way to read this table.
             </p>
 
             <div style={{ marginTop: "16px", marginBottom: "16px" }}>
@@ -557,13 +811,26 @@ export default function MethodologyPage() {
                 target rule table (for example, comparing osimertinib vs imatinib on EGFR). Those drugs scored highly because the rules were written
                 around them — this is not independent validation.
               </li>
+              {/*
+                These two bullets quoted the superseded Task 1 run ("~0.35",
+                "3 of 15", "~0.48") as current and in progress. Task 2 rebuilt
+                the benchmark with property-matched decoys and scaffold
+                splitting; its figures come from MEASURED so this list and
+                /validation cannot diverge again.
+              */}
               <li>
-                <strong>Held-out drugs (not in rule table):</strong> On a set of approved molecules not encoded in the rules, the triage score
-                reached ROC-AUC ~0.35 — no better than chance at separating actives from decoys.
+                <strong>Rebuilt benchmark (complete):</strong> the property-matched, scaffold-split decoy
+                benchmark finished with {MEASURED.compoundTriage.targetsPassingDecoyChecks} targets passing decoy
+                sanity checks (mean AVE bias {MEASURED.compoundTriage.meanAveBias}, zero leaked scaffolds).{" "}
+                <code>heuristic-v2</code> scores held-out ROC-AUC {MEASURED.compoundTriage.heuristicV2} against{" "}
+                {MEASURED.compoundTriage.random} for a seeded random ranker; the rule table alone scores{" "}
+                {MEASURED.compoundTriage.ruleTableOnly}. Tanimoto similarity to the staged co-crystal ligand
+                scores {MEASURED.compoundTriage.tanimoto}. Source: <code>{VALIDATION_SOURCES.task2Md}</code>.
               </li>
               <li>
-                <strong>Rebuilt benchmark (in progress):</strong> A property-matched decoy benchmark is being rebuilt. So far only 3 of 15
-                targets pass decoy sanity checks; where benchmarks exist, scores are near random (~0.48 AUC).
+                <strong>The earlier run is superseded, not pending:</strong> the figures in{" "}
+                <code>{VALIDATION_SOURCES.task1Md}</code> used ChEMBL weak binders as decoys and only 3 of 15
+                targets passed its sanity checks. They are not quoted anywhere on this site as current.
               </li>
             </ul>
 
@@ -604,27 +871,35 @@ export default function MethodologyPage() {
               </li>
               <li>
                 <b>Vina score does not track measured potency.</b> Spearman ρ between the inverted Vina score and median
-                ChEMBL pChEMBL is <b>−0.291</b>, with a 95% bootstrap confidence interval of <b>−0.681 to 0.478</b>. The
-                interval spans zero, so no reliable monotonic relationship is demonstrated on this sample; the sign is
-                the opposite of what a useful affinity proxy would give. Vina scores are not calibrated affinities.
-                Source: <code>benchmark/docking/results/approved_25.json</code>.
+                ChEMBL pChEMBL is <b>{VINA_MEASURED.potencySpearman}</b>, with a 95% bootstrap confidence interval
+                of <b>{VINA_MEASURED.potencySpearmanCi}</b>. The interval spans zero, so no reliable monotonic
+                relationship is demonstrated on this sample; the sign is the opposite of what a useful affinity
+                proxy would give. Vina scores are not calibrated affinities. Source:{" "}
+                <code>{VINA_MEASURED.potencySource}</code>.
               </li>
               <li>
-                <b>Enrichment on the held-out test split (3 targets).</b> EGFR: ROC-AUC 0.636 (95% CI 0.459–0.791),
-                EF@1% 0.00, from 15 actives and 50 decoys. JAK2: ROC-AUC 0.744 (0.589–0.870), EF@1% 3.50, from 16 actives
-                and 40 decoys. PDE5A: ROC-AUC 0.800 (0.668–0.911), EF@1% 0.00, from 18 actives and 38 decoys. Two of the
-                three targets show no early enrichment at the 1% cut-off. Source:
-                <code>benchmark/docking/results/enrichment.json</code>.
+                <b>Enrichment on the held-out test split ({VINA_MEASURED.enrichment.length} targets).</b>{" "}
+                {VINA_MEASURED.enrichment.map((e, i) => (
+                  <React.Fragment key={e.target}>
+                    {i > 0 ? " " : null}
+                    {e.target}: ROC-AUC {e.roc} (95% CI {e.ci}), EF@1% {e.ef1}, from {e.actives} actives and{" "}
+                    {e.decoys} decoys.
+                  </React.Fragment>
+                ))}{" "}
+                Two of the three targets show no early enrichment at the 1% cut-off. Source:{" "}
+                <code>{VINA_MEASURED.enrichmentSource}</code>.
               </li>
               <li>
                 <b>The heuristic triage score does not beat a simple similarity baseline.</b> On the
-                property-matched, scaffold-split benchmark (14/15 targets passing decoy sanity checks), heuristic-v2
-                scores ROC-AUC 0.523 against 0.662 for Tanimoto similarity to the staged co-crystal ligand — and
-                against 0.520 for a seeded random ranker, so it is a drug-likeness and liability filter rather than a
-                ranker. The rule table alone scores 0.482, because hardcoded drug-name rules never fire on held-out
-                molecules. Source: <code>benchmark/docking/TASK2_DECOY_BENCHMARK.md</code>. The earlier figures from
-                <code>TASK1_BASELINES.md</code> are superseded: that benchmark used ChEMBL weak binders as decoys and
-                only 3 of 15 targets passed its sanity checks.
+                property-matched, scaffold-split benchmark ({MEASURED.compoundTriage.targetsPassingDecoyChecks}{" "}
+                targets passing decoy sanity checks), heuristic-v2 scores ROC-AUC{" "}
+                {MEASURED.compoundTriage.heuristicV2} against {MEASURED.compoundTriage.tanimoto} for Tanimoto
+                similarity to the staged co-crystal ligand — and against {MEASURED.compoundTriage.random} for a
+                seeded random ranker, so it is a drug-likeness and liability filter rather than a ranker. The rule
+                table alone scores {MEASURED.compoundTriage.ruleTableOnly}, because hardcoded drug-name rules never
+                fire on held-out molecules. Source: <code>{VALIDATION_SOURCES.task2Md}</code>. The earlier figures
+                from <code>{VALIDATION_SOURCES.task1Md}</code> are superseded: that benchmark used ChEMBL weak
+                binders as decoys and only 3 of 15 targets passed its sanity checks.
               </li>
             </ul>
             <p className="section-text">
@@ -654,6 +929,61 @@ export default function MethodologyPage() {
               marks the pose as off-site and interactions unreliable (PDB vs literature numbering is noted where relevant, e.g. sitagliptin/4FFW).
               Where a co-crystal ligand is available, matching interaction types at the same residue may be flagged as consistent with the crystal
               pose.
+            </p>
+          </section>
+
+          {/* Section 7: the neglect screen (Task 9) */}
+          <section className="methodology-section" id="neglect-screen">
+            <div className="section-eyebrow">Criterion 07</div>
+            <h2 className="section-title">The Neglect Screen, And What It Is Not</h2>
+            <p className="section-text">{NEGLECT_SCREEN_COPY.intro}</p>
+            <p className="section-text">
+              <strong>{NEGLECT_SCREEN_COPY.notOpportunities}</strong>
+            </p>
+            <p className="section-text">{NEGLECT_SCREEN_COPY.cannotEstablishUnpursued}</p>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginTop: 20, marginBottom: 8 }}>
+              Its two axes disagree about scope
+            </h3>
+            <p className="section-text">
+              This is the first limitation of the screen, not a footnote to it. The evidence model is validated on
+              cancers ({MEASURED.cancerStratification.heldOutCancers} of the 10 contributing held-out diseases),
+              while India&apos;s recorded burden is mostly not cancer: malignant neoplasms are{" "}
+              {MEASURED.cancerStratification.indiaCancerShareOfDalys} of total DALYs. So the screen&apos;s
+              intended use — a high-burden Indian disease — is largely outside the range where its ranking was
+              validated. The page says so inline whenever the selected disease is one the committed labelling
+              marks non-cancer.
+            </p>
+            <h3 style={{ fontSize: 16, fontWeight: 600, color: "var(--text)", marginTop: 20, marginBottom: 8 }}>
+              How effort and gene properties are used
+            </h3>
+            <ul className="methodology-bullet-list">
+              <li>{NEGLECT_SCREEN_COPY.effortIsAFilter}</li>
+              <li>{NEGLECT_SCREEN_COPY.unknownIsNotZero}</li>
+              <li>{NEGLECT_SCREEN_COPY.contextOnly}</li>
+              <li>{NEGLECT_SCREEN_COPY.burdenSourceCaveat}</li>
+            </ul>
+            <p className="section-text" style={{ fontSize: 12.5, opacity: 0.8 }}>
+              Source: <code>{VALIDATION_SOURCES.task8Json}</code> for the effort finding,{" "}
+              <code>{VALIDATION_SOURCES.task7Json}</code> for the oncology scope, and{" "}
+              <code>{VALIDATION_SOURCES.cancerLabels}</code> for the cancer labelling.
+            </p>
+          </section>
+
+          {/* Section: prior-art disclosure (IDG / Pharos) */}
+          <section className="methodology-section" id="prior-art">
+            <div className="section-eyebrow">Prior art</div>
+            <h2 className="section-title">{NEGLECT_SCREEN_COPY.priorArtTitle}</h2>
+            {NEGLECT_SCREEN_COPY.priorArt.split("\n").map((para) => (
+              <p className="section-text" key={para.slice(0, 40)}>
+                {para}
+              </p>
+            ))}
+            <p className="section-text">
+              <a href={NEGLECT_SCREEN_COPY.priorArtHref} target="_blank" rel="noreferrer">
+                {NEGLECT_SCREEN_COPY.priorArtLinkLabel}
+              </a>{" "}
+              — the portal that publishes the target development level classification this repository
+              reimplements.
             </p>
           </section>
 
@@ -747,7 +1077,9 @@ export default function MethodologyPage() {
                 <span className="limitation-badge">Methodology Note &amp; Limitations</span>
               </div>
               <p className="limitation-body">
-                In-browser ADME descriptors are calculated directly from 2D molecular graphs. They do not simulate active influx/efflux transporters,
+                ADME descriptors are calculated on the backend from 2D molecular graphs — RDKit WebAssembly
+                running in the serverless function, not in your browser; <code>server/rdkitLoader.js</code> is the
+                only place it is initialised. They do not simulate active influx/efflux transporters,
                 phase I/II hepatic clearance, plasma protein binding, or clinical pharmacokinetics. All computed values are intended strictly for
                 preliminary compound triage.
               </p>

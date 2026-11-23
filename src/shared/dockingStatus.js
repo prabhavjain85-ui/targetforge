@@ -46,7 +46,26 @@ export const VINA_MEASURED = {
   redockUnder2A: "10/11",
   pairReliability: "15/25",
   potencyCorrelation: "Spearman −0.291 (95% CI −0.681 to 0.478)",
+  /** The same correlation, split for pages that lay it out themselves. */
+  potencySpearman: "−0.291",
+  potencySpearmanCi: "−0.681 to 0.478",
+  /** The one redocking failure, named so the pass rate is not read as clean. */
+  redockFailure: "ADRB2 (3SN6), 5.80 Å best / 7.95 Å median",
+  /**
+   * Per-target enrichment on the held-out split. Two of three show no early
+   * enrichment at the 1% cut-off, which is why the pass rate above is not a
+   * claim that Vina ranks compounds well.
+   */
+  enrichment: [
+    { target: "EGFR", roc: "0.636", ci: "0.459–0.791", ef1: "0.00", actives: "15", decoys: "50" },
+    { target: "JAK2", roc: "0.744", ci: "0.589–0.870", ef1: "3.50", actives: "16", decoys: "40" },
+    { target: "PDE5A", roc: "0.800", ci: "0.668–0.911", ef1: "0.00", actives: "18", decoys: "38" },
+  ],
   source: "benchmark/docking/RESULTS.md",
+  enrichmentSource: "benchmark/docking/results/enrichment.json",
+  potencySource: "benchmark/docking/results/approved_25.json",
+  redockSource: "benchmark/docking/results/redock_multiseed.json",
+  pairSource: "benchmark/docking/results/pair_sanity_checks.json",
 };
 
 /** Why the in-browser engine is off. Stated as the finished result it is. */

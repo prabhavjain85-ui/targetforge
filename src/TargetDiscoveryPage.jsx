@@ -8,7 +8,7 @@ import {
 } from "./serverApi";
 import DiseaseTypeahead from "./shared/DiseaseTypeahead";
 import ClinicalActivityPanel from "./ClinicalActivityPanel";
-import { SCORE_CHIPS } from "./shared/validationCopy";
+import { MEASURED, SCORE_CHIPS, TARGET_DISCOVERY_COPY } from "./shared/validationCopy";
 import "./validation.css";
 import {
   ACTIVE_STATE_KEYS,
@@ -117,32 +117,43 @@ function ValidationChip({ text }) {
   );
 }
 
-function NoveltyInfoTip() {
+/**
+ * Replaces NoveltyInfoTip, which described the drug-penalty formula
+ * (biology / (1 + drugCount)) that was removed after it measured below
+ * chance. Every figure comes from MEASURED so this tooltip and /validation
+ * cannot state the same quantity differently.
+ */
+function EvidenceInfoTip() {
   return (
     <span className="score-tip">
-      <button type="button" className="score-tip-btn" aria-label="How novelty score is calculated">
+      <button
+        type="button"
+        className="score-tip-btn"
+        aria-label="How the evidence strength score is calculated"
+      >
         i
       </button>
       <span className="score-tip-pop" role="tooltip">
-        <strong>Novelty score</strong>
-        <span className="score-tip-lead">
-          High genetic / biological association, inversely weighted by how many approved or investigational
-          drugs already target the gene. Zero drugs keeps the full biology signal; well-drugged genes score low
-          even when the disease association is strong.
-        </span>
+        <strong>{TARGET_DISCOVERY_COPY.evidenceTipTitle}</strong>
+        <span className="score-tip-lead">{TARGET_DISCOVERY_COPY.evidenceTipLead}</span>
         <ul>
           <li>
             <b>Biology:</b> genetic association weighted most, then rare-variant literature, somatic mutation,
             overall Open Targets score, literature, pathway, animal model.
           </li>
           <li>
-            <b>Drug penalty:</b> 1 / (1 + existing drug count) from Open Targets{" "}
-            <code>drugAndClinicalCandidates</code> (replaces the older <code>knownDrugs</code> field).
+            <b>Measured:</b> held-out ROC-AUC {MEASURED.understudy.rocUndrugged} on targets with no existing
+            drug, {MEASURED.understudy.rocAllTargets} across all targets. Genetic association on its own scores{" "}
+            {MEASURED.geneticAlone.rocCohort2} — chance — so evidence recorded in Open Targets is not evidence
+            that a target is validated.
           </li>
           <li>
-            <b>Safety &amp; Essentiality:</b> pan-essential genes (DepMap / gnomAD pLI &gt; 0.9 with broad vital-organ expression) incur a toxicity penalty.
+            <b>Not a drug penalty any more:</b> the 1 / (1 + drug count) term this score used to carry took it
+            to ROC-AUC {MEASURED.removedNoveltyFormula.roc}, below chance, and was deleted. Drug count is a
+            column you can sort on instead.
           </li>
         </ul>
+        <span className="score-tip-lead">{TARGET_DISCOVERY_COPY.evidenceTipNotNovelty}</span>
       </span>
     </span>
   );
@@ -289,7 +300,11 @@ function DiscoveryTable({
                           {r.tdl}
                         </span>
                       ) : null}
-                      {r.highNovelty ? <span className="novelty-badge undrugged">🆕 Undrugged target</span> : null}
+                      {r.highNovelty ? (
+                        <span className="novelty-badge undrugged">
+                          {TARGET_DISCOVERY_COPY.undruggedBadge}
+                        </span>
+                      ) : null}
                       {r.wellEstablished && !r.highNovelty ? (
                         <span className="novelty-badge established">Well-established</span>
                       ) : null}
@@ -711,11 +726,7 @@ export default function TargetDiscoveryPage() {
       <div className="hero">
         <div className="hero-eyebrow">TargetForge · target discovery</div>
         <h1>Target Discovery</h1>
-        <p>
-          Find genetically validated but underexplored protein targets for a disease — opportunities with strong
-          biological evidence and little to no existing drug coverage. TargetForge supports target identification
-          by ranking Open Targets associations; it does not replace experimental target validation.
-        </p>
+        <p>{TARGET_DISCOVERY_COPY.lead}</p>
       </div>
 
       <div className="grid with-scores">
@@ -740,7 +751,7 @@ export default function TargetDiscoveryPage() {
                   className={"chip" + (profile === "novel_discovery" && !useCustomWeights ? " active" : "")}
                   onClick={() => onProfileChange("novel_discovery")}
                 >
-                  Novel Discovery (Genetics &amp; CRISPR weighted)
+                  Genetic &amp; Somatic Evidence (Genetics &amp; CRISPR weighted)
                 </button>
                 <button
                   type="button"
@@ -859,13 +870,13 @@ export default function TargetDiscoveryPage() {
           {error && <div className="error-msg">{error}</div>}
           {loading && (
             <div className="repurpose-progress" role="status" aria-live="polite">
-              <div className="repurpose-progress-label">Querying Open Targets for associated targets\u2026</div>
+              <div className="repurpose-progress-label">Querying Open Targets for associated targets…</div>
             </div>
           )}
           {!loading && !result && !error && (
             <div className="empty-state">
-              Search a disease to surface protein targets with strong genetic or biological evidence and little
-              existing drug coverage.
+              Search a disease to list the protein targets Open Targets records evidence for, with the drug count
+              for each shown as its own column.
             </div>
           )}
         </Panel>
@@ -874,7 +885,7 @@ export default function TargetDiscoveryPage() {
       {result && (
         <div className="handoff-panel">
           <Panel
-            eyebrow="Novelty-ranked opportunities"
+            eyebrow={TARGET_DISCOVERY_COPY.undruggedPanelEyebrow}
             title={`Targets for ${diseaseName}`}
             kind="candidate"
           >
@@ -886,23 +897,41 @@ export default function TargetDiscoveryPage() {
             <div className="hint" style={{ marginTop: result.fromCache ? 10 : 0 }}>
               Resolved to <span className="mono">{result.disease.id}</span>
               {result.disease.associationCount
-                ? ` \u00b7 ${result.disease.associationCount.toLocaleString()} associations in Open Targets, showing the top ${result.fetchedCount} by overall score`
+                ? ` · ${result.disease.associationCount.toLocaleString()} associations in Open Targets, showing the top ${result.fetchedCount} by overall score`
                 : ""}
               . Known-drug counts use <span className="mono">target.drugAndClinicalCandidates.count</span> (the
               current schema; the older <span className="mono">knownDrugs</span> field is gone).
             </div>
 
+            {/*
+              Was a .recommend "winner" callout headed "Undrugged, genetically
+              supported leads" / "High-novelty targets", which presented the one
+              combination the benchmark argues against as the page's
+              recommendation. Now a neutral grouping that states the direction,
+              and the figure shown is the evidence score the table sorts on
+              rather than the deprecated noveltyScore alias.
+
+              The old heading also carried a literal "🆕" escape in
+              JSX text rather than an emoji, so users were shown the escape
+              sequence. Removed with the block.
+            */}
             {headline.length > 0 && view === "novelty" && (
-              <div className="recommend compact">
-                <div className="recommend-label">Undrugged, genetically supported leads</div>
-                <div className="winner">\ud83c\udd95 High-novelty targets for {diseaseName}</div>
-                <div className="winner-score">
-                  {headline.length} gene{headline.length === 1 ? "" : "s"} with strong evidence and 0 existing drugs
+              <div className="evidence-group-note">
+                <div className="evidence-group-title">
+                  {TARGET_DISCOVERY_COPY.undruggedGroupLabel} — {diseaseName}
+                </div>
+                <div className="evidence-group-caveat">
+                  {headline.length} gene{headline.length === 1 ? "" : "s"} with recorded evidence and no
+                  approved or clinical drug for this disease. This is not a shortlist: Task 8 measured existing
+                  compound count as the strongest single predictor of a target reaching the clinic (held-out
+                  ROC-AUC {MEASURED.tractability.compoundCount}), so the absence of chemistry points away from
+                  progression rather than towards it.
                 </div>
                 <ul className="rank-bullets">
                   {headline.map((row) => (
                     <li key={row.ensemblId}>
-                      <b>{row.symbol}</b> (novelty {row.noveltyScore.toFixed(1)}) — {row.explanation}
+                      <b>{row.symbol}</b> (evidence {(row.understudyScore ?? 0).toFixed(1)}) —{" "}
+                      {row.explanation}
                     </li>
                   ))}
                 </ul>
@@ -919,7 +948,7 @@ export default function TargetDiscoveryPage() {
                     setSort({ key: "noveltyScore", dir: "desc" });
                   }}
                 >
-                  Underexplored (novelty) \u00b7 {result.novelty.length}
+                  No drug for this disease · {result.novelty.length}
                 </button>
                 <button
                   type="button"
@@ -929,10 +958,10 @@ export default function TargetDiscoveryPage() {
                     setSort({ key: "noveltyScore", dir: "desc" });
                   }}
                 >
-                  Well-established targets \u00b7 {result.established.length}
+                  Well-established targets · {result.established.length}
                 </button>
               </div>
-              <NoveltyInfoTip />
+              <EvidenceInfoTip />
               <ReportExportButtons
                 compact
                 label="Export report"
@@ -1024,8 +1053,12 @@ export default function TargetDiscoveryPage() {
               <a href="https://platform.opentargets.org" target="_blank" rel="noreferrer">
                 Open Targets Platform
               </a>
-              . Novelty is a TargetForge ranking, not Open Targets' own recency-based <span className="mono">novelty</span>{" "}
-              field. A high novelty score is a hypothesis to follow up — not proof that a target is druggable.
+              . The evidence and progression columns are TargetForge rankings, unrelated to Open Targets&apos; own
+              recency-based <span className="mono">novelty</span> field, which this app does not use. A high
+              evidence score means the literature already supports the target, not that it is unexplored and not
+              that it is druggable. Held-out performance for both columns, and for the formula that was removed
+              for scoring below chance, is on the{" "}
+              <a href="/validation">validation page</a>.
             </div>
           </Panel>
         </div>

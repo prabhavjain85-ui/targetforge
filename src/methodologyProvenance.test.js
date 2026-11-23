@@ -10,17 +10,56 @@
  */
 import fs from "fs";
 import path from "path";
+import React from "react";
+import { act } from "react-dom/test-utils";
+import ReactDOM from "react-dom/client";
+import { MemoryRouter } from "react-router-dom";
 import {
+  MEASURED,
+  NEGLECT_SCREEN_COPY,
   SCORE_CHIPS,
+  SITE_COPY,
+  TARGET_DISCOVERY_COPY,
   VALIDATION_COMMIT_SHORT,
   VALIDATION_SECTIONS,
   VALIDATION_SOURCES,
 } from "./shared/validationCopy";
+import { VINA_MEASURED } from "./shared/dockingStatus";
+import MethodologyPage from "./MethodologyPage";
 
 const repoRoot = path.join(__dirname, "..");
 const read = (p) => fs.readFileSync(path.join(repoRoot, p), "utf8");
 
 const page = read("src/MethodologyPage.jsx");
+
+/**
+ * The rendered methodology page, as text.
+ *
+ * The figures on this page used to be literal text in the JSX, so grepping
+ * the source was enough to check them. They now interpolate from MEASURED and
+ * VINA_MEASURED, which is the point of the content sweep: a figure exists once
+ * and every surface renders it. Checking the source would therefore pass
+ * vacuously on an interpolation that resolves to undefined, so every figure
+ * assertion below reads the DOM instead. `page` is still used, but only for
+ * what must be ABSENT from the source.
+ */
+global.IS_REACT_ACT_ENVIRONMENT = true;
+
+const PAGE_TEXT = (() => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = ReactDOM.createRoot(container);
+  // MemoryRouter because SeoIntroLinks renders react-router <Link>s.
+  act(() => {
+    root.render(
+      React.createElement(MemoryRouter, null, React.createElement(MethodologyPage))
+    );
+  });
+  const text = container.textContent || "";
+  act(() => root.unmount());
+  container.remove();
+  return text;
+})();
 const results = read("benchmark/docking/RESULTS.md");
 const task1 = read("benchmark/docking/TASK1_BASELINES.md");
 const task2 = read("benchmark/docking/TASK2_DECOY_BENCHMARK.md");
@@ -34,11 +73,24 @@ const task7 = JSON.parse(read("benchmark/docking/results/task7_cancer_stratifica
 const task10 = JSON.parse(read("benchmark/docking/results/task10_repurposing_validation.json"));
 const fittedAsset = JSON.parse(read("server/data/novelty/fitted-simplex-weights.json"));
 
-/** Every committed benchmark artifact, concatenated, for traceability checks. */
+/**
+ * Every committed benchmark artifact, concatenated, for traceability checks.
+ *
+ * The task write-ups are included alongside the JSON: some figures are only
+ * stated in the markdown (the Open Targets tractability join rate, 72.8%, is
+ * derived in TASK8 and not emitted as a field), and a figure stated only in a
+ * committed write-up still traces.
+ */
 const ARTIFACT_TEXT =
   results +
   task1 +
   task2 +
+  read("benchmark/docking/TASK3_NOVELTY_VALIDATION.md") +
+  read("benchmark/docking/TASK4_ATTENTION_CONTROL.md") +
+  read("benchmark/docking/TASK7_CANCER_STRATIFICATION.md") +
+  read("benchmark/docking/TASK8_TRACTABILITY.md") +
+  read("benchmark/docking/TASK9_NEGLECT_SCREEN.md") +
+  read("benchmark/docking/TASK10_REPURPOSING.md") +
   JSON.stringify(task3) +
   JSON.stringify(task4) +
   JSON.stringify(task7) +
@@ -83,10 +135,13 @@ describe("every quoted figure traces to a benchmark artifact", () => {
   test("Spearman rho and its confidence interval match approved_25.json", () => {
     const rho = approved25.spearman_vina_vs_pchembl.rho;
     expect(rho).toBeCloseTo(-0.291, 3);
-    expect(page).toContain("−0.291");
+    // Via VINA_MEASURED, so this page and the docking copy cannot diverge.
+    expect(VINA_MEASURED.potencySpearman).toBe("−0.291");
+    expect(VINA_MEASURED.potencySpearmanCi).toBe("−0.681 to 0.478");
+    expect(PAGE_TEXT).toContain("−0.291");
     // The interval spans zero; the page must not imply a reliable correlation.
-    expect(page).toContain("−0.681 to 0.478");
-    expect(page).toMatch(/spans zero/i);
+    expect(PAGE_TEXT).toContain("−0.681 to 0.478");
+    expect(PAGE_TEXT).toMatch(/spans zero/i);
   });
 
   test("per-target enrichment figures match enrichment.json", () => {
@@ -113,24 +168,34 @@ describe("every quoted figure traces to a benchmark artifact", () => {
       expect(row.ef1pct).toBeCloseTo(Number(e.ef), 2);
       expect(row.n_test_actives).toBe(e.actives);
       expect(row.n_test_decoys).toBe(e.decoys);
-      // ...and the same numbers appear on the page.
-      expect(page).toContain(e.auc);
-      expect(page.toUpperCase()).toContain(e.id.toUpperCase());
+      // ...the shared constant carries them...
+      const shared = VINA_MEASURED.enrichment.find(
+        (x) => x.target.toLowerCase() === e.id
+      );
+      expect(shared).toBeDefined();
+      expect(shared.roc).toBe(e.auc);
+      expect(shared.ci).toBe(`${e.lo}–${e.hi}`);
+      expect(shared.ef1).toBe(e.ef);
+      expect(shared.actives).toBe(String(e.actives));
+      expect(shared.decoys).toBe(String(e.decoys));
+      // ...and the rendered page shows them.
+      expect(PAGE_TEXT).toContain(e.auc);
+      expect(PAGE_TEXT.toUpperCase()).toContain(e.id.toUpperCase());
     }
 
     // Two of the three targets show no early enrichment; the page states that.
-    expect(page).toMatch(/EF@1% 0\.00/);
-    expect(page).toMatch(/EF@1% 3\.50/);
-    expect(page).toMatch(/no early enrichment/i);
+    expect(PAGE_TEXT).toMatch(/EF@1% 0\.00/);
+    expect(PAGE_TEXT).toMatch(/EF@1% 3\.50/);
+    expect(PAGE_TEXT).toMatch(/no early enrichment/i);
   });
 
   test("the triage baseline finding quotes Task 2, not the superseded Task 1", () => {
     expect(task1).toMatch(/DOES NOT beat/);
     // Task 2 sanity-passing figures, matching /validation.
-    expect(page).toMatch(/0\.523/);
-    expect(page).toMatch(/0\.662/);
-    expect(page).toMatch(/TASK2_DECOY_BENCHMARK/);
-    expect(page).toMatch(/superseded/i);
+    expect(PAGE_TEXT).toMatch(/0\.523/);
+    expect(PAGE_TEXT).toMatch(/0\.662/);
+    expect(PAGE_TEXT).toMatch(/TASK2_DECOY_BENCHMARK/);
+    expect(PAGE_TEXT).toMatch(/superseded/i);
   });
 
   test("no page quotes a figure from the superseded Task 1 benchmark", () => {
@@ -1008,11 +1073,11 @@ describe("methodology and validation do not contradict each other", () => {
 
   test("Station 3 describes similarity ranking, not AI prioritisation", () => {
     expect(methodology).not.toMatch(/AI prioriti[sz]ation/i);
-    expect(methodology).toMatch(/Station 3 — Ranking and filters/);
-    expect(methodology).toMatch(/Tanimoto similarity/i);
-    expect(methodology).toContain("0.662");
-    expect(methodology).toContain("0.523");
-    expect(methodology).toMatch(/neither is AI/i);
+    expect(PAGE_TEXT).toMatch(/Station 3 — Ranking and filters/);
+    expect(PAGE_TEXT).toMatch(/Tanimoto similarity/i);
+    expect(PAGE_TEXT).toContain("0.662");
+    expect(PAGE_TEXT).toContain("0.523");
+    expect(PAGE_TEXT).toMatch(/neither is AI/i);
   });
 
   test("docking paused appears nowhere", () => {
@@ -1079,6 +1144,401 @@ describe("no surface presents LLM output as analysis", () => {
       if (/coming soon/i.test(read(`src/${name}`))) offenders.push(name);
     }
     expect(offenders).toEqual([]);
+  });
+});
+
+/* ========================================================================= *
+ * The content sweep.
+ *
+ * The status sweep fixed what the site said about whether docking works.
+ * These guards cover what it said its scores MEAN — claims the benchmarks
+ * have since refuted:
+ *
+ *   "AI-powered"            nothing here is AI
+ *   "genetically validated" genetic association alone scored at chance
+ *   "underexplored"         zero prior effort predicts AGAINST progression
+ *   "novelty score"         split into understudy and progression
+ *   "opportunity"           nothing may assert a target is one
+ *
+ * The phrase bans run over user-facing STRINGS, not whole files: a comment
+ * explaining why a phrase was removed must not trip the guard that removed
+ * it, or the explanation cannot be written down.
+ * ========================================================================= */
+
+/** Every file that renders user-facing copy. */
+const USER_FACING_FILES = fs
+  .readdirSync(path.join(repoRoot, "src"))
+  .filter((n) => /\.jsx?$/.test(n) && !/\.test\./.test(n))
+  .map((n) => `src/${n}`)
+  .concat(["src/shared/validationCopy.js", "src/shared/dockingStatus.js", "src/seoConfig.js"]);
+
+/**
+ * Strip what a user never reads: block comments, line comments, import
+ * specifiers and JSX attribute names. What remains is string literals and JSX
+ * text — the copy itself.
+ */
+function userFacingText(source) {
+  return source
+    .replace(/\/\*[\s\S]*?\*\//g, " ")
+    .replace(/^\s*\/\/.*$/gm, " ")
+    .replace(/^\s*import[\s\S]*?from\s+"[^"]+";/gm, " ")
+    .replace(/\bclassName=("[^"]*"|\{[^}]*\})/g, " ")
+    .replace(/\bid="[^"]*"/g, " ");
+}
+
+/**
+ * Occurrences of "opportunit*" that are allowed, because they deny the thing
+ * the ban exists to stop. The neglect screen's "They are not opportunities"
+ * is the correct register and the sweep says to reuse it, so the guard has to
+ * permit the denial while still catching the assertion.
+ */
+const NEGATED_OPPORTUNITY = [
+  /\bnot\s+(?:an\s+)?opportunit/i,
+  /\bnever\s+(?:an\s+)?opportunit/i,
+  /\bdoes not identify opportunit/i,
+  /\bunpursued,?\s+or an opportunit/i,
+  // The identifier itself, e.g. NEGLECT_SCREEN_COPY.notOpportunities.
+  /\bnotOpportunit/,
+];
+
+/**
+ * Sentences allowed to contain a banned phrase because they report that the
+ * claim was made and has been withdrawn.
+ *
+ * This is an explicit allowlist rather than a regex for words like "was" or
+ * "previously", on purpose. A heuristic would let any new sentence through as
+ * long as it was phrased in the past tense, which is precisely how the
+ * original copy would come back. Every entry here had to be written down and
+ * can be read in review; adding one is a visible act.
+ *
+ * Each entry must also be a denial or a history, never an assertion — the
+ * "guards bite" test checks that an affirmative sentence is not covered by
+ * any of them.
+ */
+const WITHDRAWN_CLAIM_ALLOWLIST = [
+  // Criterion 04 opens by naming the formula it replaced and its figure.
+  "used to describe a single &quot;novelty score&quot;",
+  // Criterion 04 names the phrase it removed and why.
+  "previously described these as genetically validated targets",
+];
+
+/**
+ * Denying that a score is a novelty score is the opposite of claiming it is,
+ * so the denial is always allowed — three surfaces say it, and the sweep asks
+ * them to.
+ */
+const NEGATED_NOVELTY_SCORE = /\bnot\s+a\s+novelty\s+score/i;
+
+/** True when a line denies the claim or reports it as withdrawn. */
+function isWithdrawnClaim(line) {
+  if (NEGATED_NOVELTY_SCORE.test(line)) return true;
+  return WITHDRAWN_CLAIM_ALLOWLIST.some((allowed) => line.includes(allowed));
+}
+
+describe("no surface claims the site finds validated, novel or underexplored targets", () => {
+  const BANNED = [
+    { label: "AI-powered", pattern: /AI[-\s]?powered/i },
+    { label: "genetically validated", pattern: /genetically[-\s]valid/i },
+    { label: "underexplored", pattern: /underexplored/i },
+    { label: "novelty score", pattern: /novelty\s+score/i },
+  ];
+
+  test("the four refuted phrases appear in no user-facing string", () => {
+    const offenders = [];
+    for (const file of USER_FACING_FILES) {
+      const text = userFacingText(read(file));
+      for (const { label, pattern } of BANNED) {
+        for (const line of text.split("\n").filter((l) => pattern.test(l))) {
+          if (isWithdrawnClaim(line)) continue;
+          offenders.push(`${file}: ${label} → ${line.trim().slice(0, 90)}`);
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("the static shell crawlers see carries none of them either", () => {
+    // public/index.html is served before React hydrates and its <h1>, <title>
+    // and og:/twitter: tags are what crawlers and no-JS readers get. It had
+    // its own "AI-Powered" copy in six places, which no test looked at
+    // because the suite only ever read src/.
+    const shell = read("public/index.html");
+    for (const { label, pattern } of BANNED) {
+      expect({ label, hit: pattern.test(shell) }).toEqual({ label, hit: false });
+    }
+    expect(read("public/social-preview.svg")).not.toMatch(/AI[-\s]?powered/i);
+    // The generator and the committed asset must agree, or the next regen
+    // reintroduces it.
+    expect(read("scripts/generate_social_preview.py")).not.toMatch(/AI[-\s]?powered/i);
+  });
+
+  test("'opportunity' appears only where it is denied", () => {
+    const offenders = [];
+    for (const file of USER_FACING_FILES) {
+      const text = userFacingText(read(file));
+      for (const line of text.split("\n")) {
+        if (!/opportunit/i.test(line)) continue;
+        if (NEGATED_OPPORTUNITY.some((re) => re.test(line))) continue;
+        if (isWithdrawnClaim(line)) continue;
+        offenders.push(`${file}: ${line.trim().slice(0, 90)}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("the allowlist covers only denials and histories, never assertions", () => {
+    // Every entry must read as withdrawn or denied. If an entry could be a
+    // live claim, it does not belong on the list.
+    for (const entry of WITHDRAWN_CLAIM_ALLOWLIST) {
+      expect(entry).toMatch(/used to|previously/i);
+    }
+    // The list stays short on purpose: each entry is a hole in the guard.
+    expect(WITHDRAWN_CLAIM_ALLOWLIST.length).toBeLessThanOrEqual(4);
+    // And the affirmative forms the sweep removed are not covered by any of
+    // them, so re-adding the original copy still fails.
+    const originals = [
+      "Find genetically validated, underexplored protein targets for a disease",
+      "Highlighted as underexplored opportunities for first-in-class therapeutic development.",
+      "AI-Powered Drug Discovery & Target Identification",
+      'aria-label="How novelty score is calculated"',
+      "A high novelty score is a hypothesis to follow up",
+      "Novelty-ranked opportunities",
+    ];
+    for (const original of originals) {
+      expect(isWithdrawnClaim(original)).toBe(false);
+      expect(NEGATED_OPPORTUNITY.some((re) => re.test(original))).toBe(false);
+      // ...and at least one banned pattern catches it.
+      expect(
+        BANNED.some((b) => b.pattern.test(original)) || /opportunit/i.test(original)
+      ).toBe(true);
+    }
+  });
+
+  test("the guards bite", () => {
+    // A guard that cannot fail is not a guard.
+    const fake =
+      `const a = "Find genetically validated, underexplored targets";\n` +
+      `const b = "AI-Powered Drug Discovery";\n` +
+      `const c = "How novelty score is calculated";\n` +
+      `const d = "a first-in-class opportunity";\n`;
+    const text = userFacingText(fake);
+    for (const { pattern } of BANNED) expect(pattern.test(text)).toBe(true);
+    expect(/opportunit/i.test(text)).toBe(true);
+    // The denial the guard must allow is allowed.
+    expect(NEGATED_OPPORTUNITY.some((re) => re.test("They are not opportunities: a target"))).toBe(
+      true
+    );
+    // A comment explaining a removal is stripped before the check, so the
+    // explanation can be written without tripping the guard it explains.
+    expect(/underexplored/i.test(userFacingText("// was underexplored\n"))).toBe(false);
+    expect(/underexplored/i.test(userFacingText("/* underexplored */\n"))).toBe(false);
+    // But a comment is the ONLY thing stripped: a string is still checked.
+    expect(/underexplored/i.test(userFacingText('const x = "underexplored";'))).toBe(true);
+  });
+});
+
+describe("numeric performance claims live only in the shared constants", () => {
+  /**
+   * Pages whose figures must all be interpolated. A three-decimal literal in
+   * one of these is how /methodology came to quote the superseded Task 1
+   * figures while /validation quoted Task 2's.
+   */
+  const RENDER_FILES = [
+    "src/MethodologyPage.jsx",
+    "src/TargetDiscoveryPage.jsx",
+    "src/seoConfig.js",
+    "src/NeglectScreenPage.jsx",
+  ];
+
+  test("no page file hardcodes a three-decimal metric", () => {
+    const offenders = [];
+    for (const file of RENDER_FILES) {
+      const text = userFacingText(read(file));
+      for (const line of text.split("\n")) {
+        const hits = line.match(/\b0\.\d{3}\b/g);
+        if (hits) offenders.push(`${file}: ${hits.join(", ")} → ${line.trim().slice(0, 80)}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("every figure in MEASURED traces to a committed artifact", () => {
+    const flat = [];
+    const walk = (node, trail) => {
+      if (typeof node === "string") return flat.push([trail, node]);
+      if (Array.isArray(node)) return node.forEach((v, i) => walk(v, `${trail}[${i}]`));
+      if (node && typeof node === "object") {
+        for (const [k, v] of Object.entries(node)) walk(v, `${trail}.${k}`);
+      }
+    };
+    walk(MEASURED, "MEASURED");
+    expect(flat.length).toBeGreaterThan(60);
+
+    const artifactDecimals = (ARTIFACT_TEXT.match(/\d+\.\d{2,}/g) || []).map(Number);
+    const untraced = [];
+    for (const [trail, value] of flat) {
+      // Each decimal inside the string must appear in, or round to, a value
+      // in a committed artifact. Counts and windows carry no decimals.
+      for (const raw of value.match(/\d+\.\d+/g) || []) {
+        const dp = raw.split(".")[1].length;
+        const n = Number(raw);
+        if (ARTIFACT_TEXT.includes(raw)) continue;
+        if (artifactDecimals.some((v) => Number(v.toFixed(dp)) === n)) continue;
+        untraced.push(`${trail} = ${value} (${raw})`);
+      }
+    }
+    expect(untraced).toEqual([]);
+  });
+
+  test("the artifact check bites", () => {
+    const artifactDecimals = (ARTIFACT_TEXT.match(/\d+\.\d{2,}/g) || []).map(Number);
+    const invented = "0.9991";
+    expect(ARTIFACT_TEXT.includes(invented)).toBe(false);
+    expect(artifactDecimals.some((v) => Number(v.toFixed(4)) === Number(invented))).toBe(false);
+  });
+});
+
+describe("/methodology and /validation never state the same quantity differently", () => {
+  const validationText = VALIDATION_SECTIONS.map((s) => s.body).join("\n") +
+    Object.values(SCORE_CHIPS).join("\n");
+
+  /**
+   * Quantities both pages discuss. Each is checked for ONE rendered form, so
+   * 0.0175 on one page and 0.018 on the other fails — which is the drift the
+   * HARD RULE forbids, and was real: validationCopy rounded the genetic
+   * simplex weight to 0.018 while the artifact and the sweep spec say 0.0175.
+   */
+  const SHARED_QUANTITIES = [
+    { label: "understudy ROC (undrugged)", value: MEASURED.understudy.rocUndrugged, variants: ["0.64", "0.6370"] },
+    { label: "progression ROC", value: MEASURED.progression.roc, variants: ["0.71", "0.7080"] },
+    { label: "publication-count ROC", value: MEASURED.publications.roc, variants: ["0.67", "0.6670"] },
+    { label: "biology + publications ROC", value: MEASURED.attention.publicationsPlusBiology, variants: ["0.72"] },
+    { label: "compound count ROC", value: MEASURED.tractability.compoundCount, variants: ["0.77"] },
+    { label: "removed novelty formula ROC", value: MEASURED.removedNoveltyFormula.roc, variants: ["0.36"] },
+    { label: "heuristic-v2 ROC", value: MEASURED.compoundTriage.heuristicV2, variants: ["0.52"] },
+    { label: "Tanimoto ROC", value: MEASURED.compoundTriage.tanimoto, variants: ["0.66"] },
+    { label: "repurposing ROC", value: MEASURED.repurposing.shipped, variants: ["0.91"] },
+  ];
+
+  test("each shared quantity has exactly one rendered form on both pages", () => {
+    const problems = [];
+    for (const q of SHARED_QUANTITIES) {
+      // Both surfaces state it...
+      if (!PAGE_TEXT.includes(q.value)) problems.push(`/methodology omits ${q.label} ${q.value}`);
+      if (!validationText.includes(q.value)) problems.push(`/validation omits ${q.label} ${q.value}`);
+      // ...and neither states a differently-rounded form of it. The variant
+      // must be matched as a whole number: "0.72" is a substring of "0.721",
+      // so a plain includes() reports every correct figure as a re-rounding.
+      for (const v of q.variants) {
+        const whole = new RegExp(`(?<!\\d)${v.replace(".", "\\.")}(?!\\d)`);
+        if (whole.test(PAGE_TEXT)) problems.push(`/methodology re-rounds ${q.label} to ${v}`);
+        if (whole.test(validationText)) problems.push(`/validation re-rounds ${q.label} to ${v}`);
+      }
+    }
+    expect(problems).toEqual([]);
+  });
+
+  test("the genetic simplex weight is stated identically, not re-rounded", () => {
+    // The specific drift this rule exists to catch.
+    expect(MEASURED.geneticAlone.simplexWeight).toBe("0.0175");
+    const bothSurfaces = `${PAGE_TEXT}\n${validationText}`;
+    expect(bothSurfaces).toContain("0.0175");
+    expect(bothSurfaces).not.toContain("0.018 on genetic");
+  });
+
+  test("the site descriptor and target-discovery copy are shared, not duplicated", () => {
+    // seoConfig renders SITE_COPY / TARGET_DISCOVERY_COPY rather than its own
+    // wording, so the title and the H1 cannot drift apart again.
+    const seo = read("src/seoConfig.js");
+    expect(seo).toMatch(/SITE_COPY\.title/);
+    expect(seo).toMatch(/SITE_COPY\.h1/);
+    expect(seo).toMatch(/TARGET_DISCOVERY_COPY\.(lead|seo)/);
+    expect(SITE_COPY.title).not.toMatch(/AI/i);
+    expect(SITE_COPY.h1).not.toMatch(/AI/i);
+    expect(TARGET_DISCOVERY_COPY.lead).toMatch(/not opportunities/i);
+    expect(read("src/TargetDiscoveryPage.jsx")).toMatch(/TARGET_DISCOVERY_COPY\.lead/);
+  });
+});
+
+describe("the methodology page no longer contradicts itself", () => {
+  test("the anti-hype policy is not refuted elsewhere in the same file", () => {
+    // Line 438 used to label targets "underexplored opportunities" twenty
+    // lines above the box forbidding exactly that word.
+    expect(PAGE_TEXT).toMatch(/Anti-Hype Reporting Policy/i);
+    expect(PAGE_TEXT).toMatch(/asserts that a target is novel, unpursued, or an opportunity/i);
+    // The column that carried the contradiction is gone, by its own id.
+    expect(page).not.toMatch(/col-novelty-metric/);
+    expect(page).not.toMatch(/First-in-Class Potential/i);
+    expect(page).toMatch(/col-understudy-score/);
+    expect(page).toMatch(/col-progression-score/);
+  });
+
+  test("Criterion 03 states measured performance before the score bands", () => {
+    const measuredAt = PAGE_TEXT.indexOf(MEASURED.compoundTriage.heuristicV2);
+    const bandsAt = PAGE_TEXT.indexOf("Score Bands");
+    expect(measuredAt).toBeGreaterThan(-1);
+    expect(bandsAt).toBeGreaterThan(-1);
+    expect(measuredAt).toBeLessThan(bandsAt);
+  });
+
+  test("Criterion 04 reports the split scores and the removed formula", () => {
+    expect(PAGE_TEXT).toMatch(/Evidence strength score/);
+    expect(PAGE_TEXT).toMatch(/Progression score/);
+    expect(PAGE_TEXT).toContain(MEASURED.removedNoveltyFormula.roc);
+    expect(PAGE_TEXT).toMatch(/below chance/i);
+    // Task 4, 7 and 8 as the sweep requires.
+    expect(PAGE_TEXT).toContain(MEASURED.attention.deltaRoc);
+    expect(PAGE_TEXT).toContain(MEASURED.attention.deltaRocCiDiseases);
+    expect(PAGE_TEXT).toContain(MEASURED.cancerStratification.nonCancerPublicationsOnly);
+    expect(PAGE_TEXT).toMatch(/underpowered to tell/i);
+    expect(PAGE_TEXT).toContain(MEASURED.tractability.genePropertyDelta);
+    expect(PAGE_TEXT).toContain(MEASURED.tractability.compoundCount);
+    expect(PAGE_TEXT).toMatch(/No score was shipped on this result/i);
+  });
+
+  test("the two repurposing engines are not conflated", () => {
+    // Criterion 05 is the compound screen (heuristic-v2); Task 10 is the
+    // target-side profile. The page must say which is which.
+    expect(PAGE_TEXT).toMatch(/does not score compounds/i);
+    expect(PAGE_TEXT).toContain(MEASURED.repurposing.shipped);
+    expect(PAGE_TEXT).toContain(MEASURED.compoundTriage.ruleTableOnly);
+  });
+
+  test("ADME location is stated once and says backend", () => {
+    expect(PAGE_TEXT).not.toMatch(/in-browser (RDKit|ADME)/i);
+    expect(PAGE_TEXT).toMatch(/RDKit, which runs on the backend|calculated on the backend/i);
+    // The claim matches the code: RDKit is initialised only on the server.
+    expect(read("server/rdkitLoader.js")).toMatch(/run exclusively on the server/i);
+    const srcImports = fs
+      .readdirSync(path.join(repoRoot, "src"))
+      .filter((n) => /\.jsx?$/.test(n) && !/\.test\./.test(n))
+      // Import statements only. Prose may name @rdkit/rdkit — the panels do,
+      // when saying what computes their alerts — without loading it here.
+      .filter((n) => /^\s*import[^\n]*(@rdkit|\.\/rdkit)/m.test(read(`src/${n}`)));
+    expect(srcImports).toEqual([]);
+  });
+
+  test("the sections the site never had are present and sourced", () => {
+    expect(PAGE_TEXT).toMatch(/The Neglect Screen, And What It Is Not/i);
+    expect(PAGE_TEXT).toMatch(/not opportunities/i);
+    expect(PAGE_TEXT).toContain(MEASURED.cancerStratification.indiaCancerShareOfDalys);
+    expect(PAGE_TEXT).toMatch(/not original to TargetForge/i);
+    expect(PAGE_TEXT).toMatch(/Illuminating the Druggable Genome/i);
+    // The link comes from the shared copy, so the href is checked there and
+    // the rendered label is checked on the page.
+    expect(NEGLECT_SCREEN_COPY.priorArtHref).toContain("pharos.nih.gov");
+    expect(PAGE_TEXT).toContain(NEGLECT_SCREEN_COPY.priorArtLinkLabel);
+    expect(page).toMatch(/NEGLECT_SCREEN_COPY\.priorArtHref/);
+    // And the prominent pointer to the authoritative source.
+    expect(PAGE_TEXT).toMatch(/authoritative source for every number/i);
+    expect(page).toMatch(/methodology-validation-callout/);
+  });
+
+  test("the stale 'hypothesis generation' and in-progress benchmark are gone", () => {
+    expect(PAGE_TEXT).not.toMatch(/hypothesis generation/i);
+    expect(PAGE_TEXT).not.toMatch(/being rebuilt|in progress/i);
+    // userFacingText, so the comment recording the removal does not count.
+    expect(userFacingText(read("src/seoConfig.js"))).not.toMatch(/hypothesis generation/i);
   });
 });
 

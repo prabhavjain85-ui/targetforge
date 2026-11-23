@@ -18,7 +18,11 @@ export {
   VALIDATION_COMMIT_SHORT,
   VALIDATION_RUN_LINE,
   VALIDATION_SOURCE_FILES,
-} from "./validationProvenance";
+  // Explicit .js extension: seoConfig.js imports this module, and seoConfig is
+  // loaded as plain Node ESM by scripts/inject-seo-html.mjs during the build,
+  // where extensionless specifiers do not resolve. A deploy already failed on
+  // exactly this; src/nodeEsmBuildChain.test.js now guards the whole chain.
+} from "./validationProvenance.js";
 
 export const VALIDATION_SOURCES = {
   task3Json: "benchmark/docking/results/task3_novelty_validation.json",
@@ -35,6 +39,144 @@ export const VALIDATION_SOURCES = {
   pairs: "benchmark/docking/results/pair_sanity_checks.json",
   enrichment: "benchmark/docking/results/enrichment.json",
   approved25: "benchmark/docking/results/approved_25.json",
+};
+
+/* ------------------------------------------------------------------------- *
+ * MEASURED: every numeric performance figure any page may show.
+ *
+ * The pages used to carry their own numbers in JSX text, which is how
+ * /methodology came to quote the superseded Task 1 figures while /validation
+ * quoted Task 2's. A figure now exists once, here, and every surface
+ * interpolates it. src/methodologyProvenance.test.js reads the committed
+ * artifacts back, checks each value below against them, and fails if a
+ * three-decimal figure appears as literal text in a page file.
+ *
+ * Values are strings, not numbers: the rendered form is part of the fact.
+ * Re-rounding 0.0175 to 0.018 on one page and not another is exactly the
+ * drift this object exists to stop. Minus signs are U+2212, as in the copy.
+ *
+ * Docking figures are deliberately absent. They live in VINA_MEASURED in
+ * src/shared/dockingStatus.js, which is their one source of truth.
+ * ------------------------------------------------------------------------- */
+export const MEASURED = {
+  /** Task 3, cohort 2: targets with no approved or clinical drug in 2021. */
+  understudy: {
+    rocUndrugged: "0.637",
+    rocAllTargets: "0.555",
+    prUndrugged: "0.038",
+    prAllTargets: "0.030",
+  },
+  progression: { roc: "0.708", pr: "0.052", precisionAt25: "0.12" },
+  publications: { roc: "0.667", pr: "0.057" },
+
+  /**
+   * Genetic association on its own: chance in both cohorts. This is why no
+   * page may call a target "genetically validated". Open Targets records the
+   * evidence; in this benchmark the evidence did not predict progression.
+   */
+  geneticAlone: {
+    rocCohort1: "0.497",
+    rocCohort2: "0.500",
+    /** Share of the fitted cohort-2 simplex. Literature takes 0.8135. */
+    simplexWeight: "0.0175",
+  },
+  literatureSimplexWeight: "0.8135",
+
+  /** The formula that shipped until the retrospective measured it. */
+  removedNoveltyFormula: { roc: "0.361", inverseDrugCountAlone: "0.129" },
+
+  /** Task 4: does Open Targets biology beat counting papers? */
+  attention: {
+    publicationsOnly: "0.667",
+    publicationsPlusBiology: "0.721",
+    biologyOnly: "0.683",
+    deltaRoc: "+0.054",
+    deltaRocCiPairs: "+0.021 to +0.089",
+    deltaRocCiDiseases: "+0.003 to +0.112",
+    deltaPr: "+0.012",
+    deltaPrCiPairs: "+0.001 to +0.025",
+    deltaPrCiDiseases: "−0.004 to +0.026",
+  },
+
+  /** Task 7: is that an oncology result? */
+  cancerStratification: {
+    heldOutCancers: "9",
+    cancerPairs: "10,308",
+    cancerPositives: "236",
+    cancerDelta: "+0.057",
+    cancerCiPairs: "+0.019 to +0.096",
+    cancerCiDiseases: "+0.002 to +0.122",
+    nonCancerDiseases: "1",
+    nonCancerPairs: "1,403",
+    nonCancerPositives: "22",
+    nonCancerDelta: "−0.008",
+    nonCancerCi: "−0.047 to +0.033",
+    nonCancerPublicationsOnly: "0.730",
+    nonCancerPublicationsPlusBiology: "0.722",
+    /** India's recorded burden, for the scope tension on the neglect screen. */
+    indiaCancerShareOfDalys: "6.0%",
+  },
+
+  /** Task 8: does anything else beat counting papers? */
+  tractability: {
+    everything: "0.807",
+    everythingPr: "0.146",
+    everythingPrecisionAt25: "0.440",
+    gainOverPublications: "+0.140",
+    gainOverPublicationsCi: "+0.100 to +0.181",
+    genePropertiesOnly: "0.719",
+    genePropertyDelta: "−0.002",
+    genePropertyCi: "−0.026 to +0.022",
+    compoundCount: "0.772",
+    compoundCountResidualised: "0.699",
+    compoundCountAttentionR2: "0.002",
+    bestGeneProperty: "0.621",
+    tractabilityJoinRate: "72.8%",
+  },
+
+  /** Task 10: the fitted model that replaced the hand-weighted formula. */
+  repurposing: {
+    shipped: "0.910",
+    shippedPr: "0.195",
+    shippedPrecisionAt25: "0.240",
+    drugCountAlone: "0.872",
+    drugCountAlonePr: "0.177",
+    publicationsAlone: "0.707",
+    publicationsAlonePr: "0.070",
+    handWeighted: "0.787",
+    handWeightedPr: "0.084",
+    handWeightedPrecisionAt25: "0.320",
+    gain: "+0.123",
+    gainCiPairs: "+0.107 to +0.138",
+    gainCiDiseases: "+0.048 to +0.200",
+    drugBeatsPublications: "+0.164",
+    drugBeatsPublicationsCi: "+0.118 to +0.228",
+    precisionAt25Delta: "−0.080",
+    precisionAt25DeltaCi: "−0.320 to +0.160",
+    heldOutPairs: "13,601",
+    heldOutPositives: "300",
+  },
+
+  /** Task 2: the compound triage benchmark. */
+  compoundTriage: {
+    tanimoto: "0.662",
+    tanimotoBedroc20: "0.617",
+    heuristicV2: "0.523",
+    ruleTableOnly: "0.482",
+    random: "0.520",
+    targetsPassingDecoyChecks: "14/15",
+    meanAveBias: "0.099",
+  },
+
+  /** Cohort shape, quoted wherever a figure is attributed. */
+  cohort: {
+    trainingDiseases: "11",
+    heldOutDiseases: "11",
+    heldOutPairs: "11,711",
+    heldOutPositives: "258",
+    baseRate: "2.2%",
+    window: "Open Targets 21.04 → 26.09",
+  },
 };
 
 export const SCORE_CHIPS = {
@@ -191,10 +333,15 @@ export const VALIDATION_SECTIONS = [
       "Progression score (fitted): ROC-AUC 0.708 (PR-AUC 0.052).\n" +
       "Publication count baseline: ROC-AUC 0.667 (PR-AUC 0.057).\n" +
       "Genetic association alone: ROC-AUC 0.500.\n" +
-      "The fitted progression weights place 0.814 of the simplex on the literature " +
-      "feature and 0.018 on genetic association, so this score behaves largely as a " +
-      "publication-count proxy. Publication count alone scores 0.667 against the " +
-      "fitted model's 0.708; treat the two columns as near-duplicate signals rather " +
+      // Interpolated, and no longer re-rounded here. This sentence read
+      // "0.814 ... and 0.018" while the artifact and /methodology said 0.8135
+      // and 0.0175 — two pages stating the same quantity differently, which
+      // is the drift MEASURED exists to prevent.
+      `The fitted progression weights place ${MEASURED.literatureSimplexWeight} of the simplex ` +
+      `on the literature feature and ${MEASURED.geneticAlone.simplexWeight} on genetic ` +
+      "association, so this score behaves largely as a publication-count proxy. Publication " +
+      `count alone scores ${MEASURED.publications.roc} against the fitted model's ` +
+      `${MEASURED.progression.roc}; treat the two columns as near-duplicate signals rather ` +
       "than independent evidence.\n" +
       "The previously shipped novelty formula, biology ÷ (1 + drug count), scored " +
       "ROC-AUC 0.361 on disease-specific clinical acquisition — below chance. The " +
@@ -391,3 +538,62 @@ export const VALIDATION_SECTIONS = [
       "which is the best ranker actually measured on that benchmark.",
   },
 ];
+
+/* ------------------------------------------------------------------------- *
+ * SITE_COPY: what this application is, in the words every surface uses.
+ *
+ * The title and H1 claimed "AI-Powered". Nothing in this repository is AI:
+ * compound ranking is Tanimoto similarity to the co-crystallised ligand,
+ * target ranking is a logistic model fitted over public evidence counts, and
+ * compound triage is a hand-written rule table. The methodology page already
+ * said "Neither is AI" while the title said the opposite.
+ * ------------------------------------------------------------------------- */
+export const SITE_COPY = {
+  title: "TargetForge — Computational Drug Discovery & Target Identification",
+  h1: "Computational Drug Discovery & Target Identification",
+  /** One clause naming what the thing is. Used in metadata and intros. */
+  descriptor: "a computational drug-discovery workbench with published validation",
+  notAi:
+    "Nothing here is AI. Compound ranking is Tanimoto similarity to the staged " +
+    "co-crystallised ligand; target ranking is a logistic model fitted on public " +
+    "evidence counts; compound triage is a hand-written rule table. Every one of " +
+    "them has its held-out performance published, including where it failed.",
+};
+
+/* ------------------------------------------------------------------------- *
+ * TARGET_DISCOVERY_COPY: replaces "genetically validated but underexplored
+ * protein targets ... opportunities".
+ *
+ * Both halves of that sentence were refuted. Genetic association alone scored
+ * at chance in both cohorts (MEASURED.geneticAlone), so the site must not
+ * imply the evidence validated anything; and Task 8 measured zero prior
+ * medicinal-chemistry effort as predicting AGAINST clinical progression, so
+ * the absence of drugs is not an opportunity. The neglect screen's register
+ * ("They are not opportunities") is the correct one and is reused.
+ * ------------------------------------------------------------------------- */
+export const TARGET_DISCOVERY_COPY = {
+  lead:
+    "Rank the evidence Open Targets records for a disease, and see separately how " +
+    "much medicinal chemistry already exists for each target. Targets with " +
+    "evidence and no drugs are not opportunities: in this benchmark that " +
+    "combination predicted against a target reaching the clinic, not for it. " +
+    "Nothing here establishes that a target is novel, unpursued or druggable, and " +
+    "none of it replaces experimental target validation.",
+  seo:
+    "Rank the evidence Open Targets records for a disease and see how much " +
+    "medicinal chemistry already exists for each target. Held-out performance for " +
+    "every score is published, including the scores that failed.",
+  /** Replaces the "Novelty score" tooltip, which described the removed formula. */
+  evidenceTipTitle: "Evidence strength score",
+  evidenceTipLead:
+    "The hand-set weighting of the eight Open Targets biology scores. It rises " +
+    "with evidence, so the best-studied targets score highest. The drug-count " +
+    "penalty this score used to carry has been removed: dividing by drug count " +
+    "took the whole formula below chance.",
+  evidenceTipNotNovelty:
+    "It is not a novelty score and not a prediction that a target will yield a " +
+    "drug. Drug count is shown as its own column so you can filter on it yourself.",
+  undruggedBadge: "No drug for this disease",
+  undruggedPanelEyebrow: "Ranked by recorded evidence",
+  undruggedGroupLabel: "Evidence recorded, no drug for this disease",
+};
