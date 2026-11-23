@@ -1,4 +1,7 @@
-import { dockingStatusFromFlags } from "./shared/dockingStatus";
+// Explicit .js extension: this module is also loaded as plain Node ESM by
+// scripts/inject-seo-html.mjs during the build, and Node does not resolve
+// extensionless specifiers the way webpack does. Deploy failed on exactly this.
+import { dockingStatusFromFlags } from "./shared/dockingStatus.js";
 
 /** Derived once: the only place docking status is written is dockingStatus.js. */
 const DOCKING_STATUS = dockingStatusFromFlags();

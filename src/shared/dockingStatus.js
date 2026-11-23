@@ -22,7 +22,10 @@
  *   attaching "in-browser" to a docking status tells the reader the opposite of
  *   what is true.
  */
-import { DOCKING_ENABLED, DOCKING_ENGINE_ENABLED } from "../featureFlags";
+// Explicit .js extension: seoConfig.js imports this module, and seoConfig is
+// loaded as plain Node ESM by scripts/inject-seo-html.mjs during the build,
+// where extensionless specifiers do not resolve.
+import { DOCKING_ENABLED, DOCKING_ENGINE_ENABLED } from "../featureFlags.js";
 
 /** The three states docking can actually be in. */
 export const DOCKING_STATE = {
