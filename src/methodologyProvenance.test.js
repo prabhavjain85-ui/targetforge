@@ -124,11 +124,28 @@ describe("every quoted figure traces to a benchmark artifact", () => {
     expect(page).toMatch(/no early enrichment/i);
   });
 
-  test("the triage baseline finding matches TASK1_BASELINES.md", () => {
+  test("the triage baseline finding quotes Task 2, not the superseded Task 1", () => {
     expect(task1).toMatch(/DOES NOT beat/);
-    expect(page).toMatch(/0\.583/);
-    expect(page).toMatch(/0\.777/);
-    expect(page).toMatch(/below chance/i);
+    // Task 2 sanity-passing figures, matching /validation.
+    expect(page).toMatch(/0\.523/);
+    expect(page).toMatch(/0\.662/);
+    expect(page).toMatch(/TASK2_DECOY_BENCHMARK/);
+    expect(page).toMatch(/superseded/i);
+  });
+
+  test("no page quotes a figure from the superseded Task 1 benchmark", () => {
+    // These are Task 1 weak-binder numbers. That benchmark had only 3 of 15
+    // targets passing decoy sanity checks, and quoting it on the methodology
+    // page while /validation quoted Task 2 is exactly how the two pages came
+    // to state different values for the same quantity.
+    const SUPERSEDED = ["0.583", "0.777", "0.684", "0.407"];
+    const validationBodies = VALIDATION_SECTIONS.map((x) => x.body).join(" ");
+    const offenders = [];
+    for (const v of SUPERSEDED) {
+      if (page.includes(v)) offenders.push(`methodology: ${v}`);
+      if (validationBodies.includes(v)) offenders.push(`validation: ${v}`);
+    }
+    expect(offenders).toEqual([]);
   });
 
   test("provenance names the commit and the generation dates", () => {
@@ -839,3 +856,229 @@ describe("neglect screen strings trace to committed artifacts", () => {
     expect(section.body).toMatch(/Illuminating the Druggable Genome/);
   });
 });
+
+describe("docking status has exactly one source of truth", () => {
+  /** Every file a user-facing string could hide in. */
+  const userFacing = () => {
+    const out = [];
+    const walk = (dir) => {
+      for (const name of fs.readdirSync(path.join(repoRoot, dir))) {
+        const rel = `${dir}/${name}`;
+        const stat = fs.statSync(path.join(repoRoot, rel));
+        if (stat.isDirectory()) {
+          walk(rel);
+        } else if (/\.(js|jsx)$/.test(name) && !/\.test\.jsx?$/.test(name)) {
+          out.push(rel);
+        }
+      }
+    };
+    walk("src");
+    walk("api");
+    return out;
+  };
+
+  const HELPER = "src/shared/dockingStatus.js";
+
+  test("the helper exists and owns the three states", () => {
+    const h = read(HELPER);
+    expect(h).toMatch(/VINA_LIVE/);
+    expect(h).toMatch(/VINA_UNREACHABLE/);
+    expect(h).toMatch(/OFF:/);
+    expect(h).toMatch(/export function dockingStatus/);
+  });
+
+  test("the phrase under validation appears in no user-facing string", () => {
+    // It described a finished negative result as work in progress.
+    const offenders = [];
+    for (const f of userFacing()) {
+      // The helper is the one file allowed to name the phrase: its docblock
+      // explains why it is banned everywhere else.
+      if (f === HELPER) continue;
+      if (/under validation/i.test(read(f))) offenders.push(f);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("in-browser never qualifies docking as working or pending", () => {
+    // The engine that works is a Vina service; the in-browser one failed. So
+    // "in-browser" may appear only where it says that engine failed or is
+    // disabled — never attached to a claim that docking runs, is available, or
+    // is awaiting validation. Saying it failed is required copy, not a leak.
+    const offenders = [];
+    for (const f of userFacing()) {
+      if (f === HELPER) continue;
+      const text = read(f);
+      for (const m of text.match(/[^.\n]*in-browser[^.\n]*/gi) || []) {
+        if (!/dock/i.test(m)) continue;
+        const saysItFailed = /fail|disabled|not used|never/i.test(m);
+        const claimsItWorks = /under validation|available|runs|works|enabled|simulated/i.test(m);
+        if (claimsItWorks && !saysItFailed) {
+          offenders.push(`${f}: ${m.trim().slice(0, 90)}`);
+        }
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("no docking status sentence is hardcoded outside the helper", () => {
+    // Phrases that assert a docking state. Any of them outside the helper is a
+    // second source of truth, which is how the twelve strings drifted apart.
+    const PATTERNS = [
+      /docking is (?:under|currently|not|off|unavailable|paused)/i,
+      /docking (?:paused|disabled|unavailable)/i,
+      /no docking poses or scores/i,
+      /simulated in-browser/i,
+      /binding scores and poses are not available/i,
+    ];
+    const offenders = [];
+    for (const f of userFacing()) {
+      if (f === HELPER) continue;
+      const text = read(f);
+      for (const re of PATTERNS) {
+        const m = text.match(re);
+        if (m) offenders.push(`${f}: ${m[0]}`);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("every surface that shows docking status renders it from the helper", () => {
+    for (const f of [
+      "src/Layout.jsx",
+      "src/HomepageIntro.jsx",
+      "src/seoConfig.js",
+      "src/MethodologyPage.jsx",
+      "src/HandoffStations.jsx",
+      "src/DockingRunCocrystalSection.jsx",
+      "src/DockingPage.jsx",
+    ]) {
+      expect(read(f)).toMatch(/dockingStatusFromFlags|DOCKING_STATUS/);
+    }
+  });
+
+  test("the failed in-browser engine is off and unreachable", () => {
+    for (const f of ["src/featureFlags.js", "server/featureFlags.js"]) {
+      expect(read(f)).toMatch(/DOCKING_ENGINE_ENABLED = false/);
+    }
+    // Unregistering the op matters as much as the flag: with the op present the
+    // engine was reachable by a direct POST to /api/compute even though no UI
+    // route used it.
+    expect(read("server/compute.js")).not.toMatch(/^\s*runMolecularDocking:/m);
+    expect(read("src/serverApi.js")).not.toMatch(/runMolecularDocking/);
+  });
+
+  test("DOCKING_UNAVAILABLE_NOTICE is gone from both flag files", () => {
+    for (const f of ["src/featureFlags.js", "server/featureFlags.js"]) {
+      expect(read(f)).not.toMatch(/DOCKING_UNAVAILABLE_NOTICE/);
+    }
+  });
+});
+
+describe("methodology and validation do not contradict each other", () => {
+  const methodology = read("src/MethodologyPage.jsx");
+  const validationText = VALIDATION_SECTIONS.map((s) => s.body).join("\n");
+
+  /** Quantities both pages may state. A different value on each is a bug. */
+  const SHARED = [
+    { label: "Tanimoto", value: "0.662" },
+    { label: "heuristic-v2", value: "0.523" },
+    { label: "BEDROC20", value: "0.617" },
+  ];
+
+  test("both pages state the committed value for each shared quantity", () => {
+    // Checked by exact value, not by proximity to a label. A proximity regex
+    // read the random baseline (0.520) as the Tanimoto figure and reported a
+    // contradiction that did not exist — the kind of false positive that gets
+    // a guard deleted rather than fixed.
+    const missing = [];
+    for (const q of SHARED) {
+      if (!task2.includes(q.value)) missing.push(`TASK2 lacks ${q.label} ${q.value}`);
+      if (!methodology.includes(q.value) && !validationText.includes(q.value)) {
+        missing.push(`neither page states ${q.label} ${q.value}`);
+      }
+    }
+    expect(missing).toEqual([]);
+  });
+
+  test("the figures both pages quote are the committed ones", () => {
+    for (const q of SHARED) {
+      expect(task2).toContain(q.value);
+    }
+  });
+
+  test("Station 3 describes similarity ranking, not AI prioritisation", () => {
+    expect(methodology).not.toMatch(/AI prioriti[sz]ation/i);
+    expect(methodology).toMatch(/Station 3 — Ranking and filters/);
+    expect(methodology).toMatch(/Tanimoto similarity/i);
+    expect(methodology).toContain("0.662");
+    expect(methodology).toContain("0.523");
+    expect(methodology).toMatch(/neither is AI/i);
+  });
+
+  test("docking paused appears nowhere", () => {
+    for (const f of ["src/MethodologyPage.jsx", "src/HandoffStations.jsx"]) {
+      expect(read(f)).not.toMatch(/docking paused/i);
+    }
+  });
+});
+
+describe("no surface presents LLM output as analysis", () => {
+  test("the adversarial critique is gone entirely", () => {
+    for (const p of [
+      "api/adversarial-critique.js",
+      "src/AdversarialCritique.jsx",
+      "src/adversarialService.js",
+      "server/adversarialService.js",
+    ]) {
+      expect(fs.existsSync(path.join(repoRoot, p))).toBe(false);
+    }
+    expect(read("src/setupProxy.js")).not.toMatch(/adversarial/i);
+  });
+
+  test("no component imports a deleted critique module", () => {
+    for (const f of [
+      "src/CandidateViews.jsx",
+      "src/EvolutionPage.jsx",
+      "src/HandoffStations.jsx",
+      "src/RepurposingPage.jsx",
+    ]) {
+      expect(read(f)).not.toMatch(/AdversarialCritique/);
+    }
+  });
+
+  test("any remaining LLM endpoint is labelled as generated where rendered", () => {
+    // rank-candidates still attaches language-model narration. Wherever a
+    // surface renders it, the text must be labelled as generated so a reader
+    // can tell it from a measurement.
+    // /api/rank-candidates optionally asks a language model to narrate a row
+    // and attaches it as `reasoning`. Four components rendered that with
+    // nothing to distinguish it from the measured scores beside it.
+    const offenders = [];
+    const files = fs
+      .readdirSync(path.join(repoRoot, "src"))
+      .filter((n) => /\.jsx$/.test(n) && !/\.test\./.test(n));
+    for (const name of files) {
+      const text = read(`src/${name}`);
+      // Any component that reads .reasoning off a row is rendering narration.
+      if (!/\.reasoning\b/.test(text)) continue;
+      // The label must be RENDERED, not merely imported. Checking for the
+      // identifier anywhere in the file passed a component whose JSX had been
+      // deleted but whose import remained.
+      const rendered = /\{LLM_NARRATION_LABEL\}/.test(text);
+      const guarded = /isModelNarration\(/.test(text);
+      if (!rendered || !guarded) offenders.push(`src/${name}`);
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test("Quantum Insight, which was never being built, is gone", () => {
+    expect(fs.existsSync(path.join(repoRoot, "src/QuantumInsight.jsx"))).toBe(false);
+    const offenders = [];
+    for (const name of fs.readdirSync(path.join(repoRoot, "src"))) {
+      if (!/\.(js|jsx)$/.test(name) || /\.test\./.test(name)) continue;
+      if (/coming soon/i.test(read(`src/${name}`))) offenders.push(name);
+    }
+    expect(offenders).toEqual([]);
+  });
+});
+

@@ -286,7 +286,10 @@ const OPS = Object.assign(Object.create(null), {
 
   // Docking & co-crystal analysis
   fetchPdbFromRcsb: lazy(() => import("./dockingEngine.js"), "fetchPdbFromRcsb"),
-  runMolecularDocking: lazy(() => import("./dockingEngine.js"), "runMolecularDocking"),
+  // runMolecularDocking is deliberately NOT registered. It is the legacy
+  // in-browser engine, which failed co-crystal redocking on every target
+  // tested. Registering it left the failed engine reachable by a direct POST to
+  // /api/compute even while no UI route used it.
   fetchDockingRunCocrystalContext: lazy(() => import("./dockingRunCocrystal.js"), "fetchDockingRunCocrystalContext"),
   analyzeExperimentalCocrystal: lazy(() => import("./cocrystalAnalysis.js"), "analyzeExperimentalCocrystal"),
   resolveCocrystalSearchQuery: lazy(() => import("./rcsbCocrystalSearch.js"), "resolveCocrystalSearchQuery"),

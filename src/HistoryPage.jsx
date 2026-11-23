@@ -10,6 +10,7 @@ import {
 } from "./historyService";
 import ReportExportButtons from "./ReportExportButtons";
 import { buildHistoryEntryReportMarkdown, defaultReportFilename } from "./reportExport";
+import { LLM_NARRATION_LABEL, isModelNarration } from "./shared/llmNarration";
 
 function formatTime(timestamp) {
   if (!timestamp) return "";
@@ -348,6 +349,9 @@ export default function HistoryPage() {
                                           <li key={idx}>{reason}</li>
                                         ))}
                                       </ul>
+                                      {isModelNarration(r) && (
+                                        <div className="llm-narration-label">{LLM_NARRATION_LABEL}</div>
+                                      )}
                                     </td>
                                   </tr>
                                 ))}

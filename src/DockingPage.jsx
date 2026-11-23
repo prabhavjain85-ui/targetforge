@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import { fetchPdbFromRcsb, runMolecularDocking, fetchDockingRunCocrystalContext } from "./serverApi";
+import { fetchDockingRunCocrystalContext } from "./serverApi";
 import { DOCKING_REFERENCE_TARGETS } from "./shared/dockingDisplay";
 import DockingViewer from "./DockingViewer";
 import DockingInteractionsPanel from "./DockingInteractionsPanel";
@@ -8,13 +8,16 @@ import { getActiveState, ACTIVE_STATE_KEYS } from "./historyService";
 import {
   DOCKING_ENABLED,
   DOCKING_ENGINE_ENABLED,
-  DOCKING_UNAVAILABLE_NOTICE,
   DOCKING_BENCHMARK_PAIRS_NOTICE,
 } from "./featureFlags";
 import ReportExportButtons from "./ReportExportButtons";
 import { buildDockingReportMarkdown, defaultReportFilename } from "./reportExport";
 import DockingRunCocrystalSection from "./DockingRunCocrystalSection";
 import { shouldAutoRunDockingOnLoad, shouldRunRemoteDocking } from "./dockingServiceGate";
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
 
 const dockingUiEnabled = () => DOCKING_ENABLED || DOCKING_ENGINE_ENABLED;
 
@@ -37,7 +40,7 @@ function DockingUnavailableView() {
           lineHeight: 1.5,
         }}
       >
-        {DOCKING_UNAVAILABLE_NOTICE}
+        {DOCKING_STATUS.sentence}
       </div>
       <p style={{ marginTop: 16, fontSize: "14px", color: "var(--text-dim)", lineHeight: 1.5 }}>
         Production AutoDock Vina docking is disabled while co-crystal redocking validation is in progress. No binding
@@ -179,31 +182,21 @@ export default function DockingPage() {
     }
 
     try {
-      let res;
-      if (DOCKING_ENABLED) {
-        const { runRemoteDocking } = await import("./dockingApi");
-        res = await runRemoteDocking({
-          pdbId: targetPdb,
-          smiles: ligandSmiles,
-          targetTitle,
-          compoundName: name || compoundNameInput,
-          onProgress: (p) => {
-            setProgressPercent(Math.min(99, p.percent || 0));
-            setProgressMsg(p.message || "Running AutoDock Vina…");
-          },
-        });
-      } else {
-        const pdbText = await fetchPdbFromRcsb(targetPdb);
-        res = await runMolecularDocking(pdbText, ligandSmiles, {
-          customCenter: centerOverride || customCenter,
-          boxSize,
-          searchExhaustiveness,
-          onProgress: (p) => {
-            setProgressPercent(p.percent);
-            setProgressMsg(p.message);
-          },
-        });
-      }
+      // AutoDock Vina is the only docking path. There is deliberately no
+      // fallback to the legacy in-browser engine: it failed co-crystal
+      // redocking on every target tested, so falling back to it would mean
+      // showing a user a score from an engine known not to work.
+      const { runRemoteDocking } = await import("./dockingApi");
+      const res = await runRemoteDocking({
+        pdbId: targetPdb,
+        smiles: ligandSmiles,
+        targetTitle,
+        compoundName: name || compoundNameInput,
+        onProgress: (p) => {
+          setProgressPercent(Math.min(99, p.percent || 0));
+          setProgressMsg(p.message || "Running AutoDock Vina…");
+        },
+      });
 
       setDockingResults(res);
       setActivePose(res.bestPose);
@@ -400,9 +393,9 @@ Method: Empirical Force Field Scoring (Trott & Olson 2010, Morris et al. 2009) v
             borderRadius: "var(--radius)",
           }}
         >
-          Live AutoDock Vina docking is unavailable on this deployment
-          {serviceUnavailableMessage ? ` (${serviceUnavailableMessage})` : ""}. Run still loads the
-          experimental co-crystal from RCSB PDB; scores require the docking service.
+          {DOCKING_STATUS.sentence}
+          {serviceUnavailableMessage ? ` (${serviceUnavailableMessage})` : ""} A run still loads the
+          experimental co-crystal from RCSB PDB, because that is measured rather than computed.
         </p>
       )}
       <p
@@ -469,7 +462,8 @@ Method: Empirical Force Field Scoring (Trott & Olson 2010, Morris et al. 2009) v
         >
           Compute binding free energy (ΔG_bind), estimate inhibition constants (Ki), and inspect 3D poses in
           crystallographic binding pockets
-          {DOCKING_ENABLED ? " via the production Vina service" : " — simulated in-browser"}. Supports
+          {" "}
+          via the AutoDock Vina service. Supports
           structure-based prioritization, not experimental binding confirmation.
         </p>
         {DOCKING_ENABLED && (

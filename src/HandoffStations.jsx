@@ -1,13 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { CopyField, Panel } from "./benchUi";
-import AdversarialCritique from "./AdversarialCritique";
-import QuantumInsight from "./QuantumInsight";
 import { CandidateScoreTable } from "./CandidateViews";
 import HistoricalTrialSuccessContext from "./HistoricalTrialSuccessContext";
-import { DOCKING_ENGINE_ENABLED, DOCKING_ENABLED, DOCKING_UNAVAILABLE_NOTICE } from "./featureFlags";
+import { DOCKING_ENGINE_ENABLED, DOCKING_ENABLED } from "./featureFlags";
 import ReportExportButtons from "./ReportExportButtons";
 import { buildBenchReportMarkdown, defaultReportFilename } from "./reportExport";
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
 
 export default function HandoffStations({ b }) {
   const {
@@ -52,11 +54,6 @@ export default function HandoffStations({ b }) {
                 <div className="winner-reason">{aiResult.recommended?.reason}</div>
                 {winnerCandidate && (
                   <div style={{ marginTop: 10 }}>
-                    <AdversarialCritique
-                      candidate={winnerCandidate}
-                      target={protein}
-                      label="See the case against this top candidate"
-                    />
                   </div>
                 )}
               </div>
@@ -101,7 +98,7 @@ export default function HandoffStations({ b }) {
       </div>
 
       <div className="handoff-panel">
-        <Panel eyebrow="Station 4 — handoff" title="Follow-up: ADME prediction (docking paused)" kind="handoff">
+        <Panel eyebrow="Station 4 — handoff" title="Follow-up: ADME prediction" kind="handoff">
           {!protein && !candidates.length && (
             <div className="empty-state">
               Stage a target and a shortlist above — TargetForge will prepare inputs for ADME prediction.
@@ -131,7 +128,6 @@ export default function HandoffStations({ b }) {
               {compound && <CopyField label={`${compound.displayName} — SMILES`} value={smiles} />}
               {compound && smiles && (
                 <div style={{ marginTop: 14 }}>
-                  <QuantumInsight compound={compound} smiles={smiles} protein={protein} />
                 </div>
               )}
               <div className="handoff-actions">
@@ -145,7 +141,7 @@ export default function HandoffStations({ b }) {
                   </Link>
                 ) : (
                   <span className="lipinski-note" style={{ margin: 0, flex: "1 1 100%" }}>
-                    {DOCKING_UNAVAILABLE_NOTICE}
+                    {DOCKING_STATUS.short}
                   </span>
                 )}
                 <Link
@@ -158,7 +154,7 @@ export default function HandoffStations({ b }) {
               </div>
               <div className="lipinski-note" style={{ marginTop: 14 }}>
                 ADME descriptors are computed on the TargetForge backend via RDKit.
-                Docking poses and binding scores are not available while the docking engine is under validation.
+                {DOCKING_STATUS.sentence}
               </div>
             </div>
           )}

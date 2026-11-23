@@ -1,5 +1,6 @@
 import React from "react";
 import { PainsBadge } from "./benchUi";
+import { LLM_NARRATION_LABEL, isModelNarration } from "./shared/llmNarration";
 
 const TOP_SHOWN = 15;
 
@@ -138,6 +139,9 @@ export default function LibraryScreenPanel({
                       <td className="mono">{sim ? `${sim} Tanimoto` : "—"}</td>
                       <td>
                         <div className="score-title">{leadReason(row)}</div>
+                        {isModelNarration(row) && (
+                          <div className="llm-narration-label">{LLM_NARRATION_LABEL}</div>
+                        )}
                       </td>
                     </tr>
                   );

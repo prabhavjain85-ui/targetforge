@@ -126,10 +126,8 @@ TargetForge operates out-of-the-box with local deterministic models. Advanced AI
 
 | Variable | Required | Service | Description |
 | --- | --- | --- | --- |
-| `OPENAI_API_KEY` | Optional | OpenAI | Enables structured qualitative reasoning in `/api/rank-candidates` and fallback critique in `/api/adversarial-critique`. |
+| `OPENAI_API_KEY` | Optional | OpenAI | Enables structured qualitative reasoning in `/api/rank-candidates`. |
 | `OPENAI_MODEL` | Optional | OpenAI | Model identifier for OpenAI calls (default: `gpt-4o-mini`). |
-| `GEMINI_API_KEY` | Optional | Google Gemini | Primary model provider for the Step 4 Adversarial Critique in `/api/adversarial-critique`. |
-| `GEMINI_MODEL` | Optional | Google Gemini | Model identifier for Gemini calls (default: `gemini-3.8-flash`). |
 | `RESEND_API_KEY` | Optional | Resend | API key for transactional email delivery from `/api/contact`. |
 | `CONTACT_TO_EMAIL` | Optional | Email | Destination email for contact form submissions (default: `prabhavjain85@gmail.com`). |
 | `CONTACT_FROM_EMAIL`| Optional | Resend | Verified sender email header for Resend delivery. |

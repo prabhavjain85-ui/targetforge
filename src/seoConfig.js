@@ -1,9 +1,14 @@
+import { dockingStatusFromFlags } from "./shared/dockingStatus";
+
+/** Derived once: the only place docking status is written is dockingStatus.js. */
+const DOCKING_STATUS = dockingStatusFromFlags();
+
 const SITE_URL = "https://www.targetforge.in";
 const SITE_NAME = "TargetForge";
 
 const DEFAULT_TITLE = "TargetForge — AI-Powered Drug Discovery & Target Identification";
 const DEFAULT_DESCRIPTION =
-  "Computational drug discovery workbench: knowledge-based triage scoring, target identification, repurposing screens, and ADME analysis. In-browser docking is under validation.";
+  `Computational drug discovery workbench: knowledge-based triage scoring, target identification, repurposing screens, and ADME analysis. ${DOCKING_STATUS.short}.`;
 
 export const ROUTE_SEO = {
   "/": {
@@ -32,7 +37,7 @@ export const ROUTE_SEO = {
   "/docking": {
     title: "Molecular Docking Simulation — TargetForge",
     description:
-      "Molecular docking module — under validation and currently unavailable. No binding scores or poses are shown until co-crystal redocking passes.",
+      DOCKING_STATUS.seo,
     canonical: `${SITE_URL}/docking`,
   },
   "/methodology": {
@@ -93,12 +98,12 @@ export const STATIC_ROUTE_CONTENT = {
     eyebrow: "TargetForge · computational drug discovery",
     h1: "AI-Powered Drug Discovery & Target Identification",
     intro:
-      "Rank compounds against a protein target in minutes: stage a PDB structure, shortlist PubChem molecules, get a critiqued knowledge-based triage ranking, then run ADME (docking under validation).",
+      `Rank compounds against a protein target in minutes: stage a PDB structure, shortlist PubChem molecules, rank by similarity to the co-crystallised ligand, then run ADME. ${DOCKING_STATUS.short}.`,
     sections: [
       {
         h2: "How it works",
         text:
-          "Pick a target, add 2–5 compounds, and get a knowledge-based triage ranked shortlist with ADME follow-up. In-browser docking is under validation. Station-by-station detail is documented on Methodology",
+          `Pick a target, add 2–5 compounds, and get a shortlist ranked by similarity to the co-crystallised ligand, with ADME follow-up. ${DOCKING_STATUS.short}. Station-by-station detail is documented on Methodology`,
         path: "/methodology#staging-bench",
         linkLabel: "see the staging bench workflow",
       },
@@ -141,7 +146,7 @@ export const STATIC_ROUTE_CONTENT = {
     eyebrow: "TargetForge · molecular docking",
     h1: "Receptor-Ligand Molecular Docking",
     intro:
-      "Docking is under validation and currently unavailable. The in-browser engine is disabled until co-crystal redocking passes; no binding scores or poses are shown.",
+      DOCKING_STATUS.sentence,
     breadcrumbLabel: "Molecular docking",
   },
   "/methodology": {

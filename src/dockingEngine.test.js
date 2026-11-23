@@ -10,10 +10,12 @@ import {
   DOCKING_REFERENCE_TARGETS,
 } from "../server/dockingEngine";
 
-jest.mock("./featureFlags", () => ({
-  DOCKING_ENGINE_ENABLED: true,
-  DOCKING_UNAVAILABLE_NOTICE: "Docking is under validation and currently unavailable.",
-}));
+/**
+ * The pure scoring and geometry helpers below are still worth testing: they are
+ * used to interpret Vina output. What is NOT tested any more is the engine
+ * running end to end, because it is permanently disabled — it failed co-crystal
+ * redocking on every target tested. The last test in this file pins that.
+ */
 
 describe("Molecular Docking Engine", () => {
   const SAMPLE_PDB = `HEADER    KINASE                                  09-MAY-01   1IEP
@@ -112,19 +114,16 @@ END
     expect(calculatePoseRmsd(poseA, poseC)).toBeCloseTo(3.0, 1);
   });
 
-  test("runs complete molecular docking pipeline with sample PDB and SMILES", async () => {
-    const result = await runMolecularDocking(SAMPLE_PDB, "CC(=O)Oc1ccccc1C(=O)O", {
-      steps: 40,
-      center: { x: 14.1, y: 75.1, z: 37.4 },
-      boxSize: 18,
-      minPocketAtoms: 2,
-    });
-
-    expect(result.rankedPoses.length).toBeGreaterThan(0);
-    expect(result.bestPose).toBeDefined();
-    expect(result.bestPose.deltaG).toBeDefined();
-    expect(result.bestPose.kiFormatted).toBeDefined();
-    expect(result.pocketAtoms.length).toBeGreaterThan(0);
+  test("refuses to run at all, because the engine failed its validation", async () => {
+    // Previously this asserted the pipeline produced a pose. The engine was
+    // then measured against co-crystal ligands and failed on every target, so
+    // the correct behaviour is refusal and this test pins it.
+    await expect(
+      runMolecularDocking(SAMPLE_PDB, "CC(=O)Oc1ccccc1C(=O)O", { boxSize: 20 })
+    ).rejects.toThrow(/disabled/i);
+    await expect(
+      runMolecularDocking(SAMPLE_PDB, "CC(=O)Oc1ccccc1C(=O)O", { boxSize: 20 })
+    ).rejects.toThrow(/failed co-crystal redocking/i);
   });
 
   test("verifies reference targets catalog has required fields", () => {
