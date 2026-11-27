@@ -1,6 +1,29 @@
 # TargetForge
 
-**TargetForge** is a computational drug discovery and repurposing workbench. It integrates genetic target identification, crystallographic structure selection, knowledge-based triage scoring (`heuristic-v2`), in-browser ADME profiling, and an in-browser docking module (currently disabled pending validation) into a unified workflow.
+**TargetForge** is a computational drug-discovery and repurposing workbench. It integrates target identification from public evidence, crystallographic structure selection, compound triage, ADME profiling, and a docking service into one workflow.
+
+Nothing here is AI. Compound ranking is Tanimoto similarity to the co-crystallised ligand; target ranking is a logistic model fitted on public evidence counts; compound triage is a hand-written rule table.
+
+## Measured performance
+
+Every score has been validated on held-out data, and the results are published in full — including the scores that failed and were removed. The authoritative page is [`/validation`](https://www.targetforge.in/validation); every figure there traces to a committed file under `benchmark/`.
+
+| Score | Held-out ROC-AUC | Status |
+| --- | --- | --- |
+| Repurposing model (drug + publication count) | **0.910** | Shipped — strongest result here |
+| Tanimoto to the co-crystallised ligand | **0.662** | Shipped — the compound ranker |
+| Progression score (fitted) | **0.708** | Shipped |
+| Publication count (baseline) | 0.667 | Shown as its own column |
+| Evidence strength score | 0.637 undrugged / 0.555 all | Shipped |
+| `heuristic-v2` triage | 0.523 | **At chance** (random = 0.520). A filter, not a ranker |
+| Gene/PDB rule table alone | 0.482 | Below random — its rules name specific drugs |
+| Genetic association alone | 0.497 / 0.500 | **Chance in both cohorts** |
+| Old novelty score, `biology / (1 + drugCount)` | 0.361 | **Below chance — removed** |
+
+Retrospective on Open Targets 21.04 → 26.09, 22 diseases split 11 train / 11 held out. Two consequences worth stating plainly:
+
+- **No score here ranks targets by novelty.** The formula that did scored below chance and was deleted. The evidence score *rises* with evidence, so the best-studied targets score highest.
+- **Read every figure as an oncology result.** 9 of the 11 held-out diseases are cancers. On the single non-cancer held-out disease, publication count alone scored higher than the model (0.730 vs 0.722), and one disease with 22 positives cannot settle the question either way.
 
 ---
 
@@ -11,13 +34,16 @@ TargetForge is structured across dedicated routes:
 | Route | Module | Core Functionality |
 | --- | --- | --- |
 | `/` | **Staging Bench** | Search PDB structures, evaluate Target Selection Scores, search PubChem compounds, run PAINS/toxicophore screens, and rank candidates using `heuristic-v2`. |
-| `/target-discovery` | **Target Discovery** | Query Open Targets GraphQL for genetically validated disease targets, ranked by Novelty Score versus known clinical drug saturation. |
-| `/repurposing` | **Drug Repurposing Screen** | Screen a target against a library of 2,983 approved small-molecule drugs using knowledge-based triage rules and Lipinski/Veber filters (not a validated activity predictor). |
-| `/adme` | **In-Browser ADME Profiling** | Calculate physicochemical descriptors, BOILED-Egg gastrointestinal and BBB permeation, ESOL aqueous solubility, Lipinski/Veber/Ghose rules, and organ toxicity alerts using client-side RDKit WASM. |
-| `/docking` | **Molecular Docking (paused)** | In-browser docking is under validation and currently unavailable in the UI. Engine code remains in-repo behind `DOCKING_ENGINE_ENABLED`. |
-| `/history` | **Session History** | Track and review past staging sessions, target discoveries, screening runs, and docking logs saved in persistent browser storage. |
-| `/methodology` | **Scientific Methodology** | Detailed documentation of scoring equations, rule tables, heuristic bands, algorithmic thresholds, and literature citations. |
-| `/contact` | **Contact & Inquiries** | Support and feedback form with multi-tier resilient delivery (Resend, Formspree, FormSubmit, and dry-run mode). |
+| `/target-discovery` | **Target Discovery** | Query Open Targets GraphQL for a disease and rank the targets it records evidence for, with drug count shown as its own column rather than folded into the score. |
+| `/repurposing` | **Drug Repurposing Screen** | Screen a target against a library of 2,983 approved small-molecule drugs. Ordering is `heuristic-v2`, which scores at chance; Tanimoto similarity to the bound ligand is a separate sortable column and is the better-measured signal. |
+| `/adme` | **ADME Profiling** | Physicochemical descriptors, BOILED-Egg GI and BBB permeation, ESOL solubility, Lipinski/Veber/Ghose rules, and organ toxicity alerts. RDKit runs on the backend, not in the browser. |
+| `/docking` | **Molecular Docking** | AutoDock Vina as a service. Not configured in production, so no poses or scores are produced. The legacy in-browser engine is permanently disabled — it failed redocking. |
+| `/validation` | **Validation** | The authoritative record of every score's measured held-out performance, generated from the committed benchmark artifacts. |
+| `/neglect-screen` | **Strong evidence, no chemistry** | Targets with substantial evidence and no recorded medicinal chemistry, weighted by India's disease burden. Explicitly *not* a list of opportunities — see below. |
+| `/evolution` | **Local molecular search** | Mutates a seed with curated RDKit reaction SMARTS and ranks survivors by multi-objective scoring plus diversity picking. No generative SMILES from language models. |
+| `/history` | **Session History** | Past staging sessions, target discoveries and screening runs, saved in browser storage. |
+| `/methodology` | **Scientific Methodology** | Scoring formulas, rule tables, thresholds, measured performance and limitations for every subsystem. |
+| `/contact` | **Contact & Inquiries** | Support and feedback form with multi-tier delivery (Resend, Formspree, FormSubmit, dry-run). |
 
 ---
 
@@ -36,9 +62,12 @@ Screens chemical structures against recognized pan-assay interference and reacti
 - **Reactive Toxicophores:** Screening for reactive functional groups not covered by PAINS, including Michael acceptors, aliphatic aldehydes, epoxides, and alkyl halides.
 - **Reporting:** Flagged compounds display actionable warnings and structural liability descriptions. Flagged molecules remain selectable, and alerts are factored into downstream candidate scoring as deductions rather than arbitrary exclusions.
 
-### Station 3: Knowledge-Based Triage Score (`heuristic-v2`)
-Scores 2–5 staged molecules specifically against the selected PDB target:
-- **Triage engine (`heuristic-v2`):** A 0–100 knowledge-based triage score built from curated target rules and literature knowledge — not a validated predictor of binding or clinical activity. It evaluates target context (protein name, gene symbol, family classification, co-crystal ligand functional groups, and binding pocket size/hydrophobicity) alongside drug-likeness.
+### Station 3: Compound Triage Filter (`heuristic-v2`)
+Scores 2–5 staged molecules specifically against the selected PDB target.
+
+> **Measured first, because the bands below read as meaningful and are not.** On a property-matched, Bemis–Murcko scaffold-split decoy benchmark (14/15 targets passing decoy sanity checks, mean AVE bias 0.099, zero leaked scaffolds), `heuristic-v2` scores held-out **ROC-AUC 0.523 against 0.520 for a seeded random ranker**. The gene/PDB rule table alone scores **0.482**, below random, because its hardcoded drug-name rules fire on **0%** of held-out molecules. Tanimoto to the staged co-crystal ligand scores **0.662** and is what the app actually ranks by. So `heuristic-v2` is a drug-likeness and liability **filter**, not a ranker: the bands document what the number is composed of, not pharmacological relevance.
+
+- **Triage engine (`heuristic-v2`):** A 0–100 score built from curated target rules and drug-likeness — not a predictor of binding or clinical activity. It evaluates target context (protein name, gene symbol, family classification, co-crystal ligand functional groups, binding pocket size/hydrophobicity) alongside Lipinski/Veber properties and PAINS flags.
 - **Pharmacological Rule Table:** Specific rules match recognized target genes and families (e.g., EGFR, ABL1, BRAF, HER2, $\beta_2$-AR, COX-1/2, HMGCR, DPP4, HIV Protease, SARS-CoV-2 Mpro, PDE5, HDACs) into calibrated score bands:
   - **On-target canonical chemotypes:** $\sim 67$ base points
   - **Same-family chemotypes:** $\sim 24$ base points
@@ -46,26 +75,28 @@ Scores 2–5 staged molecules specifically against the selected PDB target:
   - **Co-crystal ligand / pocket geometry match:** up to $+15$ bonus points
   - **Penalties:** Deductions for Lipinski/Veber rule violations and PAINS/toxicophore alerts.
 - **Deterministic Calibration:** Numeric scores are governed by the local deterministic engine to ensure reproducibility across batches.
-- **Optional LLM Reasoning:** When `OPENAI_API_KEY` is provided, `/api/rank-candidates` invokes OpenAI (`gpt-4o-mini` by default) to generate qualitative clinical reasoning, strengths, and concerns without overriding the baseline calibrated score scale. If the LLM is absent or encounters an error, the system seamlessly uses local rule-based reasoning.
+- **Optional LLM narration:** When `OPENAI_API_KEY` is set, `/api/rank-candidates` calls OpenAI (`gpt-4o-mini` by default) to word the strengths and concerns already derived from the rules. It is labelled as LLM-written wherever it appears, it never changes a score, and it produces no verdict, confidence label or citation. Without a key the app uses local rule-based phrasing and loses nothing quantitative.
 - **Isolation:** Scores are cached by `(PDB_ID, CID)`. A score computed against one target is never reused for another.
-- **Workflow handoff:** ADME profiling (`/adme`) is available from Station 4. In-browser docking (`/docking`) is disabled until redocking validation passes.
+- **Workflow handoff:** ADME profiling (`/adme`) is available from Station 4. Docking (`/docking`) runs on the Vina service where it is configured; the legacy in-browser engine is permanently disabled.
 
 ---
 
 ## 2. Target Discovery (`/target-discovery`)
 
-The Target Discovery module identifies genetically supported yet underexplored therapeutic targets:
+The Target Discovery module ranks the targets Open Targets records evidence for, and shows separately how much medicinal chemistry already exists for each.
+
+> **The single novelty score this section used to document has been removed.** `biologySignal / (1 + drugCount)` scored held-out **ROC-AUC 0.361** — below chance — because dividing by drug count inverts the strongest real predictor of a target entering the clinic. The inverse drug-count term alone scored 0.129. Two separately-named scores replaced it.
 
 - **Open Targets GraphQL API:** Live queries to `https://api.platform.opentargets.org/api/v4/graphql`. Free-text disease searches resolve to EFO/MONDO ontology IDs and retrieve target associations across genetic, somatic, literature, and pathway data types.
 - **Clinical Drug Saturation:** Tracks `target.drugAndClinicalCandidates.count` (the count of approved or clinical-stage drugs targeting the gene).
-- **Novelty Score Formula:**
-  $$\text{Biology Signal} = 0.50 \times \text{Genetic} + 0.12 \times \text{GenLit} + 0.12 \times \text{Somatic} + 0.10 \times \text{Overall} + 0.08 \times \text{Lit} + 0.05 \times \text{Pathway} + 0.03 \times \text{Animal} + 0.02 \times \text{RNA}$$
-  $$\text{Novelty Score} = 100 \times \text{Biology Signal} \times \frac{1}{1 + \text{Drug Count}}$$
-- **Descriptive Categorization:**
-  - **Novelty Score:** $\ge 50$ ("high"), $20\text{--}49$ ("moderate"), $< 20$ ("low").
-  - **Genetic Association:** $\ge 0.40$ ("strong"), $0.15\text{--}0.39$ ("moderate"), $< 0.15$ ("weak / none").
-  - **Drug Count:** $0$ ("no approved drugs (underexplored)"), $1\text{--}2$ ("few drugs"), $\ge 3$ ("already has $N$ approved/pipeline drugs (not underexplored)").
-- **Target Segmentation:** Separates candidates into **High Novelty Targets** (high biological association with minimal prior drug development) and **Established Targets** (extensively drugged controls).
+- **Evidence strength score** — the hand-set weighting of the eight Open Targets biology scores, with the drug-count penalty deleted:
+  $$100 \times (0.50\,\text{Genetic} + 0.12\,\text{GenLit} + 0.12\,\text{Somatic} + 0.10\,\text{Overall} + 0.08\,\text{Lit} + 0.05\,\text{Pathway} + 0.03\,\text{Animal} + 0.02\,\text{RNA})$$
+  Held-out ROC-AUC **0.637** on targets with no existing drug, **0.555** across all targets. It *rises* with evidence, so a well-studied target scores ~72.8 against ~3.7 for a barely-studied one. It is not a novelty score and not a prediction that a target will yield a drug.
+- **Progression score** — a logistic model fitted on the 11 training diseases: held-out ROC-AUC **0.708**, precision@25 **0.12**, about 3 true positives in a top-25 list. The fitted weights put **0.8135** of the simplex on the literature feature and **0.0175** on genetic association, so it behaves largely as a publication-count proxy — and publication count alone scores 0.667. Treat the two as near-duplicate signals.
+- **Publication count** — shown as its own column so you can see when a target is "novel" only in the sense of being unstudied.
+- **Drug count** — its own sortable column, never folded into a score.
+- **Evidence weighting profiles:** *Genetic & Somatic Evidence* (the weighting above) and *Repurposing*, the fitted Task 10 model that reaches **0.910** by combining drug count and publication count.
+- **Target Segmentation:** rows are grouped by whether a target has an approved or clinical drug *for the searched disease*. That grouping is a filter, not a recommendation: Task 8 measured existing compound count as the strongest single predictor of a target reaching the clinic (0.772), so an absence of chemistry points away from progression, not towards it.
 - **Bench Handoff:** 1-click transition transfers the gene to the Staging Bench or Repurposing Screen to locate viable PDB structures.
 
 ---
@@ -84,9 +115,9 @@ The Repurposing Screen evaluates existing approved therapeutics against any crys
 
 ---
 
-## 4. In-Browser ADME Profiling (`/adme`)
+## 4. ADME Profiling (`/adme`)
 
-The ADME module executes physicochemical and pharmacokinetic predictions entirely client-side using **RDKit WebAssembly**:
+The ADME module computes physicochemical and pharmacokinetic properties with **RDKit WebAssembly running on the backend**, not in your browser. `server/rdkitLoader.js` is the only place RDKit is initialised, and no module under `src/` imports it. (This README previously described the module as client-side in one section while correctly calling RDKit server-side in another.)
 
 - **BOILED-Egg Passive Permeation:**
   - Calculates topological polar surface area ($\text{TPSA}$) and lipophilicity ($\text{cLogP} / \text{WLogP}$) against the mathematical rotated ellipses defined by Daina & Zoete (*ChemMedChem* 2016).
@@ -107,13 +138,44 @@ The ADME module executes physicochemical and pharmacokinetic predictions entirel
 
 ---
 
-## 5. Molecular Docking (`/docking`) — validation paused
+## 5. Molecular Docking (`/docking`)
 
-The in-browser docking engine (`src/dockingEngine.js`) is **disabled in the UI** (`DOCKING_ENGINE_ENABLED = false`) while co-crystal redocking validation is in progress. The Docking page shows: *Docking is under validation and currently unavailable.* No binding scores or poses are shown elsewhere in the app. Source code remains for future re-enable after validation.
+Validation is **finished**, not in progress, and the two engines in this repository got very different results.
+
+**The legacy in-browser engine failed and is permanently disabled** (`DOCKING_ENGINE_ENABLED = false`). Redocking a ligand into the structure it was crystallised in returned poses 5.5–11.5 Å from the experimental pose where it returned one at all, and no valid pose on six of eleven targets. That is a completed negative result, so the app never describes it as "under validation" or "paused" — a test fails the build if that phrasing returns. It was also unregistered from `/api/compute`, where it had remained reachable by direct POST.
+
+**AutoDock Vina runs as a service** and passes pose reproduction:
+
+| Measurement | Result |
+| --- | --- |
+| Redocking within 2 Å | **10 / 11** targets |
+| Drug–structure pair reliability | **15 / 25** pairs |
+| Correlation with measured potency | Spearman **−0.291** (95% CI −0.681 to 0.478) — none, and the wrong sign |
+| Enrichment (3 targets) | ROC-AUC 0.636 / 0.744 / 0.800; no early enrichment at 1% on two of three |
+
+A Vina score is a scoring-function value used to order poses. **It is not a binding free energy, and no Ki or ΔG is derived from it** — exported reports fail a test if they contain "ΔG", "Ki", "Monte Carlo", "Morris" or "in-browser".
+
+In production `serviceConfigured` is `false`, so no poses or scores are produced at all. Experimental co-crystal structures are still shown where they exist, because those are measured rather than computed.
+
+Whether docking ranks compounds better than a fingerprint comparison **has not been measured** — the Task 6 harness is committed but has not run. Until it does, compounds are ranked by Tanimoto.
 
 ---
 
-## 6. History & Methodology
+## 6. Neglect Screen (`/neglect-screen`)
+
+Targets with substantial biological evidence for a disease and little or no recorded medicinal chemistry, ranked by evidence and weighted by India's WHO Global Health Estimates DALYs.
+
+**These are not opportunities.** The screen inverts the Task 8 finding: existing compound count was the strongest single predictor of a target entering the clinic (0.772), so this list is deliberately made of targets that signal predicts *against*. A target with good biology and no compounds is usually one the field has already looked at and left, and the reasons — no tractable pocket, no assay, no tool compound, an unpublished failure — are in no public dataset.
+
+It also cannot establish that a target is unpursued: Open Targets records approved and clinical-stage drugs, not failed or abandoned programmes. The page carries a per-target checklist of patent, trial-registry and literature searches, as outbound links only; nothing queries a patent office or registry, and ticks stay in your browser.
+
+The idea is not original here. The NIH Common Fund's **Illuminating the Druggable Genome** programme and its [Pharos](https://pharos.nih.gov/) portal already classify every human protein by target development level (Tclin / Tchem / Tbio / Tdark); "strong evidence, no chemistry" is approximately **Tbio**, and this repository reimplements that classification. What is added is the India burden weighting and an evidence model with measured held-out performance.
+
+Its two axes disagree about scope, which is the first thing the page says: the evidence model is validated on cancers, while India's recorded burden is mostly not cancer — malignant neoplasms are 6.0% of total DALYs.
+
+---
+
+## 7. History & Methodology
 
 - **Session History (`/history`):** Maintains unified local storage of staging bench sessions, target discovery runs, repurposing results, and docking simulations for auditability and session resumption.
 - **Scientific Methodology (`/methodology`):** Detailed reference documenting scoring formulas, empirical constants, rule-table mappings, validation data, and scientific limitations across every subsystem.
@@ -122,7 +184,7 @@ The in-browser docking engine (`src/dockingEngine.js`) is **disabled in the UI**
 
 ## Environment Variables
 
-TargetForge operates out-of-the-box with local deterministic models. Advanced AI reasoning and email delivery can be configured via environment variables:
+TargetForge operates out of the box with local deterministic models. An optional language model writes prose only — it never produces a score, verdict, confidence label or citation, and no scientific claim anywhere in the app is LLM-generated. Email delivery is likewise optional.
 
 | Variable | Required | Service | Description |
 | --- | --- | --- | --- |
@@ -196,7 +258,7 @@ Expanding a row in Target Discovery fetches that target's clinical history from 
 
 Two measurements shaped the design:
 
-- **Coverage is low by construction.** Of the top 25 discovered targets, 28% (pancreatic) and 16% (ALS) have any clinical candidate, because the novelty score selects for undrugged targets. A signal absent from ~75% of rows cannot be a ranking weight without distorting it, so this is shown alongside the score and never folded in.
+- **Coverage is low by construction.** Of the top 25 discovered targets, 28% (pancreatic) and 16% (ALS) have any clinical candidate, because the undrugged view selects for targets with no drug for the searched disease. A signal absent from ~75% of rows cannot be a ranking weight without distorting it, so this is shown alongside the scores and never folded in.
 - **Most stopped trials did not fail scientifically.** Recorded stop reasons across pancreatic targets: Insufficient_Enrollment 730, Business_Administrative 527, against Negative 189. Only `Negative` and `Safety_Sideeffects` are counted as setbacks; the rest are reported separately.
 
 Candidate counts from Open Targets are global across indications, so they are filtered by ontology id before display — TUBA4A reports 85 candidates overall but only one for ALS. The counts are trials of drugs that list the target, not trials of the target alone, so a broadly used drug inflates them; the panel says so.
@@ -236,15 +298,20 @@ Production builds set `GENERATE_SOURCEMAP=false`, so readable source is never pu
 # Install dependencies
 npm install
 
-# Start local Vite development server
-npm run dev
+# Start the local dev server (Create React App, port 3000)
+npm start
 
 # Build production distribution
 npm run build
 
 # Run linting checks
 npm run lint
+
+# Run the test suite (612 tests, including the provenance and copy guards)
+CI=true npm test
 ```
+
+`npm run build` is more than `react-scripts build`: it regenerates derived assets, then runs `scripts/inject-seo-html.mjs` to write crawlable HTML and per-route metadata. **Verify with `npm run build`, never `npx react-scripts build`** — a deploy once failed on a Node ESM resolution error in that post-build step that the bundler alone never reached.
 
 ---
 
