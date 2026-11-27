@@ -1290,6 +1290,34 @@ describe("no surface claims the site finds validated, novel or underexplored tar
     expect(offenders).toEqual([]);
   });
 
+  test("the static shell's metadata carries no stale docking claim", () => {
+    // public/index.html repeated one description in six places: the meta
+    // description, og:, twitter:, and three JSON-LD entities. It read
+    // "In-browser docking is under validation" — both banned phrases in one
+    // sentence — and shipped to search engines long after the copy was fixed,
+    // because the injector rewrote the meta tags but not the JSON-LD, and no
+    // guard read public/ for these phrases.
+    const shell = read("public/index.html");
+    const bad = [
+      { label: "in-browser", re: /in-browser/i },
+      { label: "pending validation", re: /\b(?:under|during|pending|awaiting|in)\s+validation\b/i },
+      { label: "docking is under validation", re: /docking is (?:under|in) validation/i },
+    ];
+    const offenders = bad.filter((b) => b.re.test(shell)).map((b) => b.label);
+    expect(offenders).toEqual([]);
+  });
+
+  test("the injector owns every description in the shipped HTML", () => {
+    // The JSON-LD descriptions must be rewritten per route, not left at
+    // whatever the shell hardcoded.
+    const injector = read("scripts/inject-seo-html.mjs");
+    expect(injector).toMatch(/setJsonLdDescriptions/);
+    expect(injector).toMatch(/application\\\/ld\\\+json/);
+    // And it is actually called from applySeoMeta, not merely defined.
+    const applyBody = injector.slice(injector.indexOf("function applySeoMeta"));
+    expect(applyBody.slice(0, 1200)).toMatch(/setJsonLdDescriptions\(out, seo\.description\)/);
+  });
+
   test("the static shell crawlers see carries none of them either", () => {
     // public/index.html is served before React hydrates and its <h1>, <title>
     // and og:/twitter: tags are what crawlers and no-JS readers get. It had

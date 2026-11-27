@@ -244,6 +244,32 @@ function injectRootContent(html, innerHtml) {
   );
 }
 
+/**
+ * Rewrite every "description" inside the JSON-LD graph to the route's own.
+ *
+ * The meta, og: and twitter: descriptions were already rewritten here, but
+ * the three JSON-LD entities in public/index.html were not, so they kept
+ * whatever was hardcoded in the shell. That is how "In-browser docking is
+ * under validation" — a sentence containing two phrases this repository
+ * bans — stayed in the structured data of every shipped page long after it
+ * was removed from the copy, and went out to search engines.
+ *
+ * Only the description is touched: @id, @type, name and url are structural
+ * and belong to the shell.
+ */
+function setJsonLdDescriptions(html, description) {
+  return html.replace(
+    /(<script type="application\/ld\+json">)([\s\S]*?)(<\/script>)/g,
+    (whole, open, body, close) => {
+      const rewritten = body.replace(
+        /("description"\s*:\s*)"(?:[^"\\]|\\.)*"/g,
+        `$1${JSON.stringify(description)}`
+      );
+      return `${open}${rewritten}${close}`;
+    }
+  );
+}
+
 function applySeoMeta(html, routePath) {
   const seo = ROUTE_SEO[routePath];
   const robots = seo.noindex ? "noindex, nofollow" : "index, follow";
@@ -262,6 +288,8 @@ function applySeoMeta(html, routePath) {
   out = setMetaContent(out, "name", "twitter:title", seo.title);
   out = setMetaContent(out, "name", "twitter:description", seo.description);
   out = setMetaContent(out, "name", "twitter:image:alt", seo.title);
+
+  out = setJsonLdDescriptions(out, seo.description);
 
   return out;
 }
