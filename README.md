@@ -245,3 +245,39 @@ npm run build
 # Run linting checks
 npm run lint
 ```
+
+---
+
+## Reproducible Benchmarks
+
+Every benchmark harness in `benchmark/docking/scripts/` (Python/AutoDock Vina/RDKit/Open Babel and Node) runs inside a single container defined by `benchmark/Dockerfile` with all tool versions pinned explicitly (Python `3.12.8`, RDKit `2024.9.5`, AutoDock Vina `1.2.5`, Open Babel `3.1.1`, PDB2PQR `3.6.2`, PROPKA `3.5.1`, Meeko `0.8.0`, gemmi `0.7.5`, spyrmsd `0.9.0`, NumPy `1.26.4`, SciPy `1.14.1`, Node `22.14.0`, `@rdkit/rdkit` `2025.3.4-1.0.0`).
+
+The committed Open Targets `21.04` retrospective snapshot (`benchmark/docking/data/task3_ot_21_04_retrospective_snapshot.json.gz`) and pre-2021 target feature table (`benchmark/docking/data/task8_target_features.json.gz`) are bind-mounted from the repository into `/workspace` rather than re-downloaded.
+
+```bash
+# 1. Clone
+git clone https://github.com/prabhavjain85-ui/targetforge.git
+cd targetforge
+
+# 2. Build the pinned benchmark image (optional: `make benchmark` builds automatically if absent)
+make benchmark-build
+make benchmark-check
+
+# 3. One command to run every harness in benchmark/docking/scripts/
+make benchmark
+# or:
+./run-benchmarks.sh
+```
+
+Expected generated files written back into the working tree:
+- `benchmark/docking/results/task1_four_rankers.json` & `benchmark/docking/TASK1_BASELINES.md`
+- `benchmark/docking/data/task2_scaffold_property_matched_benchmark.json`, `benchmark/docking/results/task2_four_rankers.json` & `benchmark/docking/TASK2_DECOY_BENCHMARK.md`
+- `benchmark/docking/results/task3_novelty_validation.json` & `benchmark/docking/TASK3_NOVELTY_VALIDATION.md`
+- `benchmark/docking/results/task4_attention_control.json` & `benchmark/docking/TASK4_ATTENTION_CONTROL.md`
+- `benchmark/docking/results/task6_vina_vs_tanimoto.json` & `benchmark/docking/TASK6_VINA_VS_TANIMOTO.md`
+- `benchmark/docking/results/task7_cancer_stratification.json` & `benchmark/docking/TASK7_CANCER_STRATIFICATION.md`
+- `benchmark/docking/results/task8_tractability.json` & `benchmark/docking/TASK8_TRACTABILITY.md`
+- `benchmark/docking/results/task10_repurposing_validation.json` & `benchmark/docking/TASK10_REPURPOSING.md`
+- `benchmark/docking/results/task12_end_to_end.json` & `benchmark/docking/TASK12_END_TO_END.md`
+- `benchmark/docking/results/redock_multiseed.json`, `approved_25.json`, `pair_sanity_checks.json`, `enrichment.json`, and `benchmark/docking/RESULTS.md`
+

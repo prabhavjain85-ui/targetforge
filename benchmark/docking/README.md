@@ -6,21 +6,40 @@ Reproducible **AutoDock Vina 1.2.5** validation for pocketlink. Production docki
 
 `engine.config.json` is the **single versioned source of truth** for AutoDock Vina settings (pinned tool versions, fixed seed, pH 7.4 receptor prep, co-crystal box, allowed PDB IDs, and limits). The production service (`services/docking/`) and Vercel proxy read the same JSON at deploy time. Update it in place when redocking benchmarks pass.
 
-## System dependencies
+## Reproducible container (recommended)
+
+Every harness in `benchmark/docking/scripts/` (both Python/Vina and Node) runs inside a single pinned container defined by `benchmark/Dockerfile` (Python 3.12.8, RDKit 2024.9.5, AutoDock Vina 1.2.5, Open Babel 3.1.1, PDB2PQR 3.6.2 / PROPKA 3.5.1, Meeko 0.8.0, gemmi 0.7.5, spyrmsd 0.9.0, NumPy 1.26.4, SciPy 1.14.1, Node 22.14.0, `@rdkit/rdkit` 2025.3.4-1.0.0).
+
+```bash
+# Run every harness in benchmark/docking/scripts/ and write results back to the repo
+make benchmark
+# or directly:
+./run-benchmarks.sh
+
+# Verify pinned toolchain & Task 6 prerequisites without running docking
+make benchmark-check
+
+# Run a single harness (e.g. Task 6, optionally passing harness flags after --)
+make benchmark-task6
+./run-benchmarks.sh --only run_vina_vs_tanimoto.py -- --target egfr --limit 10
+```
+
+## System dependencies (manual local setup)
 
 - `autodock-vina` 1.2.5 (`vina` on `PATH`)
-- `pdb2pqr` 3.6.x with PROPKA (receptor protonation at pH 7.4)
-- Python 3.12+
+- `openbabel` 3.1.1 (`obabel` on `PATH`)
+- `pdb2pqr` 3.6.2 with PROPKA 3.5.1 (receptor protonation at pH 7.4)
+- Python 3.12+ and Node 22.x
 
-## Python environment
+## Python environment (manual local setup)
 
 ```bash
 cd benchmark/docking
 python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
+.venv/bin/pip install -r requirements.txt pdb2pqr==3.6.2 propka==3.5.1
 ```
 
-Pinned versions are listed in `requirements.txt`. Large artifacts (PDB cache, Vina poses, PDB2PQR intermediates) go under `cache/` (gitignored).
+Pinned versions are listed in `requirements.txt` and `benchmark/Dockerfile`. Large artifacts (PDB cache, Vina poses, PDB2PQR intermediates) go under `cache/` (gitignored).
 
 ## Data sources
 
@@ -35,15 +54,14 @@ Pinned versions are listed in `requirements.txt`. Large artifacts (PDB cache, Vi
 ## Run pipeline
 
 ```bash
-export PATH="$PWD/benchmark/docking/.venv/bin:$PATH"
-python benchmark/docking/scripts/run_redock_multiseed.py
-python benchmark/docking/scripts/run_25_drug_benchmark.py
-python benchmark/docking/scripts/run_enrichment.py   # slow; needs network
-python benchmark/docking/scripts/generate_results_md.py
-python benchmark/docking/scripts/validate_25_pairs.py
+# Preferred: runs all Python + Node harnesses in dependency order inside the container
+./run-benchmarks.sh
+
+# Or locally inside an already-provisioned environment
+./run-benchmarks.sh --local
 ```
 
-Summary tables: `RESULTS.md`. Machine-readable summaries: `results/*.json` (including `pair_sanity_checks.json` for UI notices).
+Summary tables: `RESULTS.md` and `TASK*.md`. Machine-readable summaries: `results/*.json` (including `pair_sanity_checks.json` for UI notices).
 
 ## Configuration
 

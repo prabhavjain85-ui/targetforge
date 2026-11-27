@@ -59,6 +59,10 @@ OUT_MD = ROOT / "TASK6_VINA_VS_TANIMOTO.md"
 BEDROC_ALPHA = 20.0
 
 
+def _load_config_json() -> dict:
+    return json.loads((ROOT / "config.json").read_text())
+
+
 def check_prerequisites(cfg: dict) -> list[str]:
     """Collect every missing prerequisite, so one run reports them all."""
     missing: list[str] = []
@@ -68,13 +72,23 @@ def check_prerequisites(cfg: dict) -> list[str]:
     except Exception as exc:
         missing.append(f"RDKit is not importable ({exc.__class__.__name__}: {exc})")
 
+    try:
+        import meeko  # noqa: F401
+    except Exception as exc:
+        missing.append(f"Meeko is not importable ({exc.__class__.__name__}: {exc})")
+
     vina = cfg.get("vina_binary", "vina")
     if shutil.which(vina) is None:
         missing.append(
             f"the AutoDock Vina binary {vina!r} (config.json: vina_binary) is not on PATH"
         )
 
-    # receptor_prep shells out to one of these.
+    if shutil.which("pdb2pqr") is None:
+        missing.append(
+            "'pdb2pqr' (PDB2PQR/PROPKA) is not on PATH, so receptors cannot be protonated at pH 7.4"
+        )
+
+    # receptor_prep / ligand conversion toolchain check.
     if shutil.which("obabel") is None and shutil.which("prepare_receptor") is None:
         missing.append(
             "neither 'obabel' (Open Babel) nor 'prepare_receptor' (ADFR) is on PATH, "
@@ -199,9 +213,7 @@ def metrics_for(labels: list[bool], scores: list[float], cfg: dict) -> dict:
 
 
 def run(only_target: str | None, limit: int | None) -> dict:
-    from lib.session import DockingSession, load_config
-
-    cfg = load_config()
+    cfg = _load_config_json()
     missing = check_prerequisites(cfg)
     if missing:
         print("Task 6 cannot run. Missing prerequisites:", file=sys.stderr)
@@ -213,6 +225,8 @@ def run(only_target: str | None, limit: int | None) -> dict:
             file=sys.stderr,
         )
         sys.exit(2)
+
+    from lib.session import DockingSession
 
     bench = json.loads(BENCHMARK.read_text())
     targets = [t for t in bench["targets"] if t.get("passes_sanity")]
@@ -522,9 +536,7 @@ def main() -> None:
     args = ap.parse_args()
 
     if args.check:
-        from lib.session import load_config
-
-        missing = check_prerequisites(load_config())
+        missing = check_prerequisites(_load_config_json())
         if missing:
             print("Missing prerequisites:")
             for m in missing:
