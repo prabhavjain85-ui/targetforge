@@ -1381,7 +1381,8 @@ describe("numeric performance claims live only in the shared constants", () => {
     "src/TargetDiscoveryPage.jsx",
     "src/seoConfig.js",
     "src/NeglectScreenPage.jsx",
-    // The hero shows measured figures at 62px; they interpolate like the rest.
+    // Carries no metric today, and is listed so it cannot start carrying a
+    // hardcoded one.
     "src/HomepageIntro.jsx",
   ];
 
