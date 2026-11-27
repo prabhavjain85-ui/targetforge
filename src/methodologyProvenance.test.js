@@ -1454,6 +1454,39 @@ describe("numeric performance claims live only in the shared constants", () => {
     expect(untraced).toEqual([]);
   });
 
+  test("every figure quoted in the README traces to a committed artifact", () => {
+    // The README is the first thing anyone reads on GitHub, and it had gone
+    // badly stale: it documented the removed novelty formula as the current
+    // ranking, called ADME client-side in one section while calling RDKit
+    // server-side in another, and described docking as "validation paused"
+    // long after validation finished and the in-browser engine failed.
+    const readme = read("README.md");
+    const artifactDecimals = (ARTIFACT_TEXT.match(/\d+\.\d{2,}/g) || []).map(Number);
+    const figures = [...new Set(readme.match(/\b0\.\d{3,4}\b/g) || [])];
+    expect(figures.length).toBeGreaterThan(15);
+
+    const untraced = figures.filter((raw) => {
+      if (ARTIFACT_TEXT.includes(raw)) return false;
+      const dp = raw.split(".")[1].length;
+      return !artifactDecimals.some((v) => Number(v.toFixed(dp)) === Number(raw));
+    });
+    expect(untraced).toEqual([]);
+  });
+
+  test("the README does not present the removed score or engine as current", () => {
+    const readme = read("README.md");
+    // The formula that scored 0.361 must not reappear as the live ranking.
+    expect(readme).not.toMatch(/\\text\{Novelty Score\}\s*=/);
+    expect(readme).not.toMatch(/ranked by Novelty Score/i);
+    // ADME location, stated once and matching the code.
+    expect(readme).not.toMatch(/In-Browser ADME|entirely client-side/i);
+    expect(readme).toMatch(/RDKit WebAssembly running on the backend/);
+    // Docking is a finished result, not work in progress.
+    expect(readme).not.toMatch(/validation paused|pending validation/i);
+    // And it points at the authoritative source.
+    expect(readme).toMatch(/\/validation/);
+  });
+
   test("the artifact check bites", () => {
     const artifactDecimals = (ARTIFACT_TEXT.match(/\d+\.\d{2,}/g) || []).map(Number);
     const invented = "0.9991";

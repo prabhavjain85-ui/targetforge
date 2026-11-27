@@ -85,8 +85,21 @@ describe("run-benchmarks.sh and Makefile cover every harness in benchmark/dockin
     .sort();
 
   test("run-benchmarks.sh has valid bash syntax and is executable", () => {
-    const stat = fs.statSync(runnerPath);
-    expect(stat.mode & 0o111).toBeGreaterThan(0);
+    // The executable bit is read from git's index, not the filesystem.
+    //
+    // NTFS has no POSIX exec bit, so fs.statSync().mode always reported 0o666
+    // on Windows and this test could never pass there. Git's index mode is
+    // what actually ships, is the same on every platform, and is what decides
+    // whether `./run-benchmarks.sh` works after a clone.
+    //
+    // It also caught a real one: the file was committed 100644, so the
+    // `./run-benchmarks.sh` the README and Makefile tell people to run would
+    // have failed with "Permission denied" on a fresh Linux checkout.
+    const indexEntry = execFileSync("git", ["ls-files", "-s", "run-benchmarks.sh"], {
+      cwd: repoRoot,
+      encoding: "utf8",
+    }).trim();
+    expect(indexEntry).toMatch(/^100755\s/);
     expect(() => execFileSync("bash", ["-n", runnerPath])).not.toThrow();
   });
 
