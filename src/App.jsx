@@ -2,6 +2,7 @@ import React from "react";
 import { useStagingBench } from "./useStagingBench";
 import StagingBenchView from "./StagingBenchView";
 import "./homepageIntro.css";
+import "./heroV2.css";
 
 export default function App() {
   const bench = useStagingBench();

@@ -101,8 +101,16 @@ export default function HandoffStations({ b }) {
         <Panel eyebrow="Station 4 — handoff" title="Follow-up: ADME prediction" kind="handoff">
           {!protein && !candidates.length && (
             <div className="empty-state">
-              Stage a target and a shortlist above — TargetForge will prepare inputs for ADME prediction.
-              Molecular docking is temporarily unavailable during validation.
+              {/*
+                Was "Molecular docking is temporarily unavailable during
+                validation" — the same claim the status sweep removed
+                everywhere else, phrased as "during" rather than "under", so
+                the guard did not catch it. Docking is not awaiting a result;
+                it has one. Rendered from the single source like every other
+                docking status string.
+              */}
+              Stage a target and a shortlist above — TargetForge will prepare inputs for ADME prediction.{" "}
+              {DOCKING_STATUS.short}.
             </div>
           )}
           {(protein || candidates.length > 0) && (
