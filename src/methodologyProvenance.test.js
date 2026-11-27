@@ -952,16 +952,46 @@ describe("docking status has exactly one source of truth", () => {
     expect(h).toMatch(/export function dockingStatus/);
   });
 
-  test("the phrase under validation appears in no user-facing string", () => {
+  test("no phrasing describes docking as pending a validation result", () => {
     // It described a finished negative result as work in progress.
+    //
+    // The first version of this guard matched "under validation" literally,
+    // and HandoffStations shipped "temporarily unavailable DURING validation"
+    // straight past it for weeks — the same claim, one preposition away. The
+    // pattern now covers any preposition, because what is banned is the
+    // claim, not the wording.
+    const PENDING_VALIDATION = /\b(?:under|during|pending|awaiting|in)\s+validation\b/i;
     const offenders = [];
     for (const f of userFacing()) {
       // The helper is the one file allowed to name the phrase: its docblock
       // explains why it is banned everywhere else.
       if (f === HELPER) continue;
-      if (/under validation/i.test(read(f))) offenders.push(f);
+      const text = userFacingText(read(f));
+      for (const line of text.split("\n")) {
+        if (PENDING_VALIDATION.test(line)) offenders.push(`${f}: ${line.trim().slice(0, 80)}`);
+      }
     }
     expect(offenders).toEqual([]);
+  });
+
+  test("that guard catches every preposition, not just the one it shipped with", () => {
+    const PENDING_VALIDATION = /\b(?:under|during|pending|awaiting|in)\s+validation\b/i;
+    for (const phrasing of [
+      "Molecular docking is temporarily unavailable during validation.",
+      "Docking is under validation.",
+      "This engine is pending validation.",
+      "Results awaiting validation.",
+    ]) {
+      expect(PENDING_VALIDATION.test(phrasing)).toBe(true);
+    }
+    // ...and does not fire on legitimate uses of the word.
+    for (const ok of [
+      "see the validation page",
+      "held-out validation figures",
+      "it does not replace experimental target validation",
+    ]) {
+      expect(PENDING_VALIDATION.test(ok)).toBe(false);
+    }
   });
 
   test("in-browser never qualifies docking as working or pending", () => {
@@ -998,7 +1028,10 @@ describe("docking status has exactly one source of truth", () => {
     const offenders = [];
     for (const f of userFacing()) {
       if (f === HELPER) continue;
-      const text = read(f);
+      // Comments stripped: a note explaining why a phrase was removed must
+      // not trip the guard that removed it, or the reason cannot be recorded
+      // next to the code it applies to.
+      const text = userFacingText(read(f));
       for (const re of PATTERNS) {
         const m = text.match(re);
         if (m) offenders.push(`${f}: ${m[0]}`);
@@ -1348,6 +1381,9 @@ describe("numeric performance claims live only in the shared constants", () => {
     "src/TargetDiscoveryPage.jsx",
     "src/seoConfig.js",
     "src/NeglectScreenPage.jsx",
+    // Carries no metric today, and is listed so it cannot start carrying a
+    // hardcoded one.
+    "src/HomepageIntro.jsx",
   ];
 
   test("no page file hardcodes a three-decimal metric", () => {
